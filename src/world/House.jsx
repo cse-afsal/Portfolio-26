@@ -1,133 +1,294 @@
-import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { useState } from 'react'
+import { RigidBody, CuboidCollider } from '@react-three/rapier'
+import Interior from './interior/Interior'
+import InteractiveObject from './InteractiveObject'
+import useGameStore from '../store/useGameStore'
 
-function Window({ position, size = [0.8, 1, 0.05] }) {
+function WindowPane({ position, size = [0.1, 1.4, 2.0] }) {
   return (
-    <mesh position={position} castShadow receiveShadow>
-      <boxGeometry args={size} />
-      <meshStandardMaterial color="#2a3a4a" roughness={0.3} metalness={0.1} />
-    </mesh>
-  );
+    <group position={position}>
+      {/* Frame */}
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={size} />
+        <meshStandardMaterial color="#2d3033" roughness={0.4} metalness={0.6} />
+      </mesh>
+      {/* Glass */}
+      <mesh position={[0, 0, 0]}>
+        <boxGeometry args={[size[0] * 0.5, size[1] * 0.9, size[2] * 0.9]} />
+        <meshStandardMaterial
+          color="#d0e5f2"
+          roughness={0.1}
+          metalness={0.3}
+          transparent
+          opacity={0.3}
+        />
+      </mesh>
+    </group>
+  )
 }
 
-function Bush({ position, scale = 1 }) {
+function GardenBush({ position, scale = 1 }) {
   return (
     <mesh position={position} castShadow>
       <sphereGeometry args={[0.5 * scale, 8, 8]} />
-      <meshStandardMaterial color="#5a7a4a" roughness={0.9} />
+      <meshStandardMaterial color="#507242" roughness={0.85} />
     </mesh>
-  );
+  )
 }
 
 export default function House() {
-  const houseX = -12;
-  const wallWidth = 8;
-  const wallHeight = 6;
-  const wallDepth = 10;
+  const wallColor = '#f0ece4'       // warm modern off-white exterior
+  const roofColor = '#36383b'       // charcoal architectural flat roof
+  const doorWoodColor = '#805d3b'   // natural oak entrance door
+
+  const [doorOpen, setDoorOpen] = useState(false)
+
+  // Smooth door transition handler
+  const triggerDoorTransition = (targetPos) => {
+    useGameStore.getState().setDoorTransitioning(true)
+    useGameStore.getState().setTransitionFadeOpacity(1)
+
+    setTimeout(() => {
+      useGameStore.getState().setPlayerTeleportTarget(targetPos)
+      setTimeout(() => {
+        useGameStore.getState().setTransitionFadeOpacity(0)
+        useGameStore.getState().setDoorTransitioning(false)
+      }, 350)
+    }, 350)
+  }
 
   return (
-    <group position={[houseX, 0, 0]}>
-      <RigidBody type="fixed" name="house">
-        <CuboidCollider args={[wallWidth / 2, wallHeight / 2, wallDepth / 2]} position={[0, wallHeight / 2, 0]} />
+    <group position={[0, 0, 0]}>
+      {/* ======================================================== */}
+      {/* --- EXTERIOR WALLS & ROOF WITH HOLLOW ACCESSIBLE INTERIOR --- */}
+      {/* ======================================================== */}
+      <RigidBody type="fixed" name="house-exterior-shell">
+        {/* Back Wall (West, x = -17.0) */}
+        <CuboidCollider args={[0.15, 3.2, 7.0]} position={[-17.0, 3.2, 0.0]} />
+        {/* South Wall (z = -7.0) */}
+        <CuboidCollider args={[5.0, 3.2, 0.15]} position={[-12.0, 3.2, -7.0]} />
+        {/* North Wall (z = +7.0) */}
+        <CuboidCollider args={[5.0, 3.2, 0.15]} position={[-12.0, 3.2, 7.0]} />
 
-        {/* Main walls */}
-        <mesh
-          position={[0, wallHeight / 2, 0]}
-          castShadow
-          receiveShadow
-          userData={{ cameraCollider: true }}
-        >
-          <boxGeometry args={[wallWidth, wallHeight, wallDepth]} />
-          <meshStandardMaterial color="#f0ece4" roughness={0.7} metalness={0} />
-        </mesh>
+        {/* Front Wall (East, x = -7.0) - Left Segment */}
+        <CuboidCollider args={[0.15, 3.2, 3.1]} position={[-7.0, 3.2, -3.9]} />
+        {/* Front Wall (East, x = -7.0) - Right Segment */}
+        <CuboidCollider args={[0.15, 3.2, 3.1]} position={[-7.0, 3.2, 3.9]} />
+        {/* Lintel Wall above Front Door (y = 2.4 to 6.4) */}
+        <CuboidCollider args={[0.15, 2.0, 0.8]} position={[-7.0, 4.4, 0.0]} />
 
-        {/* Roof - flat with slight overhang */}
-        <mesh
-          position={[0, wallHeight + 0.15, 0]}
-          castShadow
-          receiveShadow
-          userData={{ cameraCollider: true }}
-        >
-          <boxGeometry args={[wallWidth + 0.6, 0.3, wallDepth + 0.6]} />
-          <meshStandardMaterial color="#3a3a3a" roughness={0.6} metalness={0.1} />
-        </mesh>
-
-        {/* Front door (facing +x) */}
-        <mesh position={[wallWidth / 2 + 0.02, 1.2, 0]} castShadow receiveShadow>
-          <boxGeometry args={[0.05, 2.4, 1.2]} />
-          <meshStandardMaterial color="#8b6b4a" roughness={0.6} metalness={0} />
-        </mesh>
-
-        {/* Door frame */}
-        <mesh position={[wallWidth / 2 + 0.03, 1.2, 0]}>
-          <boxGeometry args={[0.02, 2.5, 1.4]} />
-          <meshStandardMaterial color="#5a4a3a" roughness={0.5} />
-        </mesh>
-
-        {/* Front windows (facing +x) */}
-        <Window position={[wallWidth / 2 + 0.03, 3.8, -2.5]} size={[0.05, 1.2, 1.4]} />
-        <Window position={[wallWidth / 2 + 0.03, 3.8, 2.5]} size={[0.05, 1.2, 1.4]} />
-
-        {/* Side windows (facing +z) */}
-        <Window position={[-1.5, 3.5, wallDepth / 2 + 0.03]} size={[1.2, 1.2, 0.05]} />
-        <Window position={[1.5, 3.5, wallDepth / 2 + 0.03]} size={[1.2, 1.2, 0.05]} />
-
-        {/* Side windows (facing -z) */}
-        <Window position={[-1.5, 3.5, -(wallDepth / 2 + 0.03)]} size={[1.2, 1.2, 0.05]} />
-        <Window position={[1.5, 3.5, -(wallDepth / 2 + 0.03)]} size={[1.2, 1.2, 0.05]} />
+        {/* Roof Slab */}
+        <CuboidCollider args={[5.3, 0.2, 7.3]} position={[-12.0, 6.5, 0.0]} />
       </RigidBody>
 
-      {/* Garage extension */}
-      <RigidBody type="fixed" name="garage">
-        <CuboidCollider args={[3, 2, 3]} position={[0, 2, -(wallDepth / 2 + 3)]} />
-        <mesh
-          position={[0, 2, -(wallDepth / 2 + 3)]}
-          castShadow
-          receiveShadow
-          userData={{ cameraCollider: true }}
-        >
-          <boxGeometry args={[6, 4, 6]} />
-          <meshStandardMaterial color="#e8e4dc" roughness={0.7} metalness={0} />
-        </mesh>
+      {/* Visual Meshes for Exterior Walls (all tagged with cameraCollider: true) */}
+      {/* Back Wall */}
+      <mesh
+        position={[-17.0, 3.2, 0.0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 6.4, 14.0]} />
+        <meshStandardMaterial color={wallColor} roughness={0.7} />
+      </mesh>
 
-        {/* Garage roof */}
-        <mesh
-          position={[0, 4.15, -(wallDepth / 2 + 3)]}
-          castShadow
-          receiveShadow
-          userData={{ cameraCollider: true }}
-        >
-          <boxGeometry args={[6.4, 0.3, 6.4]} />
-          <meshStandardMaterial color="#3a3a3a" roughness={0.6} metalness={0.1} />
-        </mesh>
+      {/* South Wall */}
+      <mesh
+        position={[-12.0, 3.2, -7.0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[10.0, 6.4, 0.3]} />
+        <meshStandardMaterial color={wallColor} roughness={0.7} />
+      </mesh>
 
-        {/* Garage door (facing +x) */}
-        <mesh position={[3.02, 1.5, -(wallDepth / 2 + 3)]} castShadow receiveShadow>
-          <boxGeometry args={[0.05, 3, 4]} />
-          <meshStandardMaterial color="#6a6a6a" roughness={0.5} metalness={0.2} />
-        </mesh>
-      </RigidBody>
+      {/* North Wall */}
+      <mesh
+        position={[-12.0, 3.2, 7.0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[10.0, 6.4, 0.3]} />
+        <meshStandardMaterial color={wallColor} roughness={0.7} />
+      </mesh>
 
-      {/* Entrance path from sidewalk to door */}
-      <mesh receiveShadow position={[wallWidth / 2 + 3, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[6, 1.5]} />
+      {/* Front Wall - Left Section */}
+      <mesh
+        position={[-7.0, 3.2, -3.9]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 6.4, 6.2]} />
+        <meshStandardMaterial color={wallColor} roughness={0.7} />
+      </mesh>
+
+      {/* Front Wall - Right Section */}
+      <mesh
+        position={[-7.0, 3.2, 3.9]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 6.4, 6.2]} />
+        <meshStandardMaterial color={wallColor} roughness={0.7} />
+      </mesh>
+
+      {/* Lintel above Doorway */}
+      <mesh
+        position={[-7.0, 4.4, 0.0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 4.0, 1.6]} />
+        <meshStandardMaterial color={wallColor} roughness={0.7} />
+      </mesh>
+
+      {/* Flat Modern Roof with Overhang */}
+      <mesh
+        position={[-12.0, 6.5, 0.0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[10.8, 0.3, 14.8]} />
+        <meshStandardMaterial color={roofColor} roughness={0.5} />
+      </mesh>
+
+      {/* ======================================================== */}
+      {/* --- LARGE ARCHITECTURAL WINDOWS (NATURAL DAYLIGHT) --- */}
+      {/* ======================================================== */}
+      {/* Living Room Ground Floor Front Window */}
+      <WindowPane position={[-7.0, 1.6, -3.5]} size={[0.32, 2.2, 3.2]} />
+      {/* Dining Ground Floor Front Window */}
+      <WindowPane position={[-7.0, 1.6, 3.5]} size={[0.32, 2.2, 3.2]} />
+      {/* Upstairs Workspace Large Window */}
+      <WindowPane position={[-7.0, 4.8, 3.5]} size={[0.32, 1.8, 3.2]} />
+      {/* Upstairs Bedroom Window */}
+      <WindowPane position={[-7.0, 4.8, -3.5]} size={[0.32, 1.8, 3.2]} />
+      {/* South Wall Windows */}
+      <WindowPane position={[-12.0, 1.8, -7.0]} size={[3.0, 2.0, 0.32]} />
+      <WindowPane position={[-12.0, 4.8, -7.0]} size={[3.0, 1.8, 0.32]} />
+
+      {/* ======================================================== */}
+      {/* --- MAIN ENTRANCE DOORWAY & PORCH --- */}
+      {/* ======================================================== */}
+      {/* Modern Front Door Frame */}
+      <mesh position={[-7.0, 1.2, 0.0]}>
+        <boxGeometry args={[0.35, 2.45, 1.65]} />
+        <meshStandardMaterial color="#222" roughness={0.4} />
+      </mesh>
+      {/* Inner doorway void */}
+      <mesh position={[-7.0, 1.2, 0.0]}>
+        <boxGeometry args={[0.36, 2.38, 1.55]} />
+        <meshBasicMaterial color="#1a1a1a" />
+      </mesh>
+
+      {/* Pivotable / Openable Modern Oak Front Door */}
+      <group position={[-7.0, 0, -0.75]}>
+        <group rotation={[0, doorOpen ? -Math.PI / 2 : 0, 0]}>
+          <mesh position={[0, 1.19, 0.75]} castShadow receiveShadow>
+            <boxGeometry args={[0.08, 2.36, 1.5]} />
+            <meshStandardMaterial color={doorWoodColor} roughness={0.5} />
+          </mesh>
+          {/* Vertical modern black steel door handle */}
+          <mesh position={[0.06, 1.15, 1.35]} castShadow>
+            <cylinderGeometry args={[0.015, 0.015, 0.7, 8]} />
+            <meshStandardMaterial color="#1f1f1f" metalness={0.9} roughness={0.2} />
+          </mesh>
+        </group>
+      </group>
+
+      {/* Exterior Front Doorway Interaction (Smooth Entry Transition) */}
+      <InteractiveObject
+        id="door-exterior"
+        name="Main Entrance Door"
+        position={[-6.2, 1.0, 0]}
+        range={1.9}
+        promptText="Press E to Enter Home"
+        showBeacon={false}
+        onInteract={() => {
+          setDoorOpen(true)
+          triggerDoorTransition([-7.8, 0.8, 0])
+        }}
+      />
+
+      {/* Front Entrance Concrete Porch & Path leading to Sidewalk */}
+      <mesh position={[-5.6, 0.02, 0]} receiveShadow>
+        <boxGeometry args={[2.8, 0.05, 2.0]} />
         <meshStandardMaterial color="#c8c0b8" roughness={0.8} />
       </mesh>
-
-      {/* Front garden - bushes */}
-      <Bush position={[wallWidth / 2 + 0.8, 0.4, 3]} scale={0.8} />
-      <Bush position={[wallWidth / 2 + 0.8, 0.35, -3]} scale={0.7} />
-      <Bush position={[wallWidth / 2 + 1.5, 0.3, 1.8]} scale={0.6} />
-      <Bush position={[wallWidth / 2 + 1.5, 0.3, -1.8]} scale={0.6} />
-
-      {/* Low front hedge (along the front yard) */}
-      <mesh position={[wallWidth / 2 + 3, 0.3, 3.5]} castShadow>
-        <boxGeometry args={[6, 0.6, 0.4]} />
-        <meshStandardMaterial color="#4a6a3a" roughness={0.9} />
+      <mesh position={[-3.8, 0.01, 0]} receiveShadow>
+        <boxGeometry args={[1.6, 0.04, 1.4]} />
+        <meshStandardMaterial color="#c0b8b0" roughness={0.8} />
       </mesh>
-      <mesh position={[wallWidth / 2 + 3, 0.3, -3.5]} castShadow>
-        <boxGeometry args={[6, 0.6, 0.4]} />
-        <meshStandardMaterial color="#4a6a3a" roughness={0.9} />
+
+      {/* Porch Welcome Sconce Light */}
+      <mesh position={[-6.8, 2.3, 0.9]} castShadow>
+        <boxGeometry args={[0.1, 0.25, 0.12]} />
+        <meshStandardMaterial color="#2d3033" roughness={0.3} metalness={0.5} />
       </mesh>
+      <pointLight position={[-6.6, 2.3, 0.9]} intensity={0.4} distance={5} color="#ffe2b3" />
+
+      {/* ======================================================== */}
+      {/* --- FRONT GARDEN, BUSHES & LANDSCAPING --- */}
+      {/* ======================================================== */}
+      <GardenBush position={[-6.0, 0.35, 1.8]} scale={0.8} />
+      <GardenBush position={[-6.0, 0.3, 2.8]} scale={0.65} />
+      <GardenBush position={[-6.0, 0.35, -1.8]} scale={0.8} />
+      <GardenBush position={[-6.0, 0.3, -2.8]} scale={0.65} />
+
+      {/* Low contemporary manicured boxwood hedges */}
+      <mesh position={[-5.8, 0.3, 4.5]} castShadow>
+        <boxGeometry args={[2.2, 0.6, 0.45]} />
+        <meshStandardMaterial color="#405d35" roughness={0.9} />
+      </mesh>
+      <mesh position={[-5.8, 0.3, -4.5]} castShadow>
+        <boxGeometry args={[2.2, 0.6, 0.45]} />
+        <meshStandardMaterial color="#405d35" roughness={0.9} />
+      </mesh>
+
+      {/* ======================================================== */}
+      {/* --- GARAGE EXTENSION --- */}
+      {/* ======================================================== */}
+      <group position={[-12.0, 0, -10.5]}>
+        <RigidBody type="fixed" name="garage-ext">
+          <CuboidCollider args={[4.2, 1.8, 3.2]} position={[0, 1.8, 0]} />
+        </RigidBody>
+        <mesh
+          position={[0, 1.8, 0]}
+          castShadow
+          receiveShadow
+          userData={{ cameraCollider: true }}
+        >
+          <boxGeometry args={[8.4, 3.6, 6.4]} />
+          <meshStandardMaterial color="#e8e4dc" roughness={0.7} />
+        </mesh>
+        {/* Garage Roof */}
+        <mesh
+          position={[0, 3.75, 0]}
+          castShadow
+          receiveShadow
+          userData={{ cameraCollider: true }}
+        >
+          <boxGeometry args={[8.8, 0.3, 6.8]} />
+          <meshStandardMaterial color={roofColor} roughness={0.5} />
+        </mesh>
+        {/* Modern Sectional Garage Door */}
+        <mesh position={[4.22, 1.5, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.06, 2.8, 4.6]} />
+          <meshStandardMaterial color="#505459" roughness={0.4} metalness={0.2} />
+        </mesh>
+      </group>
+
+      {/* ======================================================== */}
+      {/* --- COMPLETE ACCESSIBLE INTERIOR --- */}
+      {/* ======================================================== */}
+      <Interior />
     </group>
-  );
+  )
 }

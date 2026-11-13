@@ -33,7 +33,8 @@ export default function Character() {
 
   useEffect(() => {
     const onMouseMove = (e) => {
-      if (document.pointerLockElement) {
+      // Rotate camera only if pointer locked and not inside an active interaction modal
+      if (document.pointerLockElement && !useGameStore.getState().activeInteraction) {
         cameraYaw.current -= e.movementX * 0.003
         cameraPitch.current = Math.max(
           -0.3,
@@ -43,7 +44,12 @@ export default function Character() {
     }
     
     const onClick = (e) => {
-      if (e.target.tagName === 'CANVAS' && !document.pointerLockElement && !useGameStore.getState().isPaused) {
+      if (
+        e.target.tagName === 'CANVAS' &&
+        !document.pointerLockElement &&
+        !useGameStore.getState().isPaused &&
+        !useGameStore.getState().activeInteraction
+      ) {
         document.body.requestPointerLock()
       }
     }
@@ -58,7 +64,7 @@ export default function Character() {
     let isTouching = false
 
     const onTouchStart = (e) => {
-      if (e.touches.length === 1 && e.target.tagName === 'CANVAS') {
+      if (e.touches.length === 1 && e.target.tagName === 'CANVAS' && !useGameStore.getState().activeInteraction) {
         isTouching = true
         lastTouchX = e.touches[0].clientX
         lastTouchY = e.touches[0].clientY
@@ -66,7 +72,7 @@ export default function Character() {
     }
 
     const onTouchMove = (e) => {
-      if (isTouching && e.touches.length === 1) {
+      if (isTouching && e.touches.length === 1 && !useGameStore.getState().activeInteraction) {
         const dx = e.touches[0].clientX - lastTouchX
         const dy = e.touches[0].clientY - lastTouchY
         lastTouchX = e.touches[0].clientX
@@ -106,11 +112,31 @@ export default function Character() {
     const dt = Math.min(delta, 0.05) // cap delta for stability
     
     const rb = rigidBodyRef.current
+    
+    // --- Teleport Check (e.g. Smooth Door Transition) ---
+    const teleportTarget = useGameStore.getState().playerTeleportTarget
+    if (teleportTarget) {
+      rb.setTranslation(
+        { x: teleportTarget[0], y: teleportTarget[1], z: teleportTarget[2] },
+        true
+      )
+      rb.setLinvel({ x: 0, y: 0, z: 0 }, true)
+      velocity.current.set(0, 0, 0)
+      useGameStore.getState().setPlayerTeleportTarget(null)
+      return
+    }
+
     const position = rb.translation()
     const currentVelocity = rb.linvel()
     
-    // Ground check: character is considered grounded if near ground and small vertical speed
-    const isOnGround = position.y < 1.4 && Math.abs(currentVelocity.y) < 1.5
+    // Check if controls should be suspended (modal open, paused, or door transition)
+    const activeInteraction = useGameStore.getState().activeInteraction
+    const isPaused = useGameStore.getState().isPaused
+    const doorTransitioning = useGameStore.getState().doorTransitioning
+    const controlsDisabled = !!activeInteraction || isPaused || doorTransitioning
+
+    // Ground check: character is considered grounded if vertical velocity is low
+    const isOnGround = Math.abs(currentVelocity.y) < 0.4
     
     // --- Combined keyboard + virtual touch input ---
     const { forward, backward, left, right, run: keyRun, jump: keyJump } = keys.current
@@ -118,26 +144,28 @@ export default function Character() {
     const touchJump = useGameStore.getState().touchJump
     const touchRun = useGameStore.getState().touchRun
 
-    const isRunning = keyRun || touchRun
-    const isJumping = keyJump || touchJump
+    const isRunning = (keyRun || touchRun) && !controlsDisabled
+    const isJumping = (keyJump || touchJump) && !controlsDisabled
     
     // Direction vector relative to camera yaw
     const moveDir = new THREE.Vector3()
-    if (forward) moveDir.z -= 1
-    if (backward) moveDir.z += 1
-    if (left) moveDir.x -= 1
-    if (right) moveDir.x += 1
+    if (!controlsDisabled) {
+      if (forward) moveDir.z -= 1
+      if (backward) moveDir.z += 1
+      if (left) moveDir.x -= 1
+      if (right) moveDir.x += 1
 
-    // Add touch joystick influence
-    if (touchMove.x !== 0 || touchMove.y !== 0) {
-      moveDir.x += touchMove.x
-      moveDir.z += touchMove.y
+      // Add touch joystick influence
+      if (touchMove.x !== 0 || touchMove.y !== 0) {
+        moveDir.x += touchMove.x
+        moveDir.z += touchMove.y
+      }
     }
     
     const isMoving = moveDir.lengthSq() > 0.001
     const speed = isRunning ? RUN_SPEED : WALK_SPEED
 
-    if (isMoving) {
+    if (isMoving && !controlsDisabled) {
       moveDir.normalize()
       
       // Rotate by camera yaw
@@ -156,8 +184,9 @@ export default function Character() {
       while (angleDiff < -Math.PI) angleDiff += Math.PI * 2
       currentRotation.current += angleDiff * dt * ROTATION_SPEED
     } else {
-      velocity.current.x = THREE.MathUtils.lerp(velocity.current.x, 0, dt * 10)
-      velocity.current.z = THREE.MathUtils.lerp(velocity.current.z, 0, dt * 10)
+      // Smooth deceleration to dead stop
+      velocity.current.x = THREE.MathUtils.lerp(velocity.current.x, 0, dt * 12)
+      velocity.current.z = THREE.MathUtils.lerp(velocity.current.z, 0, dt * 12)
     }
     
     // --- Jumping ---
@@ -217,7 +246,7 @@ export default function Character() {
     if (collidables.length > 0) {
       const hits = raycaster.current.intersectObjects(collidables, false)
       if (hits.length > 0) {
-        // Pull camera closer when blocked, never clipping through walls
+        // Pull camera closer when blocked, never clipping through walls or ceilings
         actualDist = Math.min(maxCamDist, Math.max(0.25, hits[0].distance - 0.25))
       }
     }
@@ -238,7 +267,7 @@ export default function Character() {
     if (running !== (isRunning && isMoving)) setRunning(isRunning && isMoving)
 
     // Reset if character accidentally falls off map
-    if (position.y < -10) {
+    if (position.y < -5) {
       rb.setTranslation({ x: 0, y: 3, z: 8 }, true)
       rb.setLinvel({ x: 0, y: 0, z: 0 }, true)
     }

@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import useGameStore from '../store/useGameStore'
+import InteractionModal from './InteractionModal'
+import homeData from '../data/home.json'
 
 export default function HUD() {
   const isPointerLocked = useGameStore((s) => s.isPointerLocked)
   const isPaused = useGameStore((s) => s.isPaused)
   const isRunning = useGameStore((s) => s.isRunning)
+  const activeInteraction = useGameStore((s) => s.activeInteraction)
+  const nearbyInteractable = useGameStore((s) => s.nearbyInteractable)
+  const transitionFadeOpacity = useGameStore((s) => s.transitionFadeOpacity)
   const [isMobile, setIsMobile] = useState(false)
 
   // Joystick touch state
@@ -75,6 +80,17 @@ export default function HUD() {
     })
   }
 
+  // Handle clicking the interactive prompt
+  const handlePromptClick = () => {
+    if (nearbyInteractable) {
+      if (nearbyInteractable.onInteract) {
+        nearbyInteractable.onInteract()
+      } else if (nearbyInteractable.id && homeData[nearbyInteractable.id]) {
+        useGameStore.getState().setActiveInteraction(homeData[nearbyInteractable.id])
+      }
+    }
+  }
+
   // --- Pause Overlay ---
   if (isPaused) {
     return (
@@ -87,7 +103,7 @@ export default function HUD() {
       >
         <div 
           onClick={(e) => e.stopPropagation()} 
-          className="text-center text-white bg-neutral-900/80 p-8 rounded-2xl border border-neutral-700/60 shadow-2xl max-w-sm mx-4"
+          className="text-center text-white bg-neutral-900/90 p-8 rounded-2xl border border-neutral-700/60 shadow-2xl max-w-sm mx-4"
         >
           <h2 className="text-3xl font-light mb-2 tracking-widest">PAUSED</h2>
           <p className="text-sm text-neutral-400 mb-6">Explore the peaceful neighbourhood at your pace</p>
@@ -111,25 +127,25 @@ export default function HUD() {
   }
 
   // --- Initial Start / Welcome Overlay (Desktop) ---
-  if (!isPointerLocked && !isMobile) {
+  if (!isPointerLocked && !isMobile && !activeInteraction) {
     return (
       <div 
         onClick={() => {
           document.body.requestPointerLock()
         }}
-        className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-[2px] cursor-pointer select-none"
+        className="fixed inset-0 z-40 flex items-center justify-center bg-black/45 backdrop-blur-[2px] cursor-pointer select-none"
       >
         <div className="text-center text-white p-8 max-w-lg">
           <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs tracking-wider uppercase mb-4 text-neutral-300 border border-white/10">
-            Phase 1 • Playable World
+            Phase 2 • The Main Home & Interactions
           </div>
           <h1 className="text-6xl font-light mb-3 tracking-widest text-neutral-100">MY WORLD</h1>
           <p className="text-base text-neutral-300 font-light mb-8">
-            An open 3D residential neighbourhood to explore my portfolio.
+            Walk into the modern home, explore the rooms, and interact with objects to uncover my portfolio.
           </p>
 
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-medium transition-all backdrop-blur-md border border-white/30 shadow-lg">
-            <span>Click Anywhere to Start</span>
+            <span>Click Anywhere to Explore</span>
             <span className="text-xs opacity-75">↗</span>
           </div>
 
@@ -137,9 +153,9 @@ export default function HUD() {
             <div><strong className="text-white">W A S D:</strong> Move</div>
             <div><strong className="text-white">Shift:</strong> Run</div>
             <div><strong className="text-white">Space:</strong> Jump</div>
+            <div><strong className="text-white">E:</strong> Interact / Explore</div>
             <div><strong className="text-white">Mouse:</strong> Look around</div>
-            <div><strong className="text-white">Scroll:</strong> Zoom camera</div>
-            <div><strong className="text-white">Esc:</strong> Pause</div>
+            <div><strong className="text-white">Esc:</strong> Close panel / Pause</div>
           </div>
         </div>
       </div>
@@ -149,20 +165,53 @@ export default function HUD() {
   // --- Active In-Game HUD ---
   return (
     <>
+      {/* Smooth Door Transition Screen Fade Overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none z-50 bg-neutral-950 transition-opacity duration-300 ease-in-out"
+        style={{ opacity: transitionFadeOpacity }}
+      />
+
       {/* Top subtle branding */}
       <div className="fixed top-5 left-6 z-30 pointer-events-none select-none">
         <div className="text-white/80 font-medium tracking-wider text-sm drop-shadow">MY WORLD</div>
-        <div className="text-white/40 text-xs">Residential District • Phase 1</div>
+        <div className="text-white/40 text-xs">The Main Home • Open Interior</div>
       </div>
 
-      {/* Speed indicator / status */}
-      <div className="fixed top-5 right-6 z-30 pointer-events-none select-none">
+      {/* Speed & status indicator */}
+      <div className="fixed top-5 right-6 z-30 pointer-events-none select-none flex items-center gap-2">
         <span className={`px-2.5 py-1 rounded-full text-[11px] font-mono tracking-wider transition-colors ${
           isRunning ? 'bg-amber-500/30 text-amber-200 border border-amber-400/40' : 'bg-white/10 text-white/50 border border-white/10'
         }`}>
           {isRunning ? 'RUNNING' : 'WALKING'}
         </span>
       </div>
+
+      {/* ======================================================== */}
+      {/* --- INTERACTION PROMPT PILL (CENTER SCREEN) --- */}
+      {/* ======================================================== */}
+      {nearbyInteractable && !activeInteraction && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 select-none animate-bounce duration-700">
+          <button
+            onClick={handlePromptClick}
+            className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 text-white border border-amber-400/60 shadow-2xl backdrop-blur-md transition-all cursor-pointer group"
+          >
+            <span className="w-6 h-6 rounded-full bg-amber-400 text-neutral-950 text-xs font-bold flex items-center justify-center shadow-xs">
+              E
+            </span>
+            <div className="text-left">
+              <div className="text-xs font-medium text-amber-200 group-hover:text-amber-100">
+                {nearbyInteractable.prompt || 'Press E to Explore'}
+              </div>
+              <div className="text-[11px] text-neutral-400">
+                {nearbyInteractable.name}
+              </div>
+            </div>
+            <span className="text-xs text-amber-300 opacity-60 group-hover:opacity-100 ml-1">
+              ↵
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Desktop bottom controls helper */}
       {!isMobile && (
@@ -173,6 +222,8 @@ export default function HUD() {
             <span>Shift Run</span>
             <span className="text-white/20">•</span>
             <span>Space Jump</span>
+            <span className="text-white/20">•</span>
+            <span className="text-amber-300 font-medium">E Interact</span>
             <span className="text-white/20">•</span>
             <span>Scroll Zoom</span>
             <span className="text-white/20">•</span>
@@ -203,6 +254,15 @@ export default function HUD() {
 
           {/* Action buttons (Bottom Right) */}
           <div className="pointer-events-auto absolute bottom-8 right-8 flex flex-col gap-3">
+            {/* Interact Button (appears when nearby) */}
+            {nearbyInteractable && (
+              <button
+                onTouchStart={handlePromptClick}
+                className="w-16 h-16 rounded-full bg-amber-500/80 backdrop-blur-sm border-2 border-amber-300 text-neutral-950 text-xs font-black flex items-center justify-center active:bg-amber-400 shadow-xl touch-none animate-pulse"
+              >
+                INTERACT
+              </button>
+            )}
             {/* Run Toggle Button */}
             <button
               onTouchStart={() => useGameStore.getState().setTouchRun(true)}
@@ -227,6 +287,11 @@ export default function HUD() {
           </div>
         </div>
       )}
+
+      {/* ======================================================== */}
+      {/* --- ACTIVE INTERACTION MODAL POPUP --- */}
+      {/* ======================================================== */}
+      <InteractionModal />
     </>
   )
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import useGameStore from '../store/useGameStore'
+import homeData from '../data/home.json'
 
 export default function usePlayerControls() {
   const keys = useRef({
@@ -9,6 +10,7 @@ export default function usePlayerControls() {
     right: false,
     run: false,
     jump: false,
+    interact: false,
   })
 
   useEffect(() => {
@@ -16,6 +18,17 @@ export default function usePlayerControls() {
       // Prevent browser default scroll on space/arrows
       if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
         e.preventDefault()
+      }
+
+      // If active interaction modal is open, E or Escape closes it
+      const activeInteraction = useGameStore.getState().activeInteraction
+      if (activeInteraction) {
+        if (e.code === 'KeyE' || e.code === 'Escape') {
+          e.preventDefault()
+          useGameStore.getState().closeInteraction()
+          // Re-lock pointer when closing with keyboard if canvas is active
+          return
+        }
       }
 
       switch (e.code) {
@@ -42,6 +55,18 @@ export default function usePlayerControls() {
         case 'Space':
           keys.current.jump = true
           break
+        case 'KeyE': {
+          keys.current.interact = true
+          const nearby = useGameStore.getState().nearbyInteractable
+          if (nearby) {
+            if (nearby.onInteract) {
+              nearby.onInteract()
+            } else if (nearby.id && homeData[nearby.id]) {
+              useGameStore.getState().setActiveInteraction(homeData[nearby.id])
+            }
+          }
+          break
+        }
         case 'Escape': {
           const paused = useGameStore.getState().isPaused
           if (!paused) {
@@ -82,6 +107,9 @@ export default function usePlayerControls() {
           break
         case 'Space':
           keys.current.jump = false
+          break
+        case 'KeyE':
+          keys.current.interact = false
           break
       }
     }
