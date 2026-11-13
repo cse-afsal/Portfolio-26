@@ -1,0 +1,51 @@
+{
+  "personal": {
+    "name": "[YOUR NAME]",
+    "title": "[YOUR TITLE — e.g. Full-Stack Developer]",
+    "bio": "[A short bio about yourself — 2-3 sentences]",
+    "location": "[YOUR CITY, COUNTRY]",
+    "email": "[YOUR EMAIL]",
+    "website": "[YOUR WEBSITE URL]",
+    "social": {
+      "github": "[GITHUB URL]",
+      "linkedin": "[LINKEDIN URL]",
+      "twitter": "[TWITTER URL]"
+    }
+  },
+  "skills": [
+    {
+      "name": "[SKILL NAME — e.g. React]",
+      "category": "[CATEGORY — e.g. Frontend]",
+      "proficiency": "[PROFICIENCY — e.g. 90]"
+    }
+  ],
+  "projects": [
+    {
+      "id": "project-1",
+      "title": "[PROJECT TITLE]",
+      "description": "[PROJECT DESCRIPTION — 1-2 sentences]",
+      "technologies": ["[TECH 1]", "[TECH 2]"],
+      "image": "[IMAGE PATH OR URL]",
+      "liveUrl": "[LIVE PROJECT URL]",
+      "githubUrl": "[GITHUB REPO URL]",
+      "featured": true
+    }
+  ],
+  "experience": [
+    {
+      "company": "[COMPANY NAME]",
+      "role": "[YOUR ROLE]",
+      "period": "[START DATE — END DATE]",
+      "description": "[BRIEF DESCRIPTION OF ROLE]"
+    }
+  ],
+  "education": [
+    {
+      "institution": "[INSTITUTION NAME]",
+      "degree": "[DEGREE NAME]",
+      "period": "[START — END]",
+      "description": "[BRIEF DESCRIPTION]"
+    }
+  ]
+}
+
