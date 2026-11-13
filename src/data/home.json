@@ -1,0 +1,73 @@
+{
+  "photoFrame": {
+    "id": "photoFrame",
+    "name": "Family & Memories Frame",
+    "title": "Introduction",
+    "subtitle": "Welcome to My World",
+    "category": "Personal Background",
+    "content": "Hello and welcome to my interactive portfolio! This world represents who I am — grounded, detail-oriented, and passionate about crafting immersive digital experiences. Take your time to explore the space, discover my work, and see what drives my craft.",
+    "highlights": [
+      "Based in [Your Location]",
+      "Creative technologist & full-stack software engineer",
+      "Passionate about 3D on the web, modern UX, and robust architectures"
+    ],
+    "footerNote": "[Placeholder: Replace with your personal introduction and welcome message]"
+  },
+  "computer": {
+    "id": "computer",
+    "name": "Workstation Terminal",
+    "title": "Professional Profile",
+    "subtitle": "Engineering & Development Focus",
+    "category": "Core Competencies",
+    "content": "Primary development setup featuring high-performance computing, dual calibrated displays, and modern developer tooling. Here is where code, architecture, and design converge into production applications.",
+    "highlights": [
+      "Frontend: React, TypeScript, Three.js, R3F, Tailwind CSS, Next.js",
+      "Backend: Node.js, Python, PostgreSQL, REST & GraphQL APIs",
+      "Tools: Git, Docker, CI/CD pipelines, Cloud Architecture"
+    ],
+    "footerNote": "[Placeholder: Replace with your actual tech stack, resume link, and profile summary]"
+  },
+  "bookshelf": {
+    "id": "bookshelf",
+    "name": "Curated Bookshelf",
+    "title": "Interests & Continuous Learning",
+    "subtitle": "Knowledge & Inspiration",
+    "category": "Learning & Philosophy",
+    "content": "A curated collection spanning computer science fundamentals, system design, architectural history, typography, and interactive storytelling. I believe in compounding curiosity and cross-disciplinary thinking.",
+    "highlights": [
+      "Currently Reading: Designing Data-Intensive Applications",
+      "Topics: Real-Time Rendering, Clean Architecture, Human-Computer Interaction",
+      "Philosophy: Strive for simplicity, craftsmanship, and user empathy"
+    ],
+    "footerNote": "[Placeholder: Replace with your favorite books, articles, and learning topics]"
+  },
+  "desk": {
+    "id": "desk",
+    "name": "Creative Desk",
+    "title": "Goals & Current Activities",
+    "subtitle": "Roadmap & Focus Areas",
+    "category": "Ongoing Projects",
+    "content": "Where ideas take form into concrete plans, diagrams, and prototypes. Currently focused on building spatial web applications, exploring WebGPU, and shipping high-impact client products.",
+    "highlights": [
+      "Active Goal: Launching 'My World' 3D Portfolio experience",
+      "Research: Advancing WebGL / Three.js performance and physics optimization",
+      "Target: Seeking high-impact software engineering and creative developer roles"
+    ],
+    "footerNote": "[Placeholder: Replace with your active milestones and current professional goals]"
+  },
+  "wallDisplay": {
+    "id": "wallDisplay",
+    "name": "Feature Wall Display",
+    "title": "Personal Information & Values",
+    "subtitle": "About the Creator",
+    "category": "Values & Ethics",
+    "content": "An artful gallery showcase illustrating core principles: clarity of thought, relentless attention to detail, respectful communication, and building tools that empower people.",
+    "highlights": [
+      "Values: Craftsmanship, curiosity, open collaboration, resilience",
+      "Hobbies: Urban photography, coffee brewing, cycling, indie game design",
+      "Contact: [your.email@example.com] | GitHub & LinkedIn: [@yourhandle]"
+    ],
+    "footerNote": "[Placeholder: Replace with your personal contact info, values, and bio]"
+  }
+}
+
