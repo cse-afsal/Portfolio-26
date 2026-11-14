@@ -137,11 +137,11 @@ export default function HUD() {
       >
         <div className="text-center text-white p-8 max-w-lg">
           <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs tracking-wider uppercase mb-4 text-neutral-300 border border-white/10">
-            Phase 2 • The Main Home & Interactions
+            Phase 3 • The Connected Neighbourhood
           </div>
           <h1 className="text-6xl font-light mb-3 tracking-widest text-neutral-100">MY WORLD</h1>
           <p className="text-base text-neutral-300 font-light mb-8">
-            Walk into the modern home, explore the rooms, and interact with objects to uncover my portfolio.
+            Walk along the continuous residential avenue to explore the Project Studio, Skills House, Education House, Achievement Gallery, and Contact House.
           </p>
 
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-medium transition-all backdrop-blur-md border border-white/30 shadow-lg">
@@ -174,7 +174,7 @@ export default function HUD() {
       {/* Top subtle branding */}
       <div className="fixed top-5 left-6 z-30 pointer-events-none select-none">
         <div className="text-white/80 font-medium tracking-wider text-sm drop-shadow">MY WORLD</div>
-        <div className="text-white/40 text-xs">The Main Home • Open Interior</div>
+        <div className="text-white/40 text-xs">Connected Residential District • All Buildings</div>
       </div>
 
       {/* Speed & status indicator */}

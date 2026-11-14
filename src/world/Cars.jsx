@@ -1,11 +1,19 @@
-import { RigidBody, CuboidCollider } from '@react-three/rapier';
+import { RigidBody, CuboidCollider } from '@react-three/rapier'
 
 const CAR_DATA = [
-  { pos: [3, 0, -20], rotation: 0, color: '#e8e4e0' },
-  { pos: [-3, 0, -5], rotation: Math.PI, color: '#b0b0b0' },
-  { pos: [3, 0, 10], rotation: 0, color: '#3a3a3a' },
-  { pos: [-3, 0, 25], rotation: Math.PI, color: '#5a7088' },
-];
+  // Curbside parked cars
+  { pos: [3.0, 0, -48], rotation: 0, color: '#e8e4e0' },       // White sedan (East curb)
+  { pos: [-3.0, 0, -20], rotation: Math.PI, color: '#b0b0b0' }, // Silver hatchback (West curb)
+  { pos: [3.0, 0, -12], rotation: 0, color: '#33383e' },        // Dark charcoal sedan (East curb)
+  { pos: [-3.0, 0, 16], rotation: Math.PI, color: '#5a7088' },  // Slate blue sedan (West curb)
+  { pos: [3.0, 0, 48], rotation: 0, color: '#d8d4cb' },        // Warm cream wagon (East curb)
+  { pos: [-3.0, 0, 52], rotation: Math.PI, color: '#3d4f40' },  // Forest green compact (West curb)
+
+  // Driveway parked cars
+  { pos: [-8.5, 0, -32], rotation: Math.PI / 2, color: '#44484d' }, // Skills House driveway
+  { pos: [8.5, 0, 32], rotation: -Math.PI / 2, color: '#ece8e1' },   // Contact House driveway
+  { pos: [8.5, 0, 0], rotation: -Math.PI / 2, color: '#2b2d30' },    // Project Studio parking bay
+]
 
 function Wheel({ position }) {
   return (
@@ -13,16 +21,16 @@ function Wheel({ position }) {
       <cylinderGeometry args={[0.3, 0.3, 0.2, 8]} />
       <meshStandardMaterial color="#2a2a2a" roughness={0.8} metalness={0.1} />
     </mesh>
-  );
+  )
 }
 
 function Car({ position, rotation = 0, color = '#e8e4e0' }) {
-  const bodyWidth = 1.8;
-  const bodyHeight = 0.6;
-  const bodyLength = 4;
-  const cabinWidth = 1.6;
-  const cabinHeight = 0.55;
-  const cabinLength = 2;
+  const bodyWidth = 1.8
+  const bodyHeight = 0.6
+  const bodyLength = 4.0
+  const cabinWidth = 1.6
+  const cabinHeight = 0.55
+  const cabinLength = 2.0
 
   return (
     <group position={position} rotation={[0, rotation, 0]}>
@@ -93,7 +101,7 @@ function Car({ position, rotation = 0, color = '#e8e4e0' }) {
       <Wheel position={[bodyWidth / 2 + 0.1, 0.3, -1.2]} />
       <Wheel position={[-(bodyWidth / 2 + 0.1), 0.3, -1.2]} />
     </group>
-  );
+  )
 }
 
 export default function Cars() {
@@ -103,5 +111,5 @@ export default function Cars() {
         <Car key={i} position={car.pos} rotation={car.rotation} color={car.color} />
       ))}
     </group>
-  );
+  )
 }
