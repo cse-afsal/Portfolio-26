@@ -37,4 +37,21 @@ All assets used in My World portfolio are original procedural geometry created w
 
 ---
 
+## Phase 3 — The Connected Neighbourhood
+
+| Asset | Type | Source | Licence |
+|-------|------|--------|---------|
+| Project Studio Architecture | Procedural 3D mesh & Rapier colliders | Original cantilevered glass pavilion design | MIT / Original |
+| Skills House Architecture | Procedural 3D mesh & Rapier colliders | Original tech-craftsman villa with timber pergola | MIT / Original |
+| Education House Architecture | Procedural 3D mesh & Rapier colliders | Original Scandinavian gable pavilion | MIT / Original |
+| Achievement Gallery Architecture | Procedural 3D mesh & Rapier colliders | Original minimalist limestone museum pavilion | MIT / Original |
+| Contact House Architecture | Procedural 3D mesh & Rapier colliders | Original mid-century terracotta residence | MIT / Original |
+| Architectural Entrance Signs | Drei Text & Procedural 3D plinth | Original monolith totem sign design | MIT / Original |
+| Extended Street Network & Crosswalks | Procedural 3D mesh with zebra stripes | Original asphalt, curbs, ramps, driveways | MIT / Original |
+| Street Furniture (Park Benches, Hydrants, Bins) | Procedural 3D mesh & Rapier colliders | Original street elements | MIT / Original |
+| Extended Vehicle Fleet | Procedural 3D vehicle geometries | Original low-poly cars & wheels | MIT / Original |
+| Neighborhood Forest (Oaks & Tiered Pines) | Procedural 3D trees & trunk colliders | Original procedural foliage | MIT / Original |
+
+---
+
 *This file is updated with each phase. All third-party assets must include source URL and licence.*

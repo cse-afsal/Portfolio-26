@@ -1,0 +1,93 @@
+{
+  "categories": [
+    {
+      "id": "languages",
+      "name": "Programming Languages",
+      "icon": "code",
+      "description": "Core languages used for building performant applications and tools.",
+      "items": [
+        "JavaScript (ES6+)",
+        "TypeScript",
+        "Python",
+        "HTML5 / Semantic Web",
+        "CSS3 / Modern Layouts",
+        "SQL",
+        "[ADD LANGUAGE HERE]"
+      ]
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend & Creative 3D",
+      "icon": "layout",
+      "description": "User interfaces, component architectures, and real-time 3D web graphics.",
+      "items": [
+        "React",
+        "Next.js",
+        "Three.js / React Three Fiber",
+        "Drei & Rapier Physics",
+        "Tailwind CSS",
+        "Zustand / Redux",
+        "GSAP & Web Animations",
+        "[ADD FRONTEND TECH HERE]"
+      ]
+    },
+    {
+      "id": "backend",
+      "name": "Backend & APIs",
+      "icon": "server",
+      "description": "Server-side runtimes, microservices, and API design.",
+      "items": [
+        "Node.js",
+        "Express",
+        "FastAPI / Python",
+        "RESTful API Architecture",
+        "GraphQL",
+        "Authentication & Security (JWT, OAuth)",
+        "[ADD BACKEND TECH HERE]"
+      ]
+    },
+    {
+      "id": "databases",
+      "name": "Databases & Storage",
+      "icon": "database",
+      "description": "Relational, document, and in-memory data storage systems.",
+      "items": [
+        "PostgreSQL",
+        "MongoDB",
+        "Redis (Caching & Pub/Sub)",
+        "SQLite",
+        "Prisma ORM",
+        "Cloud Storage (S3, Cloudinary)",
+        "[ADD DATABASE HERE]"
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "DevOps & Developer Tools",
+      "icon": "tool",
+      "description": "Development environment, containerization, and deployment pipelines.",
+      "items": [
+        "Git & GitHub Version Control",
+        "Docker & Containerization",
+        "Vite & Build Tooling",
+        "CI/CD Pipelines (GitHub Actions)",
+        "Linux / Shell Scripting",
+        "Figma to Code",
+        "[ADD TOOL HERE]"
+      ]
+    },
+    {
+      "id": "learning",
+      "name": "Currently Learning & Exploring",
+      "icon": "compass",
+      "description": "Emerging technologies and areas of active research.",
+      "items": [
+        "WebGPU & Compute Shaders",
+        "Rust Systems Programming",
+        "Distributed Systems & Microservices",
+        "Spatial Web & WebXR",
+        "[ADD LEARNING GOAL HERE]"
+      ]
+    }
+  ]
+}
