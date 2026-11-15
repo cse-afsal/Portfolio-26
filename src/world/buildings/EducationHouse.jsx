@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { RigidBody, CuboidCollider } from '@react-three/rapier'
 import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
+import EducationHouseInterior from './EducationHouseInterior'
 import useGameStore from '../../store/useGameStore'
 
 export default function EducationHouse() {
@@ -9,30 +11,39 @@ export default function EducationHouse() {
   const roofSlateColor = '#2e3033'   // dark standing-seam gable roof
   const glassColor = '#a8c6db'       // window glass
 
-  const handleDoorInteract = () => {
-    useGameStore.getState().setActiveInteraction({
-      name: 'Education House',
-      title: 'Academic & Learning Hall',
-      subtitle: 'Formal Degrees, Certifications & Foundations',
-      category: 'Education & Research',
-      content: 'The Education House represents academic training, computer science foundations, mathematics, and certifications. Inside, visitors will be able to explore degree details, research publications, and specialized coursework.',
-      highlights: [
-        'Architecture: Scandinavian Modern Gable Pavilion with Study Porch',
-        'Features: Computer Science fundamentals, research archives, certifications',
-        'Next: Interior reading library and academic archives opening in future phase',
-      ],
-      footerNote: '[Notice: Education House interior will unlock in a later phase]',
-    })
+  const [doorOpen, setDoorOpen] = useState(false)
+
+  const triggerDoorTransition = (targetPos) => {
+    useGameStore.getState().setDoorTransitioning(true)
+    useGameStore.getState().setTransitionFadeOpacity(1)
+
+    setTimeout(() => {
+      useGameStore.getState().setPlayerTeleportTarget(targetPos)
+      setTimeout(() => {
+        useGameStore.getState().setTransitionFadeOpacity(0)
+        useGameStore.getState().setDoorTransitioning(false)
+      }, 350)
+    }, 350)
   }
 
   return (
     <group position={[-16, 0, 32]} rotation={[0, Math.PI / 2, 0]}>
       {/* ======================================================== */}
-      {/* --- RAPIER PHYSICS COLLIDERS --- */}
+      {/* --- HOLLOW ACCESSIBLE EXTERIOR SHELL COLLIDERS --- */}
       {/* ======================================================== */}
-      <RigidBody type="fixed" name="education-house-structure">
-        {/* Main Gable Pavilion Volume */}
-        <CuboidCollider args={[5.2, 3.2, 4.5]} position={[0, 3.2, 0]} />
+      <RigidBody type="fixed" name="education-house-shell">
+        {/* Back Wall (local -Z) */}
+        <CuboidCollider args={[5.2, 2.5, 0.15]} position={[0, 2.5, -4.5]} />
+        {/* Left Wall (local -X) */}
+        <CuboidCollider args={[0.15, 2.5, 4.5]} position={[-5.2, 2.5, 0]} />
+        {/* Right Wall (local +X) */}
+        <CuboidCollider args={[0.15, 2.5, 4.5]} position={[5.2, 2.5, 0]} />
+
+        {/* Front Wall with doorway opening at center x = 0 */}
+        <CuboidCollider args={[2.2, 2.5, 0.15]} position={[-2.6, 2.5, 4.5]} />
+        <CuboidCollider args={[2.2, 2.5, 0.15]} position={[2.6, 2.5, 4.5]} />
+        <CuboidCollider args={[1.0, 1.25, 0.15]} position={[0, 3.75, 4.5]} />
+
         {/* Study Porch Platform */}
         <CuboidCollider args={[4.5, 0.2, 1.8]} position={[0, 0.2, 5.8]} />
       </RigidBody>
@@ -40,14 +51,65 @@ export default function EducationHouse() {
       {/* ======================================================== */}
       {/* --- SCANDINAVIAN GABLE BUILDING MESHES --- */}
       {/* ======================================================== */}
-      {/* Lower Main Pavilion Walls */}
+      {/* Exterior Back Wall */}
       <mesh
-        position={[0, 2.5, 0]}
+        position={[0, 2.5, -4.5]}
         castShadow
         receiveShadow
         userData={{ cameraCollider: true }}
       >
-        <boxGeometry args={[10.4, 5.0, 9.0]} />
+        <boxGeometry args={[10.4, 5.0, 0.3]} />
+        <meshStandardMaterial color={wallWhiteColor} roughness={0.7} />
+      </mesh>
+      {/* Exterior Left Wall */}
+      <mesh
+        position={[-5.2, 2.5, 0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 5.0, 9.0]} />
+        <meshStandardMaterial color={wallWhiteColor} roughness={0.7} />
+      </mesh>
+      {/* Exterior Right Wall */}
+      <mesh
+        position={[5.2, 2.5, 0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 5.0, 9.0]} />
+        <meshStandardMaterial color={wallWhiteColor} roughness={0.7} />
+      </mesh>
+
+      {/* Front Wall Left Segment */}
+      <mesh
+        position={[-2.6, 2.5, 4.5]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[4.4, 5.0, 0.3]} />
+        <meshStandardMaterial color={wallWhiteColor} roughness={0.7} />
+      </mesh>
+      {/* Front Wall Right Segment */}
+      <mesh
+        position={[2.6, 2.5, 4.5]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[4.4, 5.0, 0.3]} />
+        <meshStandardMaterial color={wallWhiteColor} roughness={0.7} />
+      </mesh>
+      {/* Lintel above Doorway */}
+      <mesh
+        position={[0, 3.75, 4.5]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[2.0, 2.5, 0.3]} />
         <meshStandardMaterial color={wallWhiteColor} roughness={0.7} />
       </mesh>
 
@@ -86,9 +148,9 @@ export default function EducationHouse() {
 
       {/* Tall Vertical Windows */}
       {[-3.0, 3.0].map((xWin, idx) => (
-        <group key={`win-${idx}`} position={[xWin, 2.6, 4.52]}>
+        <group key={`win-${idx}`} position={[xWin, 2.6, 4.66]}>
           <mesh castShadow>
-            <boxGeometry args={[1.4, 3.0, 0.1]} />
+            <boxGeometry args={[1.4, 3.0, 0.08]} />
             <meshStandardMaterial color="#2d3033" roughness={0.4} />
           </mesh>
           <mesh position={[0, 0, 0.02]}>
@@ -99,15 +161,13 @@ export default function EducationHouse() {
       ))}
 
       {/* ======================================================== */}
-      {/* --- TIMBER WRAP-AROUND PORCH & OUTDOOR STUDY TABLE --- */}
+      {/* --- TIMBER PORCH & OUTDOOR STUDY TABLE --- */}
       {/* ======================================================== */}
-      {/* Timber Deck Platform */}
       <mesh position={[0, 0.15, 5.8]} receiveShadow>
         <boxGeometry args={[9.0, 0.2, 3.0]} />
         <meshStandardMaterial color={pineWoodColor} roughness={0.7} />
       </mesh>
 
-      {/* Paved Walkway to Sidewalk */}
       <mesh position={[0, 0.02, 9.2]} receiveShadow>
         <boxGeometry args={[1.8, 0.04, 4.4]} />
         <meshStandardMaterial color="#c0bbb1" roughness={0.8} />
@@ -121,56 +181,43 @@ export default function EducationHouse() {
         </mesh>
       ))}
 
-      {/* Outdoor Study Table & Benches on Porch */}
+      {/* Outdoor Study Table on Porch */}
       <group position={[-2.4, 0.25, 5.8]}>
-        {/* Table Top */}
         <mesh position={[0, 0.65, 0]} castShadow receiveShadow>
           <boxGeometry args={[1.6, 0.05, 0.8]} />
           <meshStandardMaterial color={pineWoodColor} roughness={0.6} />
         </mesh>
-        {/* Table Legs */}
-        {[-0.6, 0.6].map((xL, idx) => (
-          <mesh key={`tbl-leg-${idx}`} position={[xL, 0.32, 0]} castShadow>
-            <boxGeometry args={[0.06, 0.64, 0.7]} />
-            <meshStandardMaterial color="#222" roughness={0.5} />
-          </mesh>
-        ))}
-        {/* Benches */}
-        {[-0.65, 0.65].map((zB, bIdx) => (
-          <mesh key={`bench-${bIdx}`} position={[0, 0.38, zB]} castShadow receiveShadow>
-            <boxGeometry args={[1.5, 0.04, 0.3]} />
-            <meshStandardMaterial color={pineWoodColor} roughness={0.6} />
-          </mesh>
-        ))}
       </group>
 
-      {/* ======================================================== */}
-      {/* --- ENTRANCE DOOR & PROXIMITY TRIGGER --- */}
-      {/* ======================================================== */}
-      <mesh position={[0, 1.35, 4.52]} castShadow>
-        <boxGeometry args={[1.4, 2.5, 0.1]} />
-        <meshStandardMaterial color={pineWoodColor} roughness={0.5} />
-      </mesh>
-      {/* Handle */}
-      <mesh position={[0.45, 1.3, 4.6]} castShadow>
-        <cylinderGeometry args={[0.015, 0.015, 0.7, 8]} />
-        <meshStandardMaterial color="#1f1f1f" metalness={0.9} roughness={0.2} />
-      </mesh>
+      {/* Entrance Door (Pivots open on interaction) */}
+      <group position={[0, 0, 4.5]}>
+        <group position={[-0.7, 0, 0]} rotation={[0, doorOpen ? -Math.PI / 2 : 0, 0]}>
+          <mesh position={[0.7, 1.35, 0]} castShadow receiveShadow>
+            <boxGeometry args={[1.4, 2.5, 0.08]} />
+            <meshStandardMaterial color={pineWoodColor} roughness={0.5} />
+          </mesh>
+          <mesh position={[1.2, 1.3, 0.06]} castShadow>
+            <cylinderGeometry args={[0.015, 0.015, 0.7, 8]} />
+            <meshStandardMaterial color="#1f1f1f" metalness={0.9} roughness={0.2} />
+          </mesh>
+        </group>
+      </group>
 
-      {/* Interactive Door Trigger */}
+      {/* Interactive Exterior Door Trigger (Smooth Entry Transition) */}
       <InteractiveObject
-        id="door-education-house"
+        id="door-education-exterior"
         name="Education House Entrance"
         position={[0, 1.0, 5.8]}
         range={2.2}
-        promptText="Press E to Explore Education House"
-        showBeacon={true}
-        onInteract={handleDoorInteract}
+        promptText="Press E to Enter Education House"
+        showBeacon={false}
+        onInteract={() => {
+          setDoorOpen(true)
+          triggerDoorTransition([-14.5, 0.8, 32])
+        }}
       />
 
-      {/* ======================================================== */}
-      {/* --- BUILDING SIGN & GARDEN BEDS --- */}
-      {/* ======================================================== */}
+      {/* Building Sign Totem */}
       <BuildingSign
         title="EDUCATION HOUSE"
         subtitle="Academics & Research"
@@ -179,21 +226,10 @@ export default function EducationHouse() {
         scale={1.05}
       />
 
-      {/* Lush Green Lawn & Flowering Garden Planter */}
-      <mesh position={[2.5, 0.2, 5.8]} castShadow receiveShadow>
-        <boxGeometry args={[2.2, 0.35, 1.8]} />
-        <meshStandardMaterial color="#7a7873" roughness={0.8} />
-      </mesh>
-      {/* Soil & Flowering Shrubs */}
-      <mesh position={[2.5, 0.45, 5.8]} castShadow>
-        <sphereGeometry args={[0.4, 7, 7]} />
-        <meshStandardMaterial color="#4a7342" roughness={0.8} />
-      </mesh>
-      <mesh position={[2.0, 0.42, 6.2]} castShadow>
-        <sphereGeometry args={[0.3, 7, 7]} />
-        <meshStandardMaterial color="#d49282" roughness={0.7} />
-      </mesh>
+      {/* ======================================================== */}
+      {/* --- ACCESSIBLE STUDY INTERIOR & CREDENTIALS --- */}
+      {/* ======================================================== */}
+      <EducationHouseInterior />
     </group>
   )
 }
-

@@ -1,0 +1,58 @@
+{
+  "personal": {
+    "name": "[YOUR NAME]",
+    "title": "Creative Technologist & Full-Stack Software Engineer",
+    "location": "[City, Country]",
+    "email": "contact@example.com",
+    "availability": "Available for Full-Time Roles & High-Impact Contracts",
+    "responseTime": "Typically replies within 24 hours"
+  },
+  "links": [
+    {
+      "id": "github",
+      "name": "GitHub",
+      "url": "https://github.com",
+      "handle": "@[your-handle]",
+      "description": "Explore open-source repositories, experiments, and code architectures.",
+      "primary": true
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "url": "https://linkedin.com",
+      "handle": "in/[your-profile]",
+      "description": "Professional background, verified credentials, and networking.",
+      "primary": true
+    },
+    {
+      "id": "email",
+      "name": "Direct Email",
+      "url": "mailto:contact@example.com",
+      "handle": "contact@example.com",
+      "description": "Reach out directly for job opportunities, projects, or consulting inquiries.",
+      "primary": true
+    },
+    {
+      "id": "twitter",
+      "name": "X / Twitter",
+      "url": "https://twitter.com",
+      "handle": "@[your-twitter]",
+      "description": "Thoughts on 3D web graphics, software architecture, and developer tools.",
+      "primary": false
+    },
+    {
+      "id": "resume",
+      "name": "Download Curriculum Vitae",
+      "url": "https://example.com/resume.pdf",
+      "handle": "resume.pdf",
+      "description": "Complete PDF resume covering full employment history and technical stack.",
+      "primary": false
+    }
+  ],
+  "messageFormPlaceholder": {
+    "title": "Send a Direct Message",
+    "subtitle": "Leave a note or proposal directly through the Contact House desk terminal.",
+    "notice": "Interactive message submission terminal ready for your backend integration or mail service."
+  }
+}
+

@@ -1,0 +1,112 @@
+{
+  "featuredProjects": [
+    {
+      "id": "project-my-world",
+      "stationNumber": "Station 01",
+      "title": "My World — 3D Interactive Portfolio",
+      "tagline": "Spatial residential district portfolio built with React & Three.js",
+      "category": "3D Web / Creative Development",
+      "description": "An open-world, peaceful 3D residential neighborhood where visitors explore portfolio projects, skills, education, and achievements by controlling a third-person character in real-time.",
+      "contribution": "Conceived the architectural concept, engineered the third-person character controller, physics collision system with Rapier, multi-level building interiors, and customized daylighting shaders.",
+      "technologies": [
+        "React",
+        "Three.js",
+        "@react-three/fiber",
+        "@react-three/rapier",
+        "Zustand",
+        "Tailwind CSS",
+        "Vite"
+      ],
+      "highlights": [
+        "6 fully connected distinct architectural buildings with accessible interiors",
+        "Custom third-person camera with intelligent wall-clipping collision avoidance",
+        "Continuous walkable neighborhood with zero loading screens",
+        "Seamless entrance portals and decoupled JSON-driven content architecture"
+      ],
+      "github": "https://github.com",
+      "liveDemo": "https://portfolio-26.local",
+      "status": "In Active Development"
+    },
+    {
+      "id": "project-saas-platform",
+      "stationNumber": "Station 02",
+      "title": "CloudFlow — Distributed Task & Workflow Engine",
+      "tagline": "Real-time workflow orchestration platform for engineering teams",
+      "category": "Full-Stack Web Application",
+      "description": "A high-concurrency event-driven pipeline manager that visualizes microservice workflows, automates job retries, and delivers live telemetry metrics over WebSockets.",
+      "contribution": "Architected the end-to-end event queue using Redis and BullMQ, implemented DAG dependency visualizer with React Flow, and built REST/GraphQL endpoints with automated role-based access control.",
+      "technologies": [
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL",
+        "Prisma",
+        "Redis",
+        "Tailwind CSS"
+      ],
+      "highlights": [
+        "Processed over 500,000 simulated tasks per hour in performance benchmarks",
+        "Interactive node graph UI with drag-and-drop workflow builder",
+        "Real-time WebSocket event streaming with automatic reconnection",
+        "Full test coverage with Jest, Supertest, and Playwright E2E"
+      ],
+      "github": "https://github.com",
+      "liveDemo": "https://example.com/cloudflow-demo",
+      "status": "Completed"
+    },
+    {
+      "id": "project-spatial-audio",
+      "stationNumber": "Station 03",
+      "title": "Aura — 3D Audio Visualizer & Soundscape Studio",
+      "tagline": "Real-time Web Audio API synthesizer with spatial sound positioning",
+      "category": "Creative Technologist / Web Audio",
+      "description": "An interactive digital audio workstation in the browser featuring binaural audio spatialization, parametric equalizer visualizer, and generative particle effects reactive to sound frequencies.",
+      "contribution": "Engineered Web Audio API DSP pipeline, implemented FFT frequency analysis hooked into custom WebGL shader uniforms, and developed clean preset manager stored in IndexedDB.",
+      "technologies": [
+        "JavaScript (ESNext)",
+        "Web Audio API",
+        "Three.js",
+        "GLSL Shaders",
+        "Web Workers",
+        "CSS3 Grid"
+      ],
+      "highlights": [
+        "Binaural 3D listener coordinate tracking reactive to mouse or headphone sensors",
+        "60 FPS GPU-accelerated frequency spectrum particle visualizer",
+        "Zero-latency audio routing graph with modular effect nodes",
+        "Offline caching and audio export support via Web Audio Renderers"
+      ],
+      "github": "https://github.com",
+      "liveDemo": "https://example.com/aura-studio",
+      "status": "Featured Demo"
+    },
+    {
+      "id": "project-commerce-engine",
+      "stationNumber": "Station 04",
+      "title": "Artisan — Headless E-Commerce & Inventory Suite",
+      "tagline": "High-conversion headless storefront with optimistic checkout",
+      "category": "E-Commerce / Systems Design",
+      "description": "A modern headless commerce solution built for independent designer studios, featuring instant search indexing, optimistic cart mutations, Stripe payments, and automated inventory sync.",
+      "contribution": "Developed the headless storefront UI, integrated Stripe Payment Element with Webhook event reconciliation, and configured Algolia instant search with faceted filtering.",
+      "technologies": [
+        "React",
+        "Next.js App Router",
+        "FastAPI",
+        "PostgreSQL",
+        "Stripe SDK",
+        "Algolia",
+        "Docker"
+      ],
+      "highlights": [
+        "Sub-100ms instant search queries with typo tolerance",
+        "Optimistic UI updates delivering seamless cart modifications",
+        "Comprehensive inventory tracking with low-stock webhooks",
+        "Achieved 99/100 Lighthouse performance score across mobile and desktop"
+      ],
+      "github": "https://github.com",
+      "liveDemo": "https://example.com/artisan-store",
+      "status": "Production Ready"
+    }
+  ]
+}
+

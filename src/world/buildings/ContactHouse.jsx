@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { RigidBody, CuboidCollider } from '@react-three/rapier'
 import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
+import ContactHouseInterior from './ContactHouseInterior'
 import useGameStore from '../../store/useGameStore'
 
 export default function ContactHouse() {
@@ -10,30 +12,39 @@ export default function ContactHouse() {
   const roofDarkColor = '#3a3c3f'     // dark flat roof with fascia
   const glassColor = '#a8c6db'        // corner window glass
 
-  const handleDoorInteract = () => {
-    useGameStore.getState().setActiveInteraction({
-      name: 'Contact House',
-      title: 'Contact & Collaboration Hub',
-      subtitle: 'Inquiries, Availability & Social Channels',
-      category: 'Get In Touch',
-      content: 'The Contact House is the communication headquarters where visitors can drop messages, view availability for freelance/full-time opportunities, schedule meetings, and access social links.',
-      highlights: [
-        'Architecture: Mid-Century Modern Warm Residence with Terracotta Brick',
-        'Direct Access: Email, LinkedIn, GitHub, Resume download, and contact form',
-        'Next: Interior interactive mailbox, desk terminal & message drop opening in future phase',
-      ],
-      footerNote: '[Notice: Contact House interior will unlock in a later phase]',
-    })
+  const [doorOpen, setDoorOpen] = useState(false)
+
+  const triggerDoorTransition = (targetPos) => {
+    useGameStore.getState().setDoorTransitioning(true)
+    useGameStore.getState().setTransitionFadeOpacity(1)
+
+    setTimeout(() => {
+      useGameStore.getState().setPlayerTeleportTarget(targetPos)
+      setTimeout(() => {
+        useGameStore.getState().setTransitionFadeOpacity(0)
+        useGameStore.getState().setDoorTransitioning(false)
+      }, 350)
+    }, 350)
   }
 
   return (
     <group position={[16, 0, 32]} rotation={[0, -Math.PI / 2, 0]}>
       {/* ======================================================== */}
-      {/* --- RAPIER PHYSICS COLLIDERS --- */}
+      {/* --- HOLLOW ACCESSIBLE EXTERIOR SHELL COLLIDERS --- */}
       {/* ======================================================== */}
-      <RigidBody type="fixed" name="contact-house-structure">
-        {/* Main Body */}
-        <CuboidCollider args={[5.5, 2.2, 4.5]} position={[0, 2.2, 0]} />
+      <RigidBody type="fixed" name="contact-house-shell">
+        {/* Back Wall (local -Z) */}
+        <CuboidCollider args={[5.5, 2.2, 0.15]} position={[0, 2.2, -4.5]} />
+        {/* Left Wall (local -X) */}
+        <CuboidCollider args={[0.15, 2.2, 4.5]} position={[-5.5, 2.2, 0]} />
+        {/* Right Wall (local +X) */}
+        <CuboidCollider args={[0.15, 2.2, 4.5]} position={[5.5, 2.2, 0]} />
+
+        {/* Front Wall with doorway opening at center x = 0 */}
+        <CuboidCollider args={[2.2, 2.2, 0.15]} position={[-2.8, 2.2, 4.5]} />
+        <CuboidCollider args={[2.2, 2.2, 0.15]} position={[2.8, 2.2, 4.5]} />
+        <CuboidCollider args={[1.0, 0.95, 0.15]} position={[0, 3.45, 4.5]} />
+
         {/* Terracotta Brick Accent Wing */}
         <CuboidCollider args={[2.5, 1.8, 2.5]} position={[-4.5, 1.8, 2.0]} />
         {/* Front Porch Deck */}
@@ -41,20 +52,71 @@ export default function ContactHouse() {
       </RigidBody>
 
       {/* ======================================================== */}
-      {/* --- MID-CENTURY RESIDENCE MESHES --- */}
+      {/* --- EXTERIOR WALL MESHES --- */}
       {/* ======================================================== */}
-      {/* Main Living Structure (Cream Stucco) */}
+      {/* Back Wall */}
       <mesh
-        position={[0, 2.2, 0]}
+        position={[0, 2.2, -4.5]}
         castShadow
         receiveShadow
         userData={{ cameraCollider: true }}
       >
-        <boxGeometry args={[11.0, 4.4, 9.0]} />
+        <boxGeometry args={[11.0, 4.4, 0.3]} />
+        <meshStandardMaterial color={creamStuccoColor} roughness={0.7} />
+      </mesh>
+      {/* Left Wall */}
+      <mesh
+        position={[-5.5, 2.2, 0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 4.4, 9.0]} />
+        <meshStandardMaterial color={creamStuccoColor} roughness={0.7} />
+      </mesh>
+      {/* Right Wall */}
+      <mesh
+        position={[5.5, 2.2, 0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 4.4, 9.0]} />
         <meshStandardMaterial color={creamStuccoColor} roughness={0.7} />
       </mesh>
 
-      {/* Terracotta Accent Feature Wall Wing */}
+      {/* Front Wall Left Segment */}
+      <mesh
+        position={[-2.8, 2.2, 4.5]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[4.4, 4.4, 0.3]} />
+        <meshStandardMaterial color={creamStuccoColor} roughness={0.7} />
+      </mesh>
+      {/* Front Wall Right Segment */}
+      <mesh
+        position={[2.8, 2.2, 4.5]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[4.4, 4.4, 0.3]} />
+        <meshStandardMaterial color={creamStuccoColor} roughness={0.7} />
+      </mesh>
+      {/* Lintel above Doorway */}
+      <mesh
+        position={[0, 3.45, 4.5]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[2.0, 1.9, 0.3]} />
+        <meshStandardMaterial color={creamStuccoColor} roughness={0.7} />
+      </mesh>
+
+      {/* Terracotta Feature Wing */}
       <mesh
         position={[-4.5, 1.8, 2.2]}
         castShadow
@@ -75,16 +137,11 @@ export default function ContactHouse() {
         <boxGeometry args={[12.2, 0.35, 10.8]} />
         <meshStandardMaterial color={roofDarkColor} roughness={0.5} />
       </mesh>
-      {/* Walnut Wood Soffit Under Overhang */}
-      <mesh position={[0, 4.3, 0.5]}>
-        <boxGeometry args={[12.0, 0.05, 10.6]} />
-        <meshStandardMaterial color={walnutWoodColor} roughness={0.6} />
-      </mesh>
 
-      {/* Classic Mid-Century Corner Glass Window */}
-      <group position={[3.5, 2.0, 4.52]}>
+      {/* Corner Glass Window */}
+      <group position={[3.5, 2.0, 4.66]}>
         <mesh castShadow>
-          <boxGeometry args={[3.6, 2.2, 0.1]} />
+          <boxGeometry args={[3.6, 2.2, 0.08]} />
           <meshStandardMaterial color="#222" roughness={0.4} />
         </mesh>
         <mesh position={[0, 0, 0.02]}>
@@ -96,22 +153,19 @@ export default function ContactHouse() {
       {/* ======================================================== */}
       {/* --- WELCOMING PORCH, ADIRONDACK CHAIRS & DOOR --- */}
       {/* ======================================================== */}
-      {/* Timber Porch Deck */}
       <mesh position={[1.5, 0.1, 5.6]} receiveShadow>
         <boxGeometry args={[6.2, 0.2, 3.0]} />
         <meshStandardMaterial color={walnutWoodColor} roughness={0.65} />
       </mesh>
 
-      {/* Paved Walkway to Sidewalk */}
       <mesh position={[0, 0.02, 9.0]} receiveShadow>
         <boxGeometry args={[2.0, 0.04, 4.0]} />
         <meshStandardMaterial color="#c0bbb1" roughness={0.8} />
       </mesh>
 
-      {/* Outdoor Mid-Century Lounge Chairs (2 chairs) on Porch */}
+      {/* Outdoor Lounge Chairs on Porch */}
       {[2.5, 3.8].map((xCh, idx) => (
         <group key={`lounge-${idx}`} position={[xCh, 0.2, 5.6]} rotation={[0, -0.2, 0]}>
-          {/* Seat & Slanted Back */}
           <mesh position={[0, 0.3, 0]} castShadow receiveShadow>
             <boxGeometry args={[0.65, 0.08, 0.65]} />
             <meshStandardMaterial color="#c29668" roughness={0.6} />
@@ -120,48 +174,38 @@ export default function ContactHouse() {
             <boxGeometry args={[0.65, 0.65, 0.08]} />
             <meshStandardMaterial color="#c29668" roughness={0.6} />
           </mesh>
-          {/* Black Legs */}
-          {[-0.28, 0.28].map((xL, lIdx) => (
-            <mesh key={`leg-${lIdx}`} position={[xL, 0.15, 0]} castShadow>
-              <cylinderGeometry args={[0.02, 0.02, 0.3, 6]} />
-              <meshStandardMaterial color="#222" roughness={0.5} />
-            </mesh>
-          ))}
         </group>
       ))}
 
-      {/* Modern Front Door with Warm Wood Inlay */}
-      <mesh position={[0, 1.35, 4.52]} castShadow>
-        <boxGeometry args={[1.5, 2.5, 0.1]} />
-        <meshStandardMaterial color={walnutWoodColor} roughness={0.5} />
-      </mesh>
-      {/* Handle */}
-      <mesh position={[0.5, 1.3, 4.6]} castShadow>
-        <cylinderGeometry args={[0.015, 0.015, 0.65, 8]} />
-        <meshStandardMaterial color="#c0c4c8" metalness={0.9} roughness={0.2} />
-      </mesh>
+      {/* Modern Front Door (Pivots open on interaction) */}
+      <group position={[0, 0, 4.5]}>
+        <group position={[-0.75, 0, 0]} rotation={[0, doorOpen ? -Math.PI / 2 : 0, 0]}>
+          <mesh position={[0.75, 1.35, 0]} castShadow receiveShadow>
+            <boxGeometry args={[1.5, 2.5, 0.08]} />
+            <meshStandardMaterial color={walnutWoodColor} roughness={0.5} />
+          </mesh>
+          <mesh position={[1.3, 1.3, 0.06]} castShadow>
+            <cylinderGeometry args={[0.015, 0.015, 0.65, 8]} />
+            <meshStandardMaterial color="#c0c4c8" metalness={0.9} roughness={0.2} />
+          </mesh>
+        </group>
+      </group>
 
-      {/* Interactive Door Trigger */}
+      {/* Interactive Exterior Door Trigger (Smooth Entry Transition) */}
       <InteractiveObject
-        id="door-contact-house"
+        id="door-contact-exterior"
         name="Contact House Entrance"
         position={[0, 1.0, 5.6]}
         range={2.2}
-        promptText="Press E to Explore Contact House"
-        showBeacon={true}
-        onInteract={handleDoorInteract}
+        promptText="Press E to Enter Contact House"
+        showBeacon={false}
+        onInteract={() => {
+          setDoorOpen(true)
+          triggerDoorTransition([14.5, 0.8, 32])
+        }}
       />
 
-      {/* Porch Warm Sconce Light */}
-      <mesh position={[1.0, 2.4, 4.56]} castShadow>
-        <boxGeometry args={[0.15, 0.25, 0.1]} />
-        <meshStandardMaterial color="#222" roughness={0.4} />
-      </mesh>
-      <pointLight position={[1.0, 2.3, 4.7]} intensity={0.4} distance={4} color="#ffe2b3" />
-
-      {/* ======================================================== */}
-      {/* --- BUILDING SIGN & ROADSIDE MAILBOX --- */}
-      {/* ======================================================== */}
+      {/* Building Sign Totem */}
       <BuildingSign
         title="CONTACT HOUSE"
         subtitle="Inquiries & Collabs"
@@ -170,25 +214,26 @@ export default function ContactHouse() {
         scale={1.05}
       />
 
-      {/* Modern Mid-Century Post Mailbox near roadside */}
+      {/* Modern Post Mailbox near roadside */}
       <group position={[-2.4, 0, 8.4]}>
-        {/* Wood Post */}
         <mesh position={[0, 0.55, 0]} castShadow>
           <cylinderGeometry args={[0.05, 0.05, 1.1, 8]} />
           <meshStandardMaterial color={walnutWoodColor} roughness={0.7} />
         </mesh>
-        {/* Charcoal Mailbox Box */}
         <mesh position={[0, 1.1, 0.1]} castShadow receiveShadow>
           <boxGeometry args={[0.3, 0.22, 0.5]} />
           <meshStandardMaterial color="#2d3033" roughness={0.4} metalness={0.3} />
         </mesh>
-        {/* Red Flag */}
         <mesh position={[0.16, 1.15, 0.05]} castShadow>
           <boxGeometry args={[0.02, 0.12, 0.06]} />
           <meshStandardMaterial color="#c24438" roughness={0.5} />
         </mesh>
       </group>
+
+      {/* ======================================================== */}
+      {/* --- ACCESSIBLE RECEPTION INTERIOR & CHANNELS --- */}
+      {/* ======================================================== */}
+      <ContactHouseInterior />
     </group>
   )
 }
-
