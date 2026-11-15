@@ -1,0 +1,65 @@
+{
+  "awards": [
+    {
+      "id": "award-hackathon-1st",
+      "title": "1st Place Winner — Global Web3 & Spatial Hackathon",
+      "organization": "International DevCon / Major Tech Sponsor",
+      "year": "2024",
+      "description": "Awarded 1st place out of 250+ international teams for developing an open-source decentralized 3D asset pipeline viewer in WebGL."
+    },
+    {
+      "id": "award-best-ui",
+      "title": "Best User Experience & Engineering Award",
+      "organization": "National Collegiate Code Championship",
+      "year": "2023",
+      "description": "Recognized for exemplary craftsmanship, accessibility standards, and responsive spatial navigation in interactive applications."
+    }
+  ],
+  "competitions": [
+    {
+      "id": "comp-icpc",
+      "name": "Regional Collegiate Programming Contest",
+      "standing": "Top 5% Finalist",
+      "year": "2023",
+      "summary": "Solved complex algorithmic challenges under strict time and memory constraints, specializing in dynamic programming and graph theory."
+    },
+    {
+      "id": "comp-open-source",
+      "name": "Hacktoberfest & Open Source Sprint",
+      "standing": "Featured Contributor",
+      "year": "2023 & 2024",
+      "summary": "Contributed bug fixes, performance improvements, and documentation enhancements to popular frontend and rendering repositories."
+    }
+  ],
+  "milestones": [
+    {
+      "id": "milestone-downloads",
+      "title": "10,000+ Downloads on Open-Source Tools",
+      "date": "2024",
+      "details": "Authored reusable npm packages and utilities widely used in the developer community for reactive Three.js state bindings."
+    },
+    {
+      "id": "milestone-speaker",
+      "title": "Invited Tech Talk Speaker — '3D Graphics on the Modern Web'",
+      "date": "2024",
+      "details": "Delivered a 45-minute keynote covering R3F physics, memory management, and mobile performance optimization to 300+ attendees."
+    }
+  ],
+  "activities": [
+    {
+      "id": "act-mentorship",
+      "title": "Developer Mentorship & Code Reviews",
+      "role": "Community Mentor",
+      "period": "2023 – Present",
+      "details": "Mentored 20+ aspiring junior developers in React patterns, Git workflows, portfolio structuring, and interview preparation."
+    },
+    {
+      "id": "act-club",
+      "title": "President / Lead — Student Developer Society",
+      "role": "Technical Lead",
+      "period": "2022 – 2024",
+      "details": "Organized weekly technical workshops, hackathons, and guest speaker sessions for over 400 active student members."
+    }
+  ]
+}
+

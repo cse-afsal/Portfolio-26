@@ -54,4 +54,21 @@ All assets used in My World portfolio are original procedural geometry created w
 
 ---
 
+## Phase 4 — Building Interiors & Portfolio Content
+
+| Asset | Type | Source | Licence |
+|-------|------|--------|---------|
+| Skills House Interior (Workstation & Skill Boards) | Procedural 3D mesh & Rapier colliders | Original computer lab & interactive boards | MIT / Original |
+| Project Studio Interior (Exhibition Stations & Displays) | Procedural 3D mesh & Rapier colliders | Original showroom with 4 project pedestals | MIT / Original |
+| Education House Interior (Study Table, Shelving & Diplomas) | Procedural 3D mesh & Rapier colliders | Original Nordic library & credentials hall | MIT / Original |
+| Achievement Gallery Interior (Trophy Vitrine & Frames) | Procedural 3D mesh & Rapier colliders | Original exhibition vitrines & award frames | MIT / Original |
+| Contact House Interior (Reception Desk, Terminal & Lounge) | Procedural 3D mesh & Rapier colliders | Original mid-century reception & social lounge | MIT / Original |
+| Skills Data Schema (`skills.json`) | JSON Data Store | Structured categories without invented levels | MIT / Original |
+| Projects Data Schema (`projects.json`) | JSON Data Store | 4 comprehensive project station entries | MIT / Original |
+| Education Data Schema (`education.json`) | JSON Data Store | Degrees, verified certifications, workshops | MIT / Original |
+| Achievements Data Schema (`achievements.json`) | JSON Data Store | Hackathons, awards, milestones, leadership | MIT / Original |
+| Contact Data Schema (`contact.json`) | JSON Data Store | Professional links, handles, message form | MIT / Original |
+
+---
+
 *This file is updated with each phase. All third-party assets must include source URL and licence.*

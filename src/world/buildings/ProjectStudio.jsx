@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { RigidBody, CuboidCollider } from '@react-three/rapier'
 import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
+import ProjectStudioInterior from './ProjectStudioInterior'
 import useGameStore from '../../store/useGameStore'
 
 export default function ProjectStudio() {
@@ -10,32 +12,42 @@ export default function ProjectStudio() {
   const glassColor = '#a8c8dc'       // tinted architectural structural glass
   const waterColor = '#3d6175'       // modern reflecting pool water
 
-  const handleDoorInteract = () => {
-    useGameStore.getState().setActiveInteraction({
-      name: 'Project Studio',
-      title: 'Flagship Project Studio',
-      subtitle: 'Featured Works & Interactive Demonstrations',
-      category: 'Flagship Building',
-      content: 'Welcome to the Project Studio — the central exhibition space designed to showcase comprehensive case studies, interactive 3D web apps, client productions, and technical architecture breakdowns.',
-      highlights: [
-        'Architecture: 2-Level Cantilevered Modernist Pavilion with Reflecting Pool',
-        'Status: Exterior fully constructed & integrated into continuous street path',
-        'Next: Full interactive project gallery interior coming in Phase 5',
-      ],
-      footerNote: '[Notice: Project Studio interior and project stations will unlock in Phase 5]',
-    })
+  const [doorOpen, setDoorOpen] = useState(false)
+
+  const triggerDoorTransition = (targetPos) => {
+    useGameStore.getState().setDoorTransitioning(true)
+    useGameStore.getState().setTransitionFadeOpacity(1)
+
+    setTimeout(() => {
+      useGameStore.getState().setPlayerTeleportTarget(targetPos)
+      setTimeout(() => {
+        useGameStore.getState().setTransitionFadeOpacity(0)
+        useGameStore.getState().setDoorTransitioning(false)
+      }, 350)
+    }, 350)
   }
 
   return (
     <group position={[17, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
       {/* ======================================================== */}
-      {/* --- RAPIER PHYSICS COLLIDERS --- */}
+      {/* --- HOLLOW ACCESSIBLE EXTERIOR SHELL COLLIDERS --- */}
       {/* ======================================================== */}
-      <RigidBody type="fixed" name="project-studio-structure">
-        {/* Main Lower Building Volume */}
-        <CuboidCollider args={[7.0, 2.2, 5.0]} position={[0, 2.2, 0]} />
-        {/* Upper Cantilever Volume (thrusts forward in +Z towards street) */}
-        <CuboidCollider args={[5.5, 1.8, 6.2]} position={[0, 5.8, 1.0]} />
+      <RigidBody type="fixed" name="project-studio-shell">
+        {/* Back Wall (local -Z) */}
+        <CuboidCollider args={[7.0, 3.5, 0.15]} position={[0, 3.5, -4.5]} />
+        {/* Left Wall (local -X) */}
+        <CuboidCollider args={[0.15, 3.5, 4.5]} position={[-6.8, 3.5, 0]} />
+        {/* Right Wall (local +X) */}
+        <CuboidCollider args={[0.15, 3.5, 4.5]} position={[6.8, 3.5, 0]} />
+
+        {/* Front Structural Wall with doorway opening at center x = 0 */}
+        <CuboidCollider args={[2.6, 2.0, 0.15]} position={[-4.2, 2.0, 3.4]} />
+        <CuboidCollider args={[2.6, 2.0, 0.15]} position={[4.2, 2.0, 3.4]} />
+        <CuboidCollider args={[1.6, 1.0, 0.15]} position={[0, 3.0, 3.4]} />
+
+        {/* Upper Cantilever Volume (above y = 4.0) */}
+        <CuboidCollider args={[5.8, 1.8, 6.2]} position={[0, 5.8, 1.0]} />
+
         {/* Reflecting Pool Boundary Edges */}
         <CuboidCollider args={[5.2, 0.2, 0.2]} position={[0, 0.2, 7.8]} />
         <CuboidCollider args={[0.2, 0.2, 2.0]} position={[-5.0, 0.2, 6.0]} />
@@ -43,45 +55,66 @@ export default function ProjectStudio() {
       </RigidBody>
 
       {/* ======================================================== */}
-      {/* --- LOWER LEVEL: CHARCOAL STEEL & DOUBLE-HEIGHT GLASS --- */}
+      {/* --- LOWER LEVEL: CHARCOAL STEEL & GLASS FACADE --- */}
       {/* ======================================================== */}
-      {/* Main Base Body */}
+      {/* Exterior Back Wall */}
       <mesh
-        position={[0, 2.0, -1.0]}
+        position={[0, 2.0, -4.5]}
         castShadow
         receiveShadow
         userData={{ cameraCollider: true }}
       >
-        <boxGeometry args={[14.0, 4.0, 8.0]} />
+        <boxGeometry args={[14.0, 4.0, 0.3]} />
+        <meshStandardMaterial color={stoneColor} roughness={0.7} />
+      </mesh>
+      {/* Exterior Left Wall */}
+      <mesh
+        position={[-6.8, 2.0, 0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 4.0, 9.0]} />
+        <meshStandardMaterial color={stoneColor} roughness={0.7} />
+      </mesh>
+      {/* Exterior Right Wall */}
+      <mesh
+        position={[6.8, 2.0, 0]}
+        castShadow
+        receiveShadow
+        userData={{ cameraCollider: true }}
+      >
+        <boxGeometry args={[0.3, 4.0, 9.0]} />
         <meshStandardMaterial color={stoneColor} roughness={0.7} />
       </mesh>
 
-      {/* Charcoal Steel Framing Grid */}
-      <mesh position={[0, 2.0, 3.1]} castShadow receiveShadow>
-        <boxGeometry args={[13.6, 4.0, 0.4]} />
+      {/* Charcoal Steel Framing Grid on Front */}
+      <mesh position={[-4.2, 2.0, 3.4]} castShadow receiveShadow>
+        <boxGeometry args={[5.2, 4.0, 0.3]} />
+        <meshStandardMaterial color={steelColor} roughness={0.4} metalness={0.6} />
+      </mesh>
+      <mesh position={[4.2, 2.0, 3.4]} castShadow receiveShadow>
+        <boxGeometry args={[5.2, 4.0, 0.3]} />
+        <meshStandardMaterial color={steelColor} roughness={0.4} metalness={0.6} />
+      </mesh>
+      <mesh position={[0, 3.0, 3.4]} castShadow receiveShadow>
+        <boxGeometry args={[3.2, 2.0, 0.3]} />
         <meshStandardMaterial color={steelColor} roughness={0.4} metalness={0.6} />
       </mesh>
 
-      {/* Expansive Double-Height Front Glass Curtain Wall */}
-      <mesh position={[0, 2.0, 3.25]}>
-        <planeGeometry args={[12.8, 3.6]} />
-        <meshStandardMaterial
-          color={glassColor}
-          roughness={0.1}
-          metalness={0.4}
-          transparent
-          opacity={0.45}
-        />
+      {/* Double-Height Glass Curtain Panels */}
+      <mesh position={[-4.2, 2.0, 3.56]}>
+        <planeGeometry args={[4.8, 3.6]} />
+        <meshStandardMaterial color={glassColor} roughness={0.1} transparent opacity={0.4} />
       </mesh>
-      {/* Warm Ambient Interior Studio Glow visible through glass */}
-      <pointLight position={[0, 2.2, 1.5]} intensity={0.9} distance={12} color="#fff1db" />
-      <pointLight position={[-4, 2.2, 1.5]} intensity={0.6} distance={8} color="#ffe8cc" />
-      <pointLight position={[4, 2.2, 1.5]} intensity={0.6} distance={8} color="#ffe8cc" />
+      <mesh position={[4.2, 2.0, 3.56]}>
+        <planeGeometry args={[4.8, 3.6]} />
+        <meshStandardMaterial color={glassColor} roughness={0.1} transparent opacity={0.4} />
+      </mesh>
 
       {/* ======================================================== */}
       {/* --- UPPER LEVEL: DRAMATIC CANTILEVER WITH CEDAR SLATS --- */}
       {/* ======================================================== */}
-      {/* Floating Cantilever Box */}
       <mesh
         position={[0, 5.8, 1.2]}
         castShadow
@@ -95,29 +128,16 @@ export default function ProjectStudio() {
       {/* Upper Front Glass Ribbon Window */}
       <mesh position={[0, 5.8, 7.25]}>
         <boxGeometry args={[9.6, 2.0, 0.1]} />
-        <meshStandardMaterial
-          color={glassColor}
-          roughness={0.1}
-          metalness={0.3}
-          transparent
-          opacity={0.4}
-        />
+        <meshStandardMaterial color={glassColor} roughness={0.1} transparent opacity={0.4} />
       </mesh>
 
-      {/* Warm Vertical Cedar Louvers / Slats Accent Panels */}
+      {/* Cedar Louver Side Panels */}
       {[-4.6, 4.6].map((xSide, sIdx) => (
         <group key={`cedar-side-${sIdx}`} position={[xSide, 5.8, 4.0]}>
           <mesh castShadow receiveShadow>
             <boxGeometry args={[1.6, 3.5, 6.2]} />
             <meshStandardMaterial color={cedarColor} roughness={0.7} />
           </mesh>
-          {/* Slat Lines */}
-          {Array.from({ length: 12 }).map((_, i) => (
-            <mesh key={`slat-${i}`} position={[0, 0, -2.6 + i * 0.45]} castShadow>
-              <boxGeometry args={[1.65, 3.5, 0.08]} />
-              <meshStandardMaterial color="#6a4c2f" roughness={0.6} />
-            </mesh>
-          ))}
         </group>
       ))}
 
@@ -132,19 +152,8 @@ export default function ProjectStudio() {
         <meshStandardMaterial color={steelColor} roughness={0.4} metalness={0.5} />
       </mesh>
 
-      {/* Cantilever Underside Downlights */}
-      {[-3, 0, 3].map((xLight, lIdx) => (
-        <group key={`downlight-${lIdx}`} position={[xLight, 3.95, 5.0]}>
-          <mesh>
-            <cylinderGeometry args={[0.08, 0.08, 0.04, 12]} />
-            <meshStandardMaterial color="#ffe8cc" emissive="#ffe8cc" emissiveIntensity={0.8} />
-          </mesh>
-          <pointLight position={[0, -0.2, 0]} intensity={0.5} distance={5} color="#fff1db" />
-        </group>
-      ))}
-
       {/* ======================================================== */}
-      {/* --- ARCHITECTURAL REFLECTING POOL & FLOATING BRIDGE --- */}
+      {/* --- REFLECTING POOL & FLOATING BRIDGE --- */}
       {/* ======================================================== */}
       {/* Reflecting Pool Basin Water Surface */}
       <mesh position={[0, 0.08, 6.0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
@@ -157,7 +166,7 @@ export default function ProjectStudio() {
           opacity={0.88}
         />
       </mesh>
-      {/* Concrete Coping Perimeter around Pool */}
+      {/* Concrete Coping Perimeter */}
       <mesh position={[0, 0.15, 8.05]} castShadow receiveShadow>
         <boxGeometry args={[10.6, 0.3, 0.3]} />
         <meshStandardMaterial color="#686b70" roughness={0.8} />
@@ -171,7 +180,7 @@ export default function ProjectStudio() {
         <meshStandardMaterial color="#686b70" roughness={0.8} />
       </mesh>
 
-      {/* Floating Stone Stepping Bridge across the pool to the entrance */}
+      {/* Floating Stone Stepping Bridge across the pool */}
       <mesh position={[0, 0.18, 6.0]} castShadow receiveShadow>
         <boxGeometry args={[2.2, 0.16, 4.2]} />
         <meshStandardMaterial color="#dcd7ce" roughness={0.6} />
@@ -191,38 +200,35 @@ export default function ProjectStudio() {
         <meshStandardMaterial color={steelColor} roughness={0.3} metalness={0.7} />
       </mesh>
 
-      {/* Double Contemporary Glass Doors */}
-      <mesh position={[-0.55, 1.35, 3.42]}>
-        <boxGeometry args={[1.0, 2.5, 0.06]} />
-        <meshStandardMaterial color="#1a1c1e" roughness={0.2} metalness={0.4} />
-      </mesh>
-      <mesh position={[0.55, 1.35, 3.42]}>
-        <boxGeometry args={[1.0, 2.5, 0.06]} />
-        <meshStandardMaterial color="#1a1c1e" roughness={0.2} metalness={0.4} />
-      </mesh>
-      {/* Modern Long Vertical Door Handles */}
-      {[-0.15, 0.15].map((xH, hIdx) => (
-        <mesh key={`handle-${hIdx}`} position={[xH, 1.3, 3.48]} castShadow>
-          <cylinderGeometry args={[0.02, 0.02, 1.1, 8]} />
-          <meshStandardMaterial color="#d4af37" metalness={0.9} roughness={0.15} />
-        </mesh>
-      ))}
+      {/* Double Contemporary Glass Doors (pivot open on interaction) */}
+      <group position={[0, 0, 3.4]}>
+        <group position={[-1.0, 0, 0]} rotation={[0, doorOpen ? -Math.PI / 2 : 0, 0]}>
+          <mesh position={[0.5, 1.35, 0.02]} castShadow receiveShadow>
+            <boxGeometry args={[1.0, 2.5, 0.06]} />
+            <meshStandardMaterial color="#1a1c1e" roughness={0.2} metalness={0.4} />
+          </mesh>
+          <mesh position={[0.9, 1.3, 0.06]} castShadow>
+            <cylinderGeometry args={[0.02, 0.02, 1.1, 8]} />
+            <meshStandardMaterial color="#d4af37" metalness={0.9} roughness={0.15} />
+          </mesh>
+        </group>
+      </group>
 
-      {/* Door Proximity Trigger */}
+      {/* Interactive Exterior Door Trigger (Smooth Entry Transition) */}
       <InteractiveObject
-        id="door-project-studio"
+        id="door-project-studio-exterior"
         name="Project Studio Entrance"
-        position={[0, 1.0, 4.0]}
+        position={[0, 1.0, 4.6]}
         range={2.4}
-        promptText="Press E to View Project Studio"
-        showBeacon={true}
-        onInteract={handleDoorInteract}
+        promptText="Press E to Enter Project Studio"
+        showBeacon={false}
+        onInteract={() => {
+          setDoorOpen(true)
+          triggerDoorTransition([14.5, 0.8, 0])
+        }}
       />
 
-      {/* ======================================================== */}
-      {/* --- ARCHITECTURAL SIGN & LANDSCAPING --- */}
-      {/* ======================================================== */}
-      {/* Large Showpiece Entrance Sign Totem */}
+      {/* Showpiece Entrance Sign Totem */}
       <BuildingSign
         title="PROJECT STUDIO"
         subtitle="Flagship Showcase"
@@ -237,30 +243,12 @@ export default function ProjectStudio() {
           <boxGeometry args={[2.0, 0.1, 0.6]} />
           <meshStandardMaterial color={cedarColor} roughness={0.6} />
         </mesh>
-        {[-0.8, 0.8].map((xB, bIdx) => (
-          <mesh key={`bench-leg-${bIdx}`} position={[xB, 0.12, 0]} castShadow>
-            <boxGeometry args={[0.15, 0.24, 0.55]} />
-            <meshStandardMaterial color={steelColor} roughness={0.5} />
-          </mesh>
-        ))}
       </group>
 
-      {/* Architectural Planter Box with Specimen Tree */}
-      <group position={[-4.5, 0, 4.0]}>
-        <mesh position={[0, 0.4, 0]} castShadow receiveShadow>
-          <boxGeometry args={[1.4, 0.8, 1.4]} />
-          <meshStandardMaterial color="#505458" roughness={0.7} />
-        </mesh>
-        <mesh position={[0, 1.6, 0]} castShadow>
-          <cylinderGeometry args={[0.08, 0.12, 1.8, 6]} />
-          <meshStandardMaterial color="#4a3628" roughness={0.9} />
-        </mesh>
-        <mesh position={[0, 2.7, 0]} castShadow>
-          <sphereGeometry args={[1.2, 8, 8]} />
-          <meshStandardMaterial color="#8a3c30" roughness={0.8} />
-        </mesh>
-      </group>
+      {/* ======================================================== */}
+      {/* --- ACCESSIBLE EXHIBITION INTERIOR --- */}
+      {/* ======================================================== */}
+      <ProjectStudioInterior />
     </group>
   )
 }
-

@@ -137,11 +137,11 @@ export default function HUD() {
       >
         <div className="text-center text-white p-8 max-w-lg">
           <div className="inline-block px-3 py-1 bg-white/10 rounded-full text-xs tracking-wider uppercase mb-4 text-neutral-300 border border-white/10">
-            Phase 3 • The Connected Neighbourhood
+            Phase 4 • Interactive Building Interiors & Displays
           </div>
           <h1 className="text-6xl font-light mb-3 tracking-widest text-neutral-100">MY WORLD</h1>
           <p className="text-base text-neutral-300 font-light mb-8">
-            Walk along the continuous residential avenue to explore the Project Studio, Skills House, Education House, Achievement Gallery, and Contact House.
+            Walk into every building in the neighbourhood to explore interactive project stations, skill display boards, academic credentials, achievements, and contact channels.
           </p>
 
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 rounded-full text-white text-sm font-medium transition-all backdrop-blur-md border border-white/30 shadow-lg">
