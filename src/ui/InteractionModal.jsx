@@ -1,21 +1,103 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { gsap } from 'gsap'
 import useGameStore from '../store/useGameStore'
+import projectsData from '../data/projects.json'
 
 export default function InteractionModal() {
   const activeInteraction = useGameStore((s) => s.activeInteraction)
   const closeInteraction = useGameStore((s) => s.closeInteraction)
 
+  const backdropRef = useRef(null)
+  const modalRef = useRef(null)
+  const [isClosing, setIsClosing] = useState(false)
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(0)
+  const [prevInteractionId, setPrevInteractionId] = useState(null)
+
+  // Sync selected project index when opening a project station without effect render waterfall
+  if (activeInteraction && activeInteraction.id !== prevInteractionId) {
+    setPrevInteractionId(activeInteraction.id)
+    if (activeInteraction.type === 'project') {
+      const idx = projectsData.featuredProjects.findIndex(
+        (p) => p.id === activeInteraction.id || p.stationNumber === activeInteraction.stationNumber
+      )
+      setSelectedProjectIndex(idx !== -1 ? idx : 0)
+    } else {
+      setSelectedProjectIndex(0)
+    }
+  }
+
+  // GSAP Entrance Animation
+  useEffect(() => {
+    if (activeInteraction && backdropRef.current && modalRef.current) {
+      setIsClosing(false)
+      gsap.killTweensOf([backdropRef.current, modalRef.current])
+
+      gsap.fromTo(
+        backdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.28, ease: 'power2.out' }
+      )
+
+      gsap.fromTo(
+        modalRef.current,
+        { opacity: 0, y: 28, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.15)' }
+      )
+    }
+  }, [activeInteraction])
+
+  // GSAP Exit Animation
+  const handleClose = useCallback(() => {
+    if (isClosing) return
+    setIsClosing(true)
+
+    if (backdropRef.current && modalRef.current) {
+      gsap.killTweensOf([backdropRef.current, modalRef.current])
+
+      gsap.to(backdropRef.current, {
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power2.in',
+      })
+
+      gsap.to(modalRef.current, {
+        opacity: 0,
+        y: 18,
+        scale: 0.96,
+        duration: 0.2,
+        ease: 'power2.in',
+        onComplete: () => {
+          setIsClosing(false)
+          closeInteraction()
+        },
+      })
+    } else {
+      setIsClosing(false)
+      closeInteraction()
+    }
+  }, [closeInteraction, isClosing])
+
+  // Keyboard shortcut listener (Esc / E to close modal)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' || e.code === 'KeyE') {
-        closeInteraction()
+      if (activeInteraction && (e.key === 'Escape' || e.code === 'KeyE')) {
+        e.preventDefault()
+        handleClose()
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [closeInteraction])
+  }, [activeInteraction, handleClose])
 
   if (!activeInteraction) return null
+
+  // If this is a project display, allow switching projects seamlessly
+  const currentProject =
+    activeInteraction.type === 'project'
+      ? projectsData.featuredProjects[selectedProjectIndex] || activeInteraction
+      : null
+
+  const displayData = currentProject || activeInteraction
 
   const {
     type,
@@ -26,42 +108,43 @@ export default function InteractionModal() {
     content,
     highlights,
     footerNote,
-    // Project-specific fields
+    // Project fields
     stationNumber,
     technologies,
     contribution,
     github,
     liveDemo,
     status,
-    // Contact-specific fields
+    // Contact fields
     links,
-    // Skill-specific fields
+    // Skill fields
     skillCategories,
-    // Education-specific fields
+    // Education fields
     degrees,
     certifications,
     workshops,
-    // Achievement-specific fields
+    // Achievement fields
     awards,
     competitions,
     milestones,
-    activities,
-  } = activeInteraction
+  } = displayData
 
   return (
     <div
-      onClick={closeInteraction}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-sm p-4 overflow-y-auto select-none"
+      ref={backdropRef}
+      onClick={handleClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto select-none"
     >
       <div
+        ref={modalRef}
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl bg-neutral-900/95 border border-neutral-700/80 rounded-2xl p-6 sm:p-8 text-white shadow-2xl backdrop-blur-md overflow-hidden max-h-[90vh] flex flex-col my-auto"
+        className="relative w-full max-w-2xl bg-neutral-900/95 border border-neutral-700/80 rounded-2xl p-6 sm:p-8 text-white shadow-2xl backdrop-blur-md overflow-hidden max-h-[88vh] flex flex-col my-auto"
       >
-        {/* Subtle decorative warm background glow */}
+        {/* Subtle decorative warm architectural background glow */}
         <div className="absolute -top-24 -right-24 w-56 h-56 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Header Bar */}
-        <div className="flex items-start justify-between gap-4 mb-4 shrink-0">
+        <div className="flex items-start justify-between gap-4 mb-3 shrink-0">
           <div>
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               {stationNumber && (
@@ -88,18 +171,37 @@ export default function InteractionModal() {
             )}
           </div>
 
-          {/* Close button */}
+          {/* Close button with hover pill */}
           <button
-            onClick={closeInteraction}
+            onClick={handleClose}
             aria-label="Close modal"
-            className="p-2 -mr-2 -mt-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors cursor-pointer text-xl leading-none"
+            className="p-2 -mr-2 -mt-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer text-xl leading-none flex items-center justify-center w-9 h-9"
           >
             ✕
           </button>
         </div>
 
-        {/* Scrollable Content Body */}
-        <div className="space-y-5 text-sm sm:text-base text-neutral-300 leading-relaxed font-light overflow-y-auto pr-1">
+        {/* Project Stations Tab Switcher (if type is project) */}
+        {type === 'project' && (
+          <div className="flex items-center gap-1.5 mb-4 p-1 bg-neutral-800/80 rounded-xl border border-neutral-700/60 overflow-x-auto shrink-0">
+            {projectsData.featuredProjects.map((proj, idx) => (
+              <button
+                key={proj.id}
+                onClick={() => setSelectedProjectIndex(idx)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
+                  selectedProjectIndex === idx
+                    ? 'bg-amber-400 text-neutral-950 font-semibold shadow'
+                    : 'text-neutral-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {proj.stationNumber}: {proj.title.split('—')[0].trim()}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Scrollable Content Body with Custom Sleek Scrollbar */}
+        <div className="space-y-5 text-sm sm:text-base text-neutral-300 leading-relaxed font-light overflow-y-auto pr-2 custom-scrollbar">
           {content && <p>{content}</p>}
 
           {/* ======================================================== */}
@@ -142,7 +244,7 @@ export default function InteractionModal() {
               {highlights && highlights.length > 0 && (
                 <div>
                   <h4 className="text-xs uppercase tracking-wider text-neutral-400 font-medium mb-2">
-                    Key Features & Metrics
+                    Key Features & Technical Metrics
                   </h4>
                   <ul className="space-y-1.5 text-xs sm:text-sm text-neutral-300">
                     {highlights.map((item, idx) => (
@@ -260,30 +362,39 @@ export default function InteractionModal() {
           {/* ======================================================== */}
           {type === 'education' && (
             <div className="space-y-4">
-              {degrees && degrees.map((deg) => (
-                <div key={deg.id} className="p-3.5 bg-neutral-800/60 rounded-xl border border-neutral-700/50">
-                  <div className="flex items-start justify-between gap-2 flex-wrap mb-1">
-                    <h4 className="text-sm font-medium text-neutral-100">{deg.degree}</h4>
-                    <span className="text-xs font-mono text-amber-300">{deg.period}</span>
-                  </div>
-                  <div className="text-xs text-neutral-400 mb-2">{deg.institution} • {deg.location}</div>
-                  <p className="text-xs text-neutral-300 mb-2.5">{deg.overview}</p>
-                  {deg.coursework && (
-                    <div className="mt-2 pt-2 border-t border-neutral-700/40">
-                      <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium block mb-1">
-                        Highlighted Coursework:
-                      </span>
-                      <div className="flex flex-wrap gap-1">
-                        {deg.coursework.map((course, cIdx) => (
-                          <span key={cIdx} className="px-2 py-0.5 rounded text-[11px] bg-neutral-900 text-neutral-300 border border-neutral-700/40">
-                            {course}
-                          </span>
-                        ))}
-                      </div>
+              {degrees &&
+                degrees.map((deg) => (
+                  <div
+                    key={deg.id}
+                    className="p-3.5 bg-neutral-800/60 rounded-xl border border-neutral-700/50"
+                  >
+                    <div className="flex items-start justify-between gap-2 flex-wrap mb-1">
+                      <h4 className="text-sm font-medium text-neutral-100">{deg.degree}</h4>
+                      <span className="text-xs font-mono text-amber-300">{deg.period}</span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    <div className="text-xs text-neutral-400 mb-2">
+                      {deg.institution} • {deg.location}
+                    </div>
+                    <p className="text-xs text-neutral-300 mb-2.5">{deg.overview}</p>
+                    {deg.coursework && (
+                      <div className="mt-2 pt-2 border-t border-neutral-700/40">
+                        <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium block mb-1">
+                          Highlighted Coursework:
+                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {deg.coursework.map((course, cIdx) => (
+                            <span
+                              key={cIdx}
+                              className="px-2 py-0.5 rounded text-[11px] bg-neutral-900 text-neutral-300 border border-neutral-700/40"
+                            >
+                              {course}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
 
               {certifications && (
                 <div>
@@ -292,14 +403,38 @@ export default function InteractionModal() {
                   </h4>
                   <div className="space-y-2">
                     {certifications.map((cert) => (
-                      <div key={cert.id} className="p-2.5 bg-neutral-800/40 rounded-lg border border-neutral-700/30 flex justify-between items-center text-xs">
+                      <div
+                        key={cert.id}
+                        className="p-2.5 bg-neutral-800/40 rounded-lg border border-neutral-700/30 flex justify-between items-center text-xs"
+                      >
                         <div>
                           <div className="font-medium text-neutral-200">{cert.title}</div>
-                          <div className="text-neutral-400">{cert.issuer} • {cert.date}</div>
+                          <div className="text-neutral-400">
+                            {cert.issuer} • {cert.date}
+                          </div>
                         </div>
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 bg-amber-500/10 border border-amber-500/20">
                           Verified
                         </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {workshops && (
+                <div>
+                  <h4 className="text-xs uppercase tracking-wider text-neutral-400 font-medium mb-2">
+                    Specialized Workshops & Courses
+                  </h4>
+                  <div className="space-y-1.5">
+                    {workshops.map((ws) => (
+                      <div
+                        key={ws.id}
+                        className="p-2 bg-neutral-800/30 rounded-lg border border-neutral-700/20 text-xs flex justify-between items-center"
+                      >
+                        <span className="text-neutral-200">{ws.title}</span>
+                        <span className="text-neutral-400 text-[11px]">{ws.provider}</span>
                       </div>
                     ))}
                   </div>
@@ -320,12 +455,21 @@ export default function InteractionModal() {
                   </h4>
                   <div className="space-y-2">
                     {awards.map((award) => (
-                      <div key={award.id} className="p-3 bg-neutral-800/50 rounded-xl border border-neutral-700/40">
+                      <div
+                        key={award.id}
+                        className="p-3 bg-neutral-800/50 rounded-xl border border-neutral-700/40"
+                      >
                         <div className="flex items-baseline justify-between gap-2">
-                          <span className="text-sm font-medium text-neutral-100">{award.title}</span>
-                          <span className="text-xs font-mono text-amber-300 shrink-0">{award.year}</span>
+                          <span className="text-sm font-medium text-neutral-100">
+                            {award.title}
+                          </span>
+                          <span className="text-xs font-mono text-amber-300 shrink-0">
+                            {award.year}
+                          </span>
                         </div>
-                        <div className="text-xs text-neutral-400 mb-1">{award.organization}</div>
+                        <div className="text-xs text-neutral-400 mb-1">
+                          {award.organization}
+                        </div>
                         <p className="text-xs text-neutral-300">{award.description}</p>
                       </div>
                     ))}
@@ -340,7 +484,10 @@ export default function InteractionModal() {
                   </h4>
                   <div className="space-y-2">
                     {competitions.map((comp) => (
-                      <div key={comp.id} className="p-2.5 bg-neutral-800/30 rounded-lg border border-neutral-700/30 text-xs">
+                      <div
+                        key={comp.id}
+                        className="p-2.5 bg-neutral-800/30 rounded-lg border border-neutral-700/30 text-xs"
+                      >
                         <div className="flex justify-between items-center mb-0.5">
                           <span className="font-medium text-neutral-200">{comp.name}</span>
                           <span className="text-emerald-300 font-mono">{comp.standing}</span>
@@ -359,7 +506,10 @@ export default function InteractionModal() {
                   </h4>
                   <div className="space-y-1.5">
                     {milestones.map((ms) => (
-                      <div key={ms.id} className="p-2 bg-neutral-800/20 rounded-lg border border-neutral-700/20 text-xs flex justify-between items-center">
+                      <div
+                        key={ms.id}
+                        className="p-2 bg-neutral-800/20 rounded-lg border border-neutral-700/20 text-xs flex justify-between items-center"
+                      >
                         <span className="text-neutral-200">{ms.title}</span>
                         <span className="text-neutral-400 font-mono text-[11px]">{ms.date}</span>
                       </div>
@@ -390,15 +540,18 @@ export default function InteractionModal() {
 
         {/* Footer Note */}
         {footerNote && (
-          <div className="mt-4 pt-3 border-t border-neutral-800/80 text-[11px] text-neutral-400 italic shrink-0">
+          <div className="mt-3 pt-3 border-t border-neutral-800/80 text-[11px] text-neutral-400 italic shrink-0">
             {footerNote}
           </div>
         )}
 
         {/* Action Button Footer */}
-        <div className="mt-5 pt-3 border-t border-neutral-800 flex justify-end gap-3 shrink-0">
+        <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between gap-3 shrink-0">
+          <div className="text-[11px] text-neutral-500 hidden sm:block">
+            Press <kbd className="px-1.5 py-0.5 bg-neutral-800 border border-neutral-700 rounded text-neutral-300 font-mono">ESC</kbd> or <kbd className="px-1.5 py-0.5 bg-neutral-800 border border-neutral-700 rounded text-neutral-300 font-mono">E</kbd> to return to walking
+          </div>
           <button
-            onClick={closeInteraction}
+            onClick={handleClose}
             className="px-5 py-2.5 bg-neutral-100 hover:bg-white text-neutral-900 font-medium text-xs sm:text-sm rounded-xl transition-all cursor-pointer shadow-md"
           >
             Close (Esc)
@@ -408,4 +561,3 @@ export default function InteractionModal() {
     </div>
   )
 }
-

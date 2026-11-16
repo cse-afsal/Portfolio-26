@@ -20,7 +20,7 @@ export default function InteractiveObject({
   const wasInRange = useRef(false)
 
   // Floating hover animation for beacon
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (!groupRef.current) return
     groupRef.current.getWorldPosition(worldPos.current)
 

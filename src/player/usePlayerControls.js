@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import useGameStore from '../store/useGameStore'
+import useGameStore, { PORTFOLIO_SECTIONS } from '../store/useGameStore'
 import homeData from '../data/home.json'
 
 export default function usePlayerControls() {
@@ -15,20 +15,81 @@ export default function usePlayerControls() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Prevent browser default scroll on space/arrows
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+      // Prevent browser default scroll and tab cycling
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) {
         e.preventDefault()
       }
 
-      // If active interaction modal is open, E or Escape closes it
-      const activeInteraction = useGameStore.getState().activeInteraction
-      if (activeInteraction) {
-        if (e.code === 'KeyE' || e.code === 'Escape') {
-          e.preventDefault()
-          useGameStore.getState().closeInteraction()
-          // Re-lock pointer when closing with keyboard if canvas is active
+      const store = useGameStore.getState()
+
+      // Tab Key: Toggle Quick Portfolio Menu
+      if (e.code === 'Tab') {
+        if (store.quickMenuOpen) {
+          store.setQuickMenuOpen(false)
+          if (!store.isTitleScreen && !store.isPaused && !store.activeInteraction) {
+            document.body.requestPointerLock?.()
+          }
+        } else {
+          if (store.activeInteraction) store.closeInteraction()
+          store.setQuickMenuOpen(true)
+        }
+        return
+      }
+
+      // If Quick Menu is open, allow pressing 1 to 6 to jump directly
+      if (store.quickMenuOpen) {
+        const digitMatch = e.code.match(/^Digit([1-6])$/)
+        if (digitMatch) {
+          const index = parseInt(digitMatch[1], 10) - 1
+          if (PORTFOLIO_SECTIONS[index]) {
+            store.teleportToSection(PORTFOLIO_SECTIONS[index].id)
+            return
+          }
+        }
+      }
+
+      // Escape key hierarchy
+      if (e.code === 'Escape') {
+        if (store.activeInteraction) {
+          store.closeInteraction()
           return
         }
+        if (store.showControlsGuide) {
+          store.setShowControlsGuide(false)
+          return
+        }
+        if (store.quickMenuOpen) {
+          store.setQuickMenuOpen(false)
+          if (!store.isTitleScreen && !store.isPaused) {
+            document.body.requestPointerLock?.()
+          }
+          return
+        }
+        if (store.isTitleScreen) {
+          // Remain on title screen
+          return
+        }
+
+        // Toggle pause menu
+        if (!store.isPaused) {
+          store.setIsPaused(true)
+          if (document.exitPointerLock) document.exitPointerLock()
+        } else {
+          store.setIsPaused(false)
+          document.body.requestPointerLock?.()
+        }
+        return
+      }
+
+      // If any modal or menu is open, ignore movement keys
+      if (
+        store.activeInteraction ||
+        store.isPaused ||
+        store.quickMenuOpen ||
+        store.isTitleScreen ||
+        store.showControlsGuide
+      ) {
+        return
       }
 
       switch (e.code) {
@@ -57,26 +118,13 @@ export default function usePlayerControls() {
           break
         case 'KeyE': {
           keys.current.interact = true
-          const nearby = useGameStore.getState().nearbyInteractable
+          const nearby = store.nearbyInteractable
           if (nearby) {
             if (nearby.onInteract) {
               nearby.onInteract()
             } else if (nearby.id && homeData[nearby.id]) {
-              useGameStore.getState().setActiveInteraction(homeData[nearby.id])
+              store.setActiveInteraction(homeData[nearby.id])
             }
-          }
-          break
-        }
-        case 'Escape': {
-          const paused = useGameStore.getState().isPaused
-          if (!paused) {
-            useGameStore.getState().setIsPaused(true)
-            if (document.exitPointerLock) {
-              document.exitPointerLock()
-            }
-          } else {
-            useGameStore.getState().setIsPaused(false)
-            document.body.requestPointerLock()
           }
           break
         }
@@ -115,10 +163,19 @@ export default function usePlayerControls() {
     }
 
     const handleWheel = (e) => {
+      const store = useGameStore.getState()
+      if (
+        store.activeInteraction ||
+        store.isPaused ||
+        store.quickMenuOpen ||
+        store.isTitleScreen
+      ) {
+        return
+      }
       if (e.deltaY > 0) {
-        useGameStore.getState().zoomOut()
+        store.zoomOut()
       } else {
-        useGameStore.getState().zoomIn()
+        store.zoomIn()
       }
     }
 

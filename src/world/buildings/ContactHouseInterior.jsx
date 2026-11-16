@@ -6,7 +6,6 @@ import contactData from '../../data/contact.json'
 export default function ContactHouseInterior() {
   const floorTileColor = '#b56c54'       // warm mid-century terracotta tiles
   const walnutWoodColor = '#735235'      // rich walnut timber
-  const wallWarmColor = '#f5f0e6'        // cozy warm off-white render
   const screenGlowColor = '#5e94c2'      // terminal blue glow
 
   const triggerDoorTransition = (targetPos) => {
