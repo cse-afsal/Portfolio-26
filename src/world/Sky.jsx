@@ -1,4 +1,4 @@
-import { Sky as DreiSky, Environment } from '@react-three/drei'
+import { Sky as DreiSky } from '@react-three/drei'
 
 export default function Sky() {
   return (

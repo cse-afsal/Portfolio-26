@@ -32,9 +32,21 @@ export default function Character() {
   const raycaster = useRef(new THREE.Raycaster())
 
   useEffect(() => {
+    const isInteractingOrMenuOpen = () => {
+      const s = useGameStore.getState()
+      return (
+        !!s.activeInteraction ||
+        s.isPaused ||
+        s.doorTransitioning ||
+        s.isTitleScreen ||
+        s.quickMenuOpen ||
+        s.showControlsGuide
+      )
+    }
+
     const onMouseMove = (e) => {
-      // Rotate camera only if pointer locked and not inside an active interaction modal
-      if (document.pointerLockElement && !useGameStore.getState().activeInteraction) {
+      // Rotate camera only if pointer locked and no menu or interaction is open
+      if (document.pointerLockElement && !isInteractingOrMenuOpen()) {
         cameraYaw.current -= e.movementX * 0.003
         cameraPitch.current = Math.max(
           -0.3,
@@ -47,8 +59,7 @@ export default function Character() {
       if (
         e.target.tagName === 'CANVAS' &&
         !document.pointerLockElement &&
-        !useGameStore.getState().isPaused &&
-        !useGameStore.getState().activeInteraction
+        !isInteractingOrMenuOpen()
       ) {
         document.body.requestPointerLock()
       }
@@ -64,7 +75,7 @@ export default function Character() {
     let isTouching = false
 
     const onTouchStart = (e) => {
-      if (e.touches.length === 1 && e.target.tagName === 'CANVAS' && !useGameStore.getState().activeInteraction) {
+      if (e.touches.length === 1 && e.target.tagName === 'CANVAS' && !isInteractingOrMenuOpen()) {
         isTouching = true
         lastTouchX = e.touches[0].clientX
         lastTouchY = e.touches[0].clientY
@@ -72,7 +83,7 @@ export default function Character() {
     }
 
     const onTouchMove = (e) => {
-      if (isTouching && e.touches.length === 1 && !useGameStore.getState().activeInteraction) {
+      if (isTouching && e.touches.length === 1 && !isInteractingOrMenuOpen()) {
         const dx = e.touches[0].clientX - lastTouchX
         const dy = e.touches[0].clientY - lastTouchY
         lastTouchX = e.touches[0].clientX
@@ -113,7 +124,16 @@ export default function Character() {
     
     const rb = rigidBodyRef.current
     
-    // --- Teleport Check (e.g. Smooth Door Transition) ---
+    // --- Camera orientation target (smooth alignment on teleportation) ---
+    const yawTarget = useGameStore.getState().cameraYawTarget
+    const pitchTarget = useGameStore.getState().cameraPitchTarget
+    if (yawTarget !== null) {
+      cameraYaw.current = yawTarget
+      if (pitchTarget !== null) cameraPitch.current = pitchTarget
+      useGameStore.getState().setCameraOrientation(null, null)
+    }
+
+    // --- Teleport Check (e.g. Smooth Door Transition or Quick Travel) ---
     const teleportTarget = useGameStore.getState().playerTeleportTarget
     if (teleportTarget) {
       rb.setTranslation(
@@ -129,11 +149,20 @@ export default function Character() {
     const position = rb.translation()
     const currentVelocity = rb.linvel()
     
-    // Check if controls should be suspended (modal open, paused, or door transition)
+    // Check if controls should be suspended (modal open, paused, menus, or door transition)
     const activeInteraction = useGameStore.getState().activeInteraction
     const isPaused = useGameStore.getState().isPaused
     const doorTransitioning = useGameStore.getState().doorTransitioning
-    const controlsDisabled = !!activeInteraction || isPaused || doorTransitioning
+    const isTitleScreen = useGameStore.getState().isTitleScreen
+    const quickMenuOpen = useGameStore.getState().quickMenuOpen
+    const showControlsGuide = useGameStore.getState().showControlsGuide
+    const controlsDisabled =
+      !!activeInteraction ||
+      isPaused ||
+      doorTransitioning ||
+      isTitleScreen ||
+      quickMenuOpen ||
+      showControlsGuide
 
     // Ground check: character is considered grounded if vertical velocity is low
     const isOnGround = Math.abs(currentVelocity.y) < 0.4

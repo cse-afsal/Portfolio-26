@@ -7,7 +7,6 @@ export default function SkillsHouseInterior() {
   const floorConcreteColor = '#7e8185'   // polished industrial grey concrete
   const deskWoodColor = '#2b2d30'        // modern charcoal workstation desk
   const screenGlowColor = '#6ea8d9'      // soft developer terminal screen glow
-  const wallInteriorColor = '#f0ede6'    // warm off-white interior wall
 
   const triggerDoorTransition = (targetPos) => {
     useGameStore.getState().setDoorTransitioning(true)

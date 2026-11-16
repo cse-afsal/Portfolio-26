@@ -5,7 +5,6 @@ import achievementsData from '../../data/achievements.json'
 
 export default function AchievementGalleryInterior() {
   const floorSlateColor = '#323438'      // honed dark museum slate flooring
-  const wallGalleryColor = '#f5f2eb'     // pristine museum off-white gallery wall
   const bronzeTrimColor = '#b8935c'      // brushed bronze accent metal
 
   const triggerDoorTransition = (targetPos) => {
