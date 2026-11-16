@@ -4,6 +4,7 @@ import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
 import AchievementGalleryInterior from './AchievementGalleryInterior'
 import useGameStore from '../../store/useGameStore'
+import useBuildingInteriorActive from '../../hooks/useBuildingInteriorActive'
 
 export default function AchievementGallery() {
   const limestoneColor = '#ded8cc'   // fine honed limestone
@@ -12,6 +13,7 @@ export default function AchievementGallery() {
   const glassColor = '#a8c6db'       // tinted display glass
 
   const [doorOpen, setDoorOpen] = useState(false)
+  const isInteriorActive = useBuildingInteriorActive([16, 0, -32])
 
   const triggerDoorTransition = (targetPos) => {
     useGameStore.getState().setDoorTransitioning(true)
@@ -227,9 +229,9 @@ export default function AchievementGallery() {
       ))}
 
       {/* ======================================================== */}
-      {/* --- ACCESSIBLE EXHIBITION GALLERY INTERIOR --- */}
+      {/* --- ACCESSIBLE EXHIBITION GALLERY INTERIOR (LAZY-LOADED) --- */}
       {/* ======================================================== */}
-      <AchievementGalleryInterior />
+      {isInteriorActive && <AchievementGalleryInterior />}
     </group>
   )
 }

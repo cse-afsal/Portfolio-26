@@ -59,12 +59,18 @@ export default function InteractiveObject({
       }
     }
 
-    // Animate glowing ring/beacon
+    // Animate glowing ring/beacon (disabled or reduced under reduced motion)
     if (indicatorRef.current) {
-      const t = state.clock.getElapsedTime()
-      indicatorRef.current.rotation.y = t * 1.5
-      indicatorRef.current.position.y = (position[1] || 0) + Math.sin(t * 3) * 0.05 + 0.1
-      indicatorRef.current.scale.setScalar(inRange ? 1.2 : 1.0)
+      const reducedMotion = useGameStore.getState().reducedMotion
+      if (reducedMotion) {
+        indicatorRef.current.position.y = (position[1] || 0) + 0.1
+        indicatorRef.current.scale.setScalar(inRange ? 1.1 : 1.0)
+      } else {
+        const t = state.clock.getElapsedTime()
+        indicatorRef.current.rotation.y = t * 1.5
+        indicatorRef.current.position.y = (position[1] || 0) + Math.sin(t * 3) * 0.05 + 0.1
+        indicatorRef.current.scale.setScalar(inRange ? 1.2 : 1.0)
+      }
     }
   })
 

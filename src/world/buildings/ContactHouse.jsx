@@ -4,6 +4,7 @@ import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
 import ContactHouseInterior from './ContactHouseInterior'
 import useGameStore from '../../store/useGameStore'
+import useBuildingInteriorActive from '../../hooks/useBuildingInteriorActive'
 
 export default function ContactHouse() {
   const terracottaColor = '#aa5c44'   // warm mid-century terracotta brick
@@ -13,6 +14,7 @@ export default function ContactHouse() {
   const glassColor = '#a8c6db'        // corner window glass
 
   const [doorOpen, setDoorOpen] = useState(false)
+  const isInteriorActive = useBuildingInteriorActive([16, 0, 32])
 
   const triggerDoorTransition = (targetPos) => {
     useGameStore.getState().setDoorTransitioning(true)
@@ -231,9 +233,9 @@ export default function ContactHouse() {
       </group>
 
       {/* ======================================================== */}
-      {/* --- ACCESSIBLE RECEPTION INTERIOR & CHANNELS --- */}
+      {/* --- ACCESSIBLE RECEPTION INTERIOR (LAZY-LOADED) --- */}
       {/* ======================================================== */}
-      <ContactHouseInterior />
+      {isInteriorActive && <ContactHouseInterior />}
     </group>
   )
 }

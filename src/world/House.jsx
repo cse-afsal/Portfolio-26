@@ -3,6 +3,7 @@ import { RigidBody, CuboidCollider } from '@react-three/rapier'
 import Interior from './interior/Interior'
 import InteractiveObject from './InteractiveObject'
 import useGameStore from '../store/useGameStore'
+import useBuildingInteriorActive from '../hooks/useBuildingInteriorActive'
 
 function WindowPane({ position, size = [0.1, 1.4, 2.0] }) {
   return (
@@ -42,6 +43,7 @@ export default function House() {
   const doorWoodColor = '#805d3b'   // natural oak entrance door
 
   const [doorOpen, setDoorOpen] = useState(false)
+  const isInteriorActive = useBuildingInteriorActive([-12, 0, 0])
 
   // Smooth door transition handler
   const triggerDoorTransition = (targetPos) => {
@@ -286,9 +288,9 @@ export default function House() {
       </group>
 
       {/* ======================================================== */}
-      {/* --- COMPLETE ACCESSIBLE INTERIOR --- */}
+      {/* --- COMPLETE ACCESSIBLE INTERIOR (LAZY-LOADED) --- */}
       {/* ======================================================== */}
-      <Interior />
+      {isInteriorActive && <Interior />}
     </group>
   )
 }
