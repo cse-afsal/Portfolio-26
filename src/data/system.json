@@ -1,0 +1,49 @@
+{
+  "os": {
+    "name": "Afsal OS",
+    "version": "v1.0.0 (Darwin/Linux AI-Kernel)",
+    "codename": "Neural Horizon",
+    "releaseDate": "2026.11",
+    "developer": "Afsal",
+    "specs": {
+      "host": "Afsal-Neural-Workstation",
+      "kernel": "Linux 6.8.0-ml-neural #42 SMP PREEMPT_DYNAMIC",
+      "cpu": "Neural Tensor Engine @ 4.8 GHz (16 Cores)",
+      "memory": "32 GB Tensor RAM",
+      "gpu": "Dedicated Tensor Processing Unit (TPU / CUDA 12.4)",
+      "storage": "2 TB NVMe SSD (Encrypted)",
+      "shell": "zsh 5.9 (x86_64-apple-darwin22.0)",
+      "resolution": "Retina Display 2560x1600 @ 120Hz"
+    }
+  },
+  "wallpapers": [
+    {
+      "id": "neural_mesh",
+      "name": "Neural Mesh (Default)",
+      "style": "radial-gradient(circle at 50% 30%, #1e2638 0%, #0d0d12 70%, #08080a 100%)"
+    },
+    {
+      "id": "deep_space",
+      "name": "Deep Midnight",
+      "style": "linear-gradient(135deg, #0d0d14 0%, #101524 50%, #080a10 100%)"
+    },
+    {
+      "id": "cyber_matrix",
+      "name": "Cyber Blue Glow",
+      "style": "radial-gradient(ellipse at 80% 20%, #14284b 0%, #0d0d12 60%, #08080a 100%)"
+    }
+  ],
+  "terminalCommands": [
+    { "cmd": "help", "desc": "List all available OS terminal commands" },
+    { "cmd": "bio", "desc": "Display Afsal's background, education & research focus" },
+    { "cmd": "skills", "desc": "Inspect Deep Learning & AI/ML skill stack" },
+    { "cmd": "projects", "desc": "Browse featured AI, Deep Learning & Vision projects" },
+    { "cmd": "contact", "desc": "Show communication channels and links" },
+    { "cmd": "neofetch", "desc": "Render system hardware and OS specs banner" },
+    { "cmd": "open <app>", "desc": "Launch an app window (about, projects, skills, contact, settings)" },
+    { "cmd": "clear", "desc": "Clear terminal history" },
+    { "cmd": "whoami", "desc": "Display current user identity" },
+    { "cmd": "date", "desc": "Print current system date and timestamp" },
+    { "cmd": "history", "desc": "Show recent terminal command history" }
+  ]
+}

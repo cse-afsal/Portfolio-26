@@ -1,94 +1,84 @@
 {
-  "categories": [
+  "domains": [
+    {
+      "id": "deep_learning",
+      "name": "Deep Learning & Neural Architectures",
+      "description": "Designing, training, and fine-tuning deep neural network topologies.",
+      "skills": [
+        "PyTorch",
+        "TensorFlow / Keras",
+        "Convolutional Neural Networks (CNNs)",
+        "Transformers & Self-Attention",
+        "Diffusion & Generative Models",
+        "Transfer Learning & Model Fine-Tuning",
+        "CUDA & GPU Acceleration"
+      ]
+    },
+    {
+      "id": "machine_learning",
+      "name": "Machine Learning & Data Science",
+      "description": "Statistical modeling, feature extraction, and exploratory analysis.",
+      "skills": [
+        "Scikit-Learn",
+        "XGBoost / LightGBM",
+        "Pandas & NumPy",
+        "SciPy & Statistical Testing",
+        "Exploratory Data Analysis (EDA)",
+        "Feature Engineering & Dimensionality Reduction",
+        "Data Visualization (Matplotlib, Seaborn, Plotly)"
+      ]
+    },
+    {
+      "id": "domains_cv_nlp",
+      "name": "Computer Vision & Natural Language Processing",
+      "description": "Applied vision pipelines and modern language understanding.",
+      "skills": [
+        "OpenCV",
+        "TorchVision & Albumentations",
+        "Hugging Face Transformers",
+        "Tokenization & Embeddings",
+        "Image Classification & Object Detection",
+        "Semantic Segmentation",
+        "Text Preprocessing & Sentiment Analysis"
+      ]
+    },
     {
       "id": "languages",
       "name": "Programming Languages",
-      "icon": "code",
-      "description": "Core languages used for building performant applications and tools.",
-      "items": [
-        "JavaScript (ES6+)",
-        "TypeScript",
-        "Python",
-        "HTML5 / Semantic Web",
-        "CSS3 / Modern Layouts",
-        "SQL",
-        "[ADD LANGUAGE HERE]"
+      "description": "Core software languages for algorithm implementation and production deployment.",
+      "skills": [
+        "Python (Advanced)",
+        "C++ (Algorithms & Performance)",
+        "SQL (PostgreSQL, MySQL)",
+        "JavaScript / TypeScript",
+        "Bash / Shell Scripting"
       ]
     },
     {
-      "id": "frontend",
-      "name": "Frontend & Creative 3D",
-      "icon": "layout",
-      "description": "User interfaces, component architectures, and real-time 3D web graphics.",
-      "items": [
-        "React",
-        "Next.js",
-        "Three.js / React Three Fiber",
-        "Drei & Rapier Physics",
-        "Tailwind CSS",
-        "Zustand / Redux",
-        "GSAP & Web Animations",
-        "[ADD FRONTEND TECH HERE]"
-      ]
-    },
-    {
-      "id": "backend",
-      "name": "Backend & APIs",
-      "icon": "server",
-      "description": "Server-side runtimes, microservices, and API design.",
-      "items": [
-        "Node.js",
-        "Express",
-        "FastAPI / Python",
-        "RESTful API Architecture",
-        "GraphQL",
-        "Authentication & Security (JWT, OAuth)",
-        "[ADD BACKEND TECH HERE]"
-      ]
-    },
-    {
-      "id": "databases",
-      "name": "Databases & Storage",
-      "icon": "database",
-      "description": "Relational, document, and in-memory data storage systems.",
-      "items": [
-        "PostgreSQL",
-        "MongoDB",
-        "Redis (Caching & Pub/Sub)",
-        "SQLite",
-        "Prisma ORM",
-        "Cloud Storage (S3, Cloudinary)",
-        "[ADD DATABASE HERE]"
-      ]
-    },
-    {
-      "id": "tools",
-      "name": "DevOps & Developer Tools",
-      "icon": "tool",
-      "description": "Development environment, containerization, and deployment pipelines.",
-      "items": [
+      "id": "mlops_tooling",
+      "name": "MLOps, Tools & Infrastructure",
+      "description": "Experiment tracking, versioning, containerization, and environment management.",
+      "skills": [
         "Git & GitHub Version Control",
         "Docker & Containerization",
-        "Vite & Build Tooling",
-        "CI/CD Pipelines (GitHub Actions)",
-        "Linux / Shell Scripting",
-        "Figma to Code",
-        "[ADD TOOL HERE]"
+        "Weights & Biases (W&B)",
+        "MLflow",
+        "Linux OS Environment",
+        "Jupyter & Google Colab",
+        "Conda & Virtual Environments"
       ]
     },
     {
-      "id": "learning",
-      "name": "Currently Learning & Exploring",
-      "icon": "compass",
-      "description": "Emerging technologies and areas of active research.",
-      "items": [
-        "WebGPU & Compute Shaders",
-        "Rust Systems Programming",
-        "Distributed Systems & Microservices",
-        "Spatial Web & WebXR",
-        "[ADD LEARNING GOAL HERE]"
+      "id": "mathematics",
+      "name": "Mathematical Foundations",
+      "description": "Theoretical rigor underlying machine learning algorithms.",
+      "skills": [
+        "Linear Algebra & Matrix Decompositions",
+        "Multivariate Calculus & Gradients",
+        "Probability Theory & Bayes Theorem",
+        "Inferential Statistics & Hypothesis Testing",
+        "Convex & Gradient Optimization"
       ]
     }
   ]
 }
-

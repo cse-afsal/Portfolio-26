@@ -1,0 +1,37 @@
+{
+  "name": "Afsal",
+  "tagline": "AI/ML Engineering Student & Deep Learning Researcher",
+  "role": "Undergraduate AI/ML Engineer",
+  "specialization": "Deep Learning & Data Science",
+  "location": "YOUR_LOCATION",
+  "status": "Available for AI/ML Internships & Research Collaborations",
+  "bio": "Undergraduate engineering student passionate about designing deep neural architectures, scaling computer vision pipelines, and uncovering actionable intelligence through data science. Dedicated to reproducible research and production-grade machine learning systems.",
+  "education": {
+    "degree": "Bachelor of Technology in Artificial Intelligence & Machine Learning",
+    "institution": "YOUR_UNIVERSITY_OR_COLLEGE",
+    "timeline": "2023 - 2027 (Expected)",
+    "coursework": [
+      "Deep Learning & Neural Networks",
+      "Computer Vision & Pattern Recognition",
+      "Natural Language Processing",
+      "Data Structures & Algorithms",
+      "Linear Algebra & Multivariate Calculus",
+      "Probability, Statistics & Stochastic Processes"
+    ]
+  },
+  "contacts": {
+    "email": "YOUR_EMAIL",
+    "github": "YOUR_GITHUB_URL",
+    "linkedin": "YOUR_LINKEDIN_URL",
+    "kaggle": "YOUR_KAGGLE_URL",
+    "twitter": "YOUR_TWITTER_URL",
+    "resume": "YOUR_RESUME_URL"
+  },
+  "researchInterests": [
+    "Transformer & Attention Architectures",
+    "Computer Vision & Generative Models",
+    "Multimodal Learning Systems",
+    "Efficient Inference & Model Quantization",
+    "Statistical Data Modeling & Feature Engineering"
+  ]
+}
