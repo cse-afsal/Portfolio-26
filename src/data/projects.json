@@ -1,112 +1,96 @@
 {
-  "featuredProjects": [
+  "projects": [
     {
-      "id": "project-my-world",
-      "stationNumber": "Station 01",
-      "title": "My World — 3D Interactive Portfolio",
-      "tagline": "Spatial residential district portfolio built with React & Three.js",
-      "category": "3D Web / Creative Development",
-      "description": "An open-world, peaceful 3D residential neighborhood where visitors explore portfolio projects, skills, education, and achievements by controlling a third-person character in real-time.",
-      "contribution": "Conceived the architectural concept, engineered the third-person character controller, physics collision system with Rapier, multi-level building interiors, and customized daylighting shaders.",
-      "technologies": [
-        "React",
-        "Three.js",
-        "@react-three/fiber",
-        "@react-three/rapier",
-        "Zustand",
-        "Tailwind CSS",
-        "Vite"
-      ],
+      "id": "proj-vision-transformer",
+      "title": "Vision Transformer (ViT) & Attention Classification",
+      "category": "Deep Learning / Computer Vision",
+      "badge": "Deep Learning",
+      "status": "Completed Research Prototype",
+      "summary": "Implementation and benchmarking of a patch-based Vision Transformer for multi-class visual recognition with custom multi-head self-attention layers.",
+      "technologies": ["PyTorch", "TorchVision", "Python", "CUDA", "Weights & Biases"],
       "highlights": [
-        "6 fully connected distinct architectural buildings with accessible interiors",
-        "Custom third-person camera with intelligent wall-clipping collision avoidance",
-        "Continuous walkable neighborhood with zero loading screens",
-        "Seamless entrance portals and decoupled JSON-driven content architecture"
+        "Constructed patch projection and learnable 1D position embeddings from scratch",
+        "Trained with AdamW optimizer, cosine annealing schedule, and gradient clipping",
+        "Conducted ablation study comparing standard CNN baselines vs self-attention heads",
+        "Logged real-time validation metrics and attention roll-out maps"
       ],
-      "github": "https://github.com",
-      "liveDemo": "https://portfolio-26.local",
-      "status": "In Active Development"
+      "metrics": {
+        "dataset": "Benchmark ImageNet/CIFAR-100",
+        "parameters": "22M Parameters",
+        "architecture": "Custom Patch Embedding + 8-Layer Transformer"
+      },
+      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
+      "demo": "https://YOUR_DEMO_URL_HERE",
+      "paperUrl": null
     },
     {
-      "id": "project-saas-platform",
-      "stationNumber": "Station 02",
-      "title": "CloudFlow — Distributed Task & Workflow Engine",
-      "tagline": "Real-time workflow orchestration platform for engineering teams",
-      "category": "Full-Stack Web Application",
-      "description": "A high-concurrency event-driven pipeline manager that visualizes microservice workflows, automates job retries, and delivers live telemetry metrics over WebSockets.",
-      "contribution": "Architected the end-to-end event queue using Redis and BullMQ, implemented DAG dependency visualizer with React Flow, and built REST/GraphQL endpoints with automated role-based access control.",
-      "technologies": [
-        "Next.js",
-        "TypeScript",
-        "Node.js",
-        "PostgreSQL",
-        "Prisma",
-        "Redis",
-        "Tailwind CSS"
-      ],
+      "id": "proj-nlp-distil-transformer",
+      "title": "Domain-Adapted Transformer for Clinical & Semantic Text",
+      "category": "Natural Language Processing",
+      "badge": "NLP",
+      "status": "Active Project",
+      "summary": "Fine-tuned language model leveraging Hugging Face Transformers for domain-specific named entity recognition and classification with attention masking.",
+      "technologies": ["PyTorch", "Hugging Face", "Tokenizers", "Scikit-Learn", "FastAPI"],
       "highlights": [
-        "Processed over 500,000 simulated tasks per hour in performance benchmarks",
-        "Interactive node graph UI with drag-and-drop workflow builder",
-        "Real-time WebSocket event streaming with automatic reconnection",
-        "Full test coverage with Jest, Supertest, and Playwright E2E"
+        "Implemented customized tokenization with subword byte-pair encoding",
+        "Fine-tuned pre-trained Transformer weights using mixed-precision FP16 training",
+        "Exposed high-throughput REST inference endpoint serving predictions under 35ms",
+        "Built automated evaluation pipeline tracking F1, Precision, and Recall scores"
       ],
-      "github": "https://github.com",
-      "liveDemo": "https://example.com/cloudflow-demo",
-      "status": "Completed"
+      "metrics": {
+        "latency": "35ms Inference Latency",
+        "f1Score": "Evaluated on Standard Domain Test Split",
+        "framework": "Hugging Face / PyTorch"
+      },
+      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
+      "demo": "https://YOUR_DEMO_URL_HERE",
+      "paperUrl": null
     },
     {
-      "id": "project-spatial-audio",
-      "stationNumber": "Station 03",
-      "title": "Aura — 3D Audio Visualizer & Soundscape Studio",
-      "tagline": "Real-time Web Audio API synthesizer with spatial sound positioning",
-      "category": "Creative Technologist / Web Audio",
-      "description": "An interactive digital audio workstation in the browser featuring binaural audio spatialization, parametric equalizer visualizer, and generative particle effects reactive to sound frequencies.",
-      "contribution": "Engineered Web Audio API DSP pipeline, implemented FFT frequency analysis hooked into custom WebGL shader uniforms, and developed clean preset manager stored in IndexedDB.",
-      "technologies": [
-        "JavaScript (ESNext)",
-        "Web Audio API",
-        "Three.js",
-        "GLSL Shaders",
-        "Web Workers",
-        "CSS3 Grid"
-      ],
+      "id": "proj-multivariate-data-science",
+      "title": "Predictive Analytics & Feature Engineering Engine",
+      "category": "Data Science & Statistical ML",
+      "badge": "Data Science",
+      "status": "Completed Case Study",
+      "summary": "End-to-end data science pipeline conducting automated exploratory data analysis, outlier remediation, multivariate hypothesis testing, and gradient-boosted ensemble modeling.",
+      "technologies": ["Python", "Pandas", "NumPy", "XGBoost", "Scikit-Learn", "Seaborn"],
       "highlights": [
-        "Binaural 3D listener coordinate tracking reactive to mouse or headphone sensors",
-        "60 FPS GPU-accelerated frequency spectrum particle visualizer",
-        "Zero-latency audio routing graph with modular effect nodes",
-        "Offline caching and audio export support via Web Audio Renderers"
+        "Engineered robust feature pipelines handling skewed tabular distributions and missing data",
+        "Applied Bayesian hyperparameter optimization with cross-validated grid search",
+        "Generated SHAP (Shapley Additive Explanations) summary plots for model interpretability",
+        "Documented reproducible Jupyter notebook workflows and statistical conclusions"
       ],
-      "github": "https://github.com",
-      "liveDemo": "https://example.com/aura-studio",
-      "status": "Featured Demo"
+      "metrics": {
+        "datasetSize": "1M+ Tabular Records",
+        "modeling": "XGBoost / LightGBM Ensembles",
+        "explainability": "TreeSHAP Interpretable Attribution"
+      },
+      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
+      "demo": "https://YOUR_DEMO_URL_HERE",
+      "paperUrl": null
     },
     {
-      "id": "project-commerce-engine",
-      "stationNumber": "Station 04",
-      "title": "Artisan — Headless E-Commerce & Inventory Suite",
-      "tagline": "High-conversion headless storefront with optimistic checkout",
-      "category": "E-Commerce / Systems Design",
-      "description": "A modern headless commerce solution built for independent designer studios, featuring instant search indexing, optimistic cart mutations, Stripe payments, and automated inventory sync.",
-      "contribution": "Developed the headless storefront UI, integrated Stripe Payment Element with Webhook event reconciliation, and configured Algolia instant search with faceted filtering.",
-      "technologies": [
-        "React",
-        "Next.js App Router",
-        "FastAPI",
-        "PostgreSQL",
-        "Stripe SDK",
-        "Algolia",
-        "Docker"
-      ],
+      "id": "proj-realtime-object-tracking",
+      "title": "Edge Computer Vision & Real-Time Object Tracking",
+      "category": "Computer Vision / Embedded ML",
+      "badge": "Edge Vision",
+      "status": "Prototype",
+      "summary": "High-framerate object detection and centroid tracking system optimized for live video streams with dynamic bounding box filtering.",
+      "technologies": ["OpenCV", "PyTorch", "YOLO Architecture", "Python", "NumPy"],
       "highlights": [
-        "Sub-100ms instant search queries with typo tolerance",
-        "Optimistic UI updates delivering seamless cart modifications",
-        "Comprehensive inventory tracking with low-stock webhooks",
-        "Achieved 99/100 Lighthouse performance score across mobile and desktop"
+        "Optimized bounding box inference achieving 45+ FPS on standard hardware",
+        "Built multi-object centroid tracking algorithm maintaining identity over occlusion",
+        "Designed real-time telemetry HUD displaying object count, confidence, and speed",
+        "Packaged complete inference environment inside portable Docker container"
       ],
-      "github": "https://github.com",
-      "liveDemo": "https://example.com/artisan-store",
-      "status": "Production Ready"
+      "metrics": {
+        "throughput": "45+ FPS Video Processing",
+        "backbone": "Lightweight Mobile Detection Backbone",
+        "input": "HD Video Streams / Webcam"
+      },
+      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
+      "demo": "https://YOUR_DEMO_URL_HERE",
+      "paperUrl": null
     }
   ]
 }
-

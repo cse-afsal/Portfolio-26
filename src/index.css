@@ -1,42 +1,83 @@
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  :root {
+    --bg-base: #0d0d0f;
+    --bg-surface: #141418;
+    --bg-elevated: #1e1e24;
+    --accent-blue: #4f9eff;
+    --text-primary: #e8e8f0;
+    --text-muted: #6b6b80;
+    --border-glass: rgba(255, 255, 255, 0.08);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #0d0d0f;
+    color: #e8e8f0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
 }
 
-html, body, #root {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #1a1a1a;
+/* Glassmorphism Window Styling */
+.glass-window {
+  background: rgba(30, 30, 36, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 }
 
-canvas {
-  display: block;
+.glass-panel {
+  background: rgba(20, 20, 24, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Custom Sleek Scrollbar for modals and dialogs */
-.custom-scrollbar::-webkit-scrollbar {
+.glass-dock {
+  background: rgba(20, 20, 24, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+}
+
+/* Electric Blue Glows */
+.glow-accent {
+  box-shadow: 0 0 15px rgba(79, 158, 255, 0.35);
+}
+
+.glow-accent-subtle {
+  box-shadow: 0 0 8px rgba(79, 158, 255, 0.2);
+}
+
+/* Custom Sleek OS Scrollbar */
+::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 158, 255, 0.4);
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.04);
+/* Selection Color */
+::selection {
+  background: rgba(79, 158, 255, 0.3);
+  color: #ffffff;
 }
