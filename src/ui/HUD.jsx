@@ -14,6 +14,7 @@ export default function HUD() {
   const activeInteraction = useGameStore((s) => s.activeInteraction)
   const nearbyInteractable = useGameStore((s) => s.nearbyInteractable)
   const transitionFadeOpacity = useGameStore((s) => s.transitionFadeOpacity)
+  const reducedMotion = useGameStore((s) => s.reducedMotion)
   const setQuickMenuOpen = useGameStore((s) => s.setQuickMenuOpen)
   const setShowControlsGuide = useGameStore((s) => s.setShowControlsGuide)
   const setIsPaused = useGameStore((s) => s.setIsPaused)
@@ -179,10 +180,10 @@ export default function HUD() {
 
           {/* Center Interaction Prompt Pill */}
           {nearbyInteractable && !activeInteraction && !isPaused && (
-            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 select-none animate-bounce duration-700">
+            <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 z-40 select-none ${reducedMotion ? '' : 'animate-bounce duration-700'}`}>
               <button
                 onClick={handlePromptClick}
-                className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 text-white border border-amber-400/60 shadow-2xl backdrop-blur-md transition-all cursor-pointer group"
+                className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 text-white border border-amber-400/60 shadow-2xl backdrop-blur-md transition-all cursor-pointer group focus:ring-2 focus:ring-amber-400 focus:outline-none"
               >
                 <span className="w-6 h-6 rounded-full bg-amber-400 text-neutral-950 text-xs font-bold flex items-center justify-center shadow-xs">
                   E

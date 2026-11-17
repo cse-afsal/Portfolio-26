@@ -4,6 +4,7 @@ import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
 import SkillsHouseInterior from './SkillsHouseInterior'
 import useGameStore from '../../store/useGameStore'
+import useBuildingInteriorActive from '../../hooks/useBuildingInteriorActive'
 
 export default function SkillsHouse() {
   const stuccoColor = '#ece8e1'       // light warm cream stucco
@@ -12,6 +13,7 @@ export default function SkillsHouse() {
   const glassColor = '#a8c6db'        // window glass
 
   const [doorOpen, setDoorOpen] = useState(false)
+  const isInteriorActive = useBuildingInteriorActive([-16, 0, -32])
 
   const triggerDoorTransition = (targetPos) => {
     useGameStore.getState().setDoorTransitioning(true)
@@ -250,9 +252,9 @@ export default function SkillsHouse() {
       </mesh>
 
       {/* ======================================================== */}
-      {/* --- ACCESSIBLE INTERIOR WORKSPACE & DISPLAY BOARDS --- */}
+      {/* --- ACCESSIBLE INTERIOR WORKSPACE (LAZY-LOADED) --- */}
       {/* ======================================================== */}
-      <SkillsHouseInterior />
+      {isInteriorActive && <SkillsHouseInterior />}
     </group>
   )
 }

@@ -6,6 +6,8 @@ export default function QuickMenu() {
   const quickMenuOpen = useGameStore((s) => s.quickMenuOpen)
   const setQuickMenuOpen = useGameStore((s) => s.setQuickMenuOpen)
   const teleportToSection = useGameStore((s) => s.teleportToSection)
+  const visitedSections = useGameStore((s) => s.visitedSections)
+  const reducedMotion = useGameStore((s) => s.reducedMotion)
 
   const backdropRef = useRef(null)
   const containerRef = useRef(null)
@@ -13,27 +15,32 @@ export default function QuickMenu() {
   // GSAP Entrance
   useEffect(() => {
     if (quickMenuOpen && backdropRef.current && containerRef.current) {
-      gsap.fromTo(
-        backdropRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.25, ease: 'power2.out' }
-      )
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 30, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.2)' }
-      )
+      if (reducedMotion) {
+        gsap.set(backdropRef.current, { opacity: 1 })
+        gsap.set(containerRef.current, { opacity: 1, y: 0, scale: 1 })
+      } else {
+        gsap.fromTo(
+          backdropRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.25, ease: 'power2.out' }
+        )
+        gsap.fromTo(
+          containerRef.current,
+          { opacity: 0, y: 25, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.2)' }
+        )
+      }
     }
-  }, [quickMenuOpen])
+  }, [quickMenuOpen, reducedMotion])
 
   if (!quickMenuOpen) return null
 
   const handleClose = () => {
-    if (backdropRef.current && containerRef.current) {
+    if (!reducedMotion && backdropRef.current && containerRef.current) {
       gsap.to(backdropRef.current, { opacity: 0, duration: 0.2, ease: 'power2.in' })
       gsap.to(containerRef.current, {
         opacity: 0,
-        y: 20,
+        y: 18,
         scale: 0.97,
         duration: 0.2,
         ease: 'power2.in',
@@ -48,6 +55,10 @@ export default function QuickMenu() {
       })
     } else {
       setQuickMenuOpen(false)
+      const s = useGameStore.getState()
+      if (!s.isTitleScreen && !s.isPaused) {
+        document.body.requestPointerLock?.()
+      }
     }
   }
 
@@ -57,6 +68,9 @@ export default function QuickMenu() {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Quick Portfolio Navigation"
       ref={backdropRef}
       onClick={handleClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto select-none"
@@ -87,7 +101,7 @@ export default function QuickMenu() {
           <button
             onClick={handleClose}
             aria-label="Close Quick Menu"
-            className="p-2 -mr-2 -mt-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-2xl transition-all cursor-pointer text-xl leading-none flex items-center justify-center w-10 h-10"
+            className="p-2 -mr-2 -mt-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-2xl transition-all cursor-pointer text-xl leading-none flex items-center justify-center w-10 h-10 focus:ring-2 focus:ring-amber-400 focus:outline-none"
           >
             ✕
           </button>
@@ -95,36 +109,46 @@ export default function QuickMenu() {
 
         {/* 6 Section Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 relative z-10">
-          {PORTFOLIO_SECTIONS.map((sec) => (
-            <button
-              key={sec.id}
-              onClick={() => handleSelect(sec.id)}
-              className="group relative p-4 rounded-2xl bg-neutral-800/60 hover:bg-neutral-800/90 border border-neutral-700/60 hover:border-amber-400/50 transition-all text-left flex flex-col justify-between cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-0.5"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-wider uppercase bg-white/10 text-neutral-300 border border-white/10 group-hover:bg-amber-400/20 group-hover:text-amber-200 group-hover:border-amber-400/30 transition-colors">
-                    {sec.badge}
-                  </span>
-                  <span className="w-5 h-5 rounded-md bg-neutral-700/60 group-hover:bg-amber-400 group-hover:text-neutral-950 text-neutral-300 text-[11px] font-mono font-bold flex items-center justify-center transition-all">
-                    {sec.key}
-                  </span>
+          {PORTFOLIO_SECTIONS.map((sec) => {
+            const isVisited = visitedSections.includes(sec.id)
+            return (
+              <button
+                key={sec.id}
+                onClick={() => handleSelect(sec.id)}
+                className="group relative p-4 rounded-2xl bg-neutral-800/60 hover:bg-neutral-800/90 border border-neutral-700/60 hover:border-amber-400/50 transition-all text-left flex flex-col justify-between cursor-pointer shadow-md hover:shadow-xl hover:-translate-y-0.5 focus:ring-2 focus:ring-amber-400 focus:outline-none"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-wider uppercase bg-white/10 text-neutral-300 border border-white/10 group-hover:bg-amber-400/20 group-hover:text-amber-200 group-hover:border-amber-400/30 transition-colors">
+                        {sec.badge}
+                      </span>
+                      {isVisited && (
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          ✓ Visited
+                        </span>
+                      )}
+                    </div>
+                    <span className="w-5 h-5 rounded-md bg-neutral-700/60 group-hover:bg-amber-400 group-hover:text-neutral-950 text-neutral-300 text-[11px] font-mono font-bold flex items-center justify-center transition-all">
+                      {sec.key}
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-medium text-white group-hover:text-amber-200 transition-colors">
+                    {sec.name}
+                  </h3>
+                  <div className="text-xs text-neutral-400 mt-0.5 font-light">
+                    {sec.subtitle}
+                  </div>
                 </div>
 
-                <h3 className="text-base font-medium text-white group-hover:text-amber-200 transition-colors">
-                  {sec.name}
-                </h3>
-                <div className="text-xs text-neutral-400 mt-0.5 font-light">
-                  {sec.subtitle}
+                <div className="mt-4 pt-3 border-t border-neutral-700/40 flex items-center justify-between text-xs text-neutral-400 group-hover:text-amber-300 transition-colors">
+                  <span className="font-mono text-[11px]">{sec.building}</span>
+                  <span className="text-sm transition-transform group-hover:translate-x-1">→</span>
                 </div>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-neutral-700/40 flex items-center justify-between text-xs text-neutral-400 group-hover:text-amber-300 transition-colors">
-                <span className="font-mono text-[11px]">{sec.building}</span>
-                <span className="text-sm transition-transform group-hover:translate-x-1">→</span>
-              </div>
-            </button>
-          ))}
+              </button>
+            )
+          })}
         </div>
 
         {/* Footer shortcuts hint */}
@@ -141,7 +165,7 @@ export default function QuickMenu() {
 
           <button
             onClick={handleClose}
-            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl transition-all cursor-pointer font-medium"
+            className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl transition-all cursor-pointer font-medium focus:ring-2 focus:ring-amber-400 focus:outline-none"
           >
             Cancel
           </button>

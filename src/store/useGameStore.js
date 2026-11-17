@@ -128,6 +128,46 @@ export const PORTFOLIO_SECTIONS = [
   },
 ]
 
+// Safe local storage helpers
+const getSavedQuality = () => {
+  try {
+    const q = localStorage.getItem('myworld_quality')
+    if (q === 'low' || q === 'medium' || q === 'high') return q
+    // Default medium on lower-end/mobile devices, high on desktop
+    const isMobile = typeof window !== 'undefined' && ('ontouchstart' in window || window.innerWidth < 768)
+    return isMobile ? 'medium' : 'high'
+  } catch {
+    return 'high'
+  }
+}
+
+const getSavedReducedMotion = () => {
+  try {
+    const rm = localStorage.getItem('myworld_reduced_motion')
+    if (rm !== null) return rm === 'true'
+    return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+  } catch {
+    return false
+  }
+}
+
+const getSavedVisited = () => {
+  try {
+    const v = localStorage.getItem('myworld_visited')
+    return v ? JSON.parse(v) : []
+  } catch {
+    return []
+  }
+}
+
+const getHasSavedSession = () => {
+  try {
+    return !!localStorage.getItem('myworld_saved_pos')
+  } catch {
+    return false
+  }
+}
+
 const useGameStore = create((set, get) => ({
   // Player state
   isMoving: false,
@@ -142,6 +182,12 @@ const useGameStore = create((set, get) => ({
   cameraAngle: 0,
   cameraYawTarget: null,
   cameraPitchTarget: null,
+  
+  // Quality & Accessibility Settings
+  graphicsQuality: getSavedQuality(), // 'low' | 'medium' | 'high'
+  reducedMotion: getSavedReducedMotion(),
+  visitedSections: getSavedVisited(),
+  hasSavedSession: getHasSavedSession(),
   
   // Game & Navigation Menu States
   isTitleScreen: true,         // Title screen shown initially
@@ -169,7 +215,22 @@ const useGameStore = create((set, get) => ({
   setIsRunning: (val) => set({ isRunning: val }),
   setIsJumping: (val) => set({ isJumping: val }),
   setIsGrounded: (val) => set({ isGrounded: val }),
-  setPlayerPosition: (pos) => set({ playerPosition: pos }),
+  setPlayerPosition: (pos) => {
+    set({ playerPosition: pos })
+    // Periodically save progress to localStorage
+    if (Math.random() < 0.05) {
+      try {
+        localStorage.setItem('myworld_saved_pos', JSON.stringify([
+          Math.round(pos[0] * 10) / 10,
+          Math.round(pos[1] * 10) / 10,
+          Math.round(pos[2] * 10) / 10
+        ]))
+        set({ hasSavedSession: true })
+      } catch {
+        // ignore
+      }
+    }
+  },
   setPlayerTeleportTarget: (pos) => set({ playerTeleportTarget: pos }),
   setCameraDistance: (dist) => set({ cameraDistance: dist }),
   setCameraAngle: (angle) => set({ cameraAngle: angle }),
@@ -185,12 +246,94 @@ const useGameStore = create((set, get) => ({
   },
   setShowControlsGuide: (val) => set({ showControlsGuide: val }),
   setIsPointerLocked: (val) => set({ isPointerLocked: val }),
+
+  // Quality & Accessibility Setters
+  setGraphicsQuality: (quality) => {
+    try {
+      localStorage.setItem('myworld_quality', quality)
+    } catch {
+      // ignore
+    }
+    set({ graphicsQuality: quality })
+  },
+  setReducedMotion: (val) => {
+    try {
+      localStorage.setItem('myworld_reduced_motion', String(val))
+    } catch {
+      // ignore
+    }
+    set({ reducedMotion: val })
+  },
+  markSectionVisited: (sectionId) => {
+    const visited = get().visitedSections
+    if (!visited.includes(sectionId)) {
+      const updated = [...visited, sectionId]
+      try {
+        localStorage.setItem('myworld_visited', JSON.stringify(updated))
+      } catch {
+        // ignore
+      }
+      set({ visitedSections: updated })
+    }
+  },
+
+  // Save / Restore Progress
+  saveProgress: () => {
+    try {
+      const pos = get().playerPosition
+      localStorage.setItem('myworld_saved_pos', JSON.stringify([
+        Math.round(pos[0] * 10) / 10,
+        Math.round(pos[1] * 10) / 10,
+        Math.round(pos[2] * 10) / 10
+      ]))
+      set({ hasSavedSession: true })
+    } catch {
+      // ignore
+    }
+  },
+  resumeSavedSession: () => {
+    try {
+      const raw = localStorage.getItem('myworld_saved_pos')
+      if (raw) {
+        const pos = JSON.parse(raw)
+        set({
+          playerTeleportTarget: pos,
+          isTitleScreen: false,
+          isPaused: false,
+          quickMenuOpen: false
+        })
+        return true
+      }
+    } catch {
+      // ignore
+    }
+    set({ isTitleScreen: false })
+    return false
+  },
+  resetProgress: () => {
+    try {
+      localStorage.removeItem('myworld_saved_pos')
+      localStorage.removeItem('myworld_visited')
+    } catch {
+      // ignore
+    }
+    set({
+      hasSavedSession: false,
+      visitedSections: [],
+      playerTeleportTarget: [0, 2, 8],
+      cameraYawTarget: 0,
+      cameraPitchTarget: 0.25
+    })
+  },
   
   // Interaction actions
   setActiveInteraction: (interaction) => {
     // When opening interaction modal, exit pointer lock so user can click
     if (interaction && document.pointerLockElement) {
       document.exitPointerLock?.()
+    }
+    if (interaction?.id) {
+      get().markSectionVisited(interaction.id)
     }
     set({ activeInteraction: interaction })
   },
@@ -210,10 +353,14 @@ const useGameStore = create((set, get) => ({
     const section = PORTFOLIO_SECTIONS.find((s) => s.id === sectionId)
     if (!section) return
 
+    get().markSectionVisited(sectionId)
+
     // Exit pointer lock if active
     if (document.pointerLockElement) {
       document.exitPointerLock?.()
     }
+
+    const isReduced = get().reducedMotion
 
     // Step 1: Smooth fade out & close open menus
     set({
@@ -224,6 +371,9 @@ const useGameStore = create((set, get) => ({
       isTitleScreen: false,
       showControlsGuide: false,
     })
+
+    const fadePeakTime = isReduced ? 50 : 260
+    const fadeInTime = isReduced ? 50 : 300
 
     // Step 2: At peak of fade, reposition character, align camera, and load modal data
     setTimeout(() => {
@@ -240,8 +390,8 @@ const useGameStore = create((set, get) => ({
           transitionFadeOpacity: 0,
           doorTransitioning: false,
         })
-      }, 300)
-    }, 260)
+      }, fadeInTime)
+    }, fadePeakTime)
   },
 
   // Touch controls

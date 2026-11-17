@@ -6,6 +6,7 @@ import projectsData from '../data/projects.json'
 export default function InteractionModal() {
   const activeInteraction = useGameStore((s) => s.activeInteraction)
   const closeInteraction = useGameStore((s) => s.closeInteraction)
+  const reducedMotion = useGameStore((s) => s.reducedMotion)
 
   const backdropRef = useRef(null)
   const modalRef = useRef(null)
@@ -32,26 +33,31 @@ export default function InteractionModal() {
       setIsClosing(false)
       gsap.killTweensOf([backdropRef.current, modalRef.current])
 
-      gsap.fromTo(
-        backdropRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.28, ease: 'power2.out' }
-      )
+      if (reducedMotion) {
+        gsap.set(backdropRef.current, { opacity: 1 })
+        gsap.set(modalRef.current, { opacity: 1, y: 0, scale: 1 })
+      } else {
+        gsap.fromTo(
+          backdropRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.28, ease: 'power2.out' }
+        )
 
-      gsap.fromTo(
-        modalRef.current,
-        { opacity: 0, y: 28, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.15)' }
-      )
+        gsap.fromTo(
+          modalRef.current,
+          { opacity: 0, y: 28, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.15)' }
+        )
+      }
     }
-  }, [activeInteraction])
+  }, [activeInteraction, reducedMotion])
 
   // GSAP Exit Animation
   const handleClose = useCallback(() => {
     if (isClosing) return
     setIsClosing(true)
 
-    if (backdropRef.current && modalRef.current) {
+    if (!reducedMotion && backdropRef.current && modalRef.current) {
       gsap.killTweensOf([backdropRef.current, modalRef.current])
 
       gsap.to(backdropRef.current, {
@@ -75,7 +81,7 @@ export default function InteractionModal() {
       setIsClosing(false)
       closeInteraction()
     }
-  }, [closeInteraction, isClosing])
+  }, [closeInteraction, isClosing, reducedMotion])
 
   // Keyboard shortcut listener (Esc / E to close modal)
   useEffect(() => {
@@ -131,6 +137,9 @@ export default function InteractionModal() {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title || name || 'Information Panel'}
       ref={backdropRef}
       onClick={handleClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto select-none"
@@ -188,11 +197,10 @@ export default function InteractionModal() {
               <button
                 key={proj.id}
                 onClick={() => setSelectedProjectIndex(idx)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
-                  selectedProjectIndex === idx
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${selectedProjectIndex === idx
                     ? 'bg-amber-400 text-neutral-950 font-semibold shadow'
                     : 'text-neutral-400 hover:text-white hover:bg-white/5'
-                }`}
+                  }`}
               >
                 {proj.stationNumber}: {proj.title.split('—')[0].trim()}
               </button>
@@ -305,11 +313,10 @@ export default function InteractionModal() {
                     {cat.items.map((item, i) => (
                       <span
                         key={i}
-                        className={`px-2 py-0.5 rounded text-xs font-mono ${
-                          item.startsWith('[')
+                        className={`px-2 py-0.5 rounded text-xs font-mono ${item.startsWith('[')
                             ? 'bg-amber-500/10 text-amber-300/80 italic border border-dashed border-amber-500/30'
                             : 'bg-neutral-900 text-neutral-200 border border-neutral-700/60'
-                        }`}
+                          }`}
                       >
                         {item}
                       </span>

@@ -16,14 +16,22 @@ import Cars from '../world/Cars'
 import Sky from '../world/Sky'
 import Lighting from '../world/Lighting'
 import Character from '../player/Character'
+import useGameStore from '../store/useGameStore'
 
 export default function Game() {
+  const graphicsQuality = useGameStore((s) => s.graphicsQuality)
+
+  const dpr = graphicsQuality === 'low' ? [0.8, 1] : graphicsQuality === 'medium' ? [1, 1.5] : [1, 2]
+  const shadowsEnabled = graphicsQuality !== 'low'
+
   return (
     <Canvas
-      shadows
-      camera={{ fov: 60, near: 0.1, far: 500, position: [0, 5, 15] }}
+      shadows={shadowsEnabled}
+      dpr={dpr}
+      camera={{ fov: 60, near: 0.1, far: 450, position: [0, 5, 15] }}
       gl={{
-        antialias: true,
+        antialias: graphicsQuality !== 'low',
+        powerPreference: 'high-performance',
         toneMapping: 3, // ACESFilmicToneMapping
         toneMappingExposure: 1.0,
       }}

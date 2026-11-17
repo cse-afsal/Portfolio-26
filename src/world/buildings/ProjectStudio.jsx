@@ -4,6 +4,7 @@ import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
 import ProjectStudioInterior from './ProjectStudioInterior'
 import useGameStore from '../../store/useGameStore'
+import useBuildingInteriorActive from '../../hooks/useBuildingInteriorActive'
 
 export default function ProjectStudio() {
   const steelColor = '#242629'       // structural charcoal steel
@@ -13,6 +14,7 @@ export default function ProjectStudio() {
   const waterColor = '#3d6175'       // modern reflecting pool water
 
   const [doorOpen, setDoorOpen] = useState(false)
+  const isInteriorActive = useBuildingInteriorActive([17, 0, 0])
 
   const triggerDoorTransition = (targetPos) => {
     useGameStore.getState().setDoorTransitioning(true)
@@ -246,9 +248,9 @@ export default function ProjectStudio() {
       </group>
 
       {/* ======================================================== */}
-      {/* --- ACCESSIBLE EXHIBITION INTERIOR --- */}
+      {/* --- ACCESSIBLE EXHIBITION INTERIOR (LAZY-LOADED) --- */}
       {/* ======================================================== */}
-      <ProjectStudioInterior />
+      {isInteriorActive && <ProjectStudioInterior />}
     </group>
   )
 }

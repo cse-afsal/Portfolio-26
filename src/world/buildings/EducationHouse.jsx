@@ -4,6 +4,7 @@ import InteractiveObject from '../InteractiveObject'
 import BuildingSign from './BuildingSign'
 import EducationHouseInterior from './EducationHouseInterior'
 import useGameStore from '../../store/useGameStore'
+import useBuildingInteriorActive from '../../hooks/useBuildingInteriorActive'
 
 export default function EducationHouse() {
   const pineWoodColor = '#ba9368'    // warm scandinavian pine timber
@@ -12,6 +13,7 @@ export default function EducationHouse() {
   const glassColor = '#a8c6db'       // window glass
 
   const [doorOpen, setDoorOpen] = useState(false)
+  const isInteriorActive = useBuildingInteriorActive([-16, 0, 32])
 
   const triggerDoorTransition = (targetPos) => {
     useGameStore.getState().setDoorTransitioning(true)
@@ -227,9 +229,9 @@ export default function EducationHouse() {
       />
 
       {/* ======================================================== */}
-      {/* --- ACCESSIBLE STUDY INTERIOR & CREDENTIALS --- */}
+      {/* --- ACCESSIBLE STUDY INTERIOR (LAZY-LOADED) --- */}
       {/* ======================================================== */}
-      <EducationHouseInterior />
+      {isInteriorActive && <EducationHouseInterior />}
     </group>
   )
 }

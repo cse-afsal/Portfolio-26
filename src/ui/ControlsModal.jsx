@@ -5,29 +5,35 @@ import useGameStore from '../store/useGameStore'
 export default function ControlsModal() {
   const showControlsGuide = useGameStore((s) => s.showControlsGuide)
   const setShowControlsGuide = useGameStore((s) => s.setShowControlsGuide)
+  const reducedMotion = useGameStore((s) => s.reducedMotion)
 
   const backdropRef = useRef(null)
   const modalRef = useRef(null)
 
   useEffect(() => {
     if (showControlsGuide && backdropRef.current && modalRef.current) {
-      gsap.fromTo(
-        backdropRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.25, ease: 'power2.out' }
-      )
-      gsap.fromTo(
-        modalRef.current,
-        { opacity: 0, y: 24, scale: 0.96 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.2)' }
-      )
+      if (reducedMotion) {
+        gsap.set(backdropRef.current, { opacity: 1 })
+        gsap.set(modalRef.current, { opacity: 1, y: 0, scale: 1 })
+      } else {
+        gsap.fromTo(
+          backdropRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.25, ease: 'power2.out' }
+        )
+        gsap.fromTo(
+          modalRef.current,
+          { opacity: 0, y: 24, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.2)' }
+        )
+      }
     }
-  }, [showControlsGuide])
+  }, [showControlsGuide, reducedMotion])
 
   if (!showControlsGuide) return null
 
   const handleClose = () => {
-    if (backdropRef.current && modalRef.current) {
+    if (!reducedMotion && backdropRef.current && modalRef.current) {
       gsap.to(backdropRef.current, { opacity: 0, duration: 0.2, ease: 'power2.in' })
       gsap.to(modalRef.current, {
         opacity: 0,
@@ -44,6 +50,9 @@ export default function ControlsModal() {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Controls and Guidance"
       ref={backdropRef}
       onClick={handleClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto select-none"
