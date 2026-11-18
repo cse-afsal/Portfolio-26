@@ -1,68 +1,118 @@
 import { create } from 'zustand'
 
 export const APP_CONFIGS = {
-  about: {
-    id: 'about',
-    title: 'About Afsal — Bio & Background',
-    iconName: 'User',
-    defaultSize: { width: 720, height: 530 },
-    defaultPosition: { x: 80, y: 70 },
-    minSize: { width: 400, height: 350 },
-  },
   terminal: {
     id: 'terminal',
-    title: 'afsal@neural-workstation:~ (zsh)',
+    title: 'Terminal — zsh',
+    name: 'Terminal',
     iconName: 'Terminal',
-    defaultSize: { width: 740, height: 480 },
-    defaultPosition: { x: 140, y: 110 },
-    minSize: { width: 420, height: 300 },
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 100, y: 70 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Terminal — Coming in Phase 2',
+  },
+  about: {
+    id: 'about',
+    title: 'About Me',
+    name: 'About Me',
+    iconName: 'User',
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 140, y: 90 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'About Me — Coming in Phase 3',
   },
   projects: {
     id: 'projects',
-    title: 'Deep Learning & AI Projects',
+    title: 'Projects',
+    name: 'Projects',
     iconName: 'Layers',
-    defaultSize: { width: 880, height: 580 },
-    defaultPosition: { x: 110, y: 80 },
-    minSize: { width: 460, height: 380 },
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 180, y: 110 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Projects — Coming in Phase 4',
   },
   skills: {
     id: 'skills',
-    title: 'AI/ML & Deep Learning Stack',
+    title: 'Skills & Neural Stack',
+    name: 'Skills',
     iconName: 'Cpu',
-    defaultSize: { width: 760, height: 530 },
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 220, y: 80 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Skills — Coming in Phase 4',
+  },
+  education: {
+    id: 'education',
+    title: 'Education',
+    name: 'Education',
+    iconName: 'GraduationCap',
+    defaultSize: { width: 720, height: 480 },
     defaultPosition: { x: 160, y: 100 },
-    minSize: { width: 420, height: 350 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Education — Coming in Phase 5',
+  },
+  achievements: {
+    id: 'achievements',
+    title: 'Achievements',
+    name: 'Achievements',
+    iconName: 'Award',
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 200, y: 120 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Achievements — Coming in Phase 5',
   },
   contact: {
     id: 'contact',
-    title: 'Connect & Inquiries',
+    title: 'Contact',
+    name: 'Contact',
     iconName: 'Mail',
-    defaultSize: { width: 660, height: 500 },
-    defaultPosition: { x: 180, y: 120 },
-    minSize: { width: 380, height: 340 },
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 240, y: 130 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Contact — Coming in Phase 6',
+  },
+  finder: {
+    id: 'finder',
+    title: 'Finder — File Explorer',
+    name: 'Finder',
+    iconName: 'FolderTree',
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 120, y: 90 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Finder — Coming in Phase 3',
   },
   settings: {
     id: 'settings',
     title: 'System Preferences',
+    name: 'Preferences',
     iconName: 'Settings',
-    defaultSize: { width: 620, height: 460 },
-    defaultPosition: { x: 200, y: 130 },
-    minSize: { width: 380, height: 320 },
+    defaultSize: { width: 720, height: 480 },
+    defaultPosition: { x: 150, y: 100 },
+    minSize: { width: 400, height: 300 },
+    phaseNote: 'Preferences — System Customization',
   },
 }
 
 const useOSStore = create((set, get) => ({
+  // Boot state
+  isBooted: false,
+  setBooted: (val) => set({ isBooted: val }),
+
   // Windows state map
   windows: {
+    terminal: { ...APP_CONFIGS.terminal, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     about: { ...APP_CONFIGS.about, isOpen: true, isMinimized: false, isMaximized: false, zIndex: 10 },
-    terminal: { ...APP_CONFIGS.terminal, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 9 },
-    projects: { ...APP_CONFIGS.projects, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 8 },
-    skills: { ...APP_CONFIGS.skills, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 7 },
-    contact: { ...APP_CONFIGS.contact, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 6 },
-    settings: { ...APP_CONFIGS.settings, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 5 },
+    projects: { ...APP_CONFIGS.projects, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    skills: { ...APP_CONFIGS.skills, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    education: { ...APP_CONFIGS.education, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    achievements: { ...APP_CONFIGS.achievements, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    contact: { ...APP_CONFIGS.contact, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    finder: { ...APP_CONFIGS.finder, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    settings: { ...APP_CONFIGS.settings, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
   },
   activeAppId: 'about',
   highestZIndex: 10,
+  bouncingAppId: null,
 
   // OS Global Settings
   wallpaper: 'neural_mesh',
@@ -79,7 +129,6 @@ const useOSStore = create((set, get) => ({
 
     const newZ = highestZIndex + 1
 
-    // If window exists and is minimized, restore it
     set({
       windows: {
         ...windows,
@@ -92,6 +141,7 @@ const useOSStore = create((set, get) => ({
       },
       activeAppId: appId,
       highestZIndex: newZ,
+      bouncingAppId: null,
       isStartMenuOpen: false,
       contextMenu: { visible: false, x: 0, y: 0 },
     })
@@ -119,6 +169,7 @@ const useOSStore = create((set, get) => ({
     const { windows } = get()
     if (!windows[appId]) return
 
+    // Trigger bounce effect on the dock icon
     set({
       windows: {
         ...windows,
@@ -128,7 +179,15 @@ const useOSStore = create((set, get) => ({
         },
       },
       activeAppId: get().activeAppId === appId ? null : get().activeAppId,
+      bouncingAppId: appId,
     })
+
+    // Clear bounce trigger after 1.2s
+    setTimeout(() => {
+      if (get().bouncingAppId === appId) {
+        set({ bouncingAppId: null })
+      }
+    }, 1200)
   },
 
   toggleMaximizeApp: (appId) => {
