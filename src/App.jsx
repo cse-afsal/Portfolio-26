@@ -1,70 +1,120 @@
+import { motion } from 'framer-motion'
 import {
-  User,
   Terminal,
+  User,
   Layers,
   Cpu,
+  GraduationCap,
+  Award,
   Mail,
-  Settings,
+  FolderTree,
 } from 'lucide-react'
-import Desktop from './components/Desktop'
+import useOSStore from './store/useOSStore'
+import BootScreen from './components/BootScreen'
 import TopBar from './components/TopBar'
+import Desktop from './components/Desktop'
 import Dock from './components/Dock'
-import ContextMenu from './components/ContextMenu'
-import StartMenu from './components/StartMenu'
-import ControlCenter from './components/ControlCenter'
 import Window from './components/Window'
-
-// Apps
-import AboutApp from './apps/about/AboutApp'
-import TerminalApp from './apps/terminal/TerminalApp'
-import ProjectsApp from './apps/projects/ProjectsApp'
-import SkillsApp from './apps/skills/SkillsApp'
-import ContactApp from './apps/contact/ContactApp'
-import SettingsApp from './apps/settings/SettingsApp'
+import ContextMenu from './components/ContextMenu'
+import PlaceholderApp from './components/PlaceholderApp'
 
 export default function App() {
+  const isBooted = useOSStore((s) => s.isBooted)
+  const setBooted = useOSStore((s) => s.setBooted)
+
   return (
-    <div className="w-screen h-screen overflow-hidden bg-[#0d0d0f] text-[#e8e8f0] font-sans select-none flex flex-col relative">
-      {/* OS Top Menu Bar (32px) */}
-      <TopBar />
+    <div className="w-screen h-screen overflow-hidden bg-[#09090c] text-[#e8e8f0] font-sans select-none flex flex-col relative">
+      {/* 1. Animated Boot Sequence */}
+      {!isBooted && (
+        <BootScreen onBootComplete={() => setBooted(true)} />
+      )}
 
-      {/* Interactive Desktop Canvas with Wallpaper, Grid & App Shortcuts */}
-      <div className="flex-1 w-full relative overflow-hidden">
-        <Desktop>
-          {/* Windows Layer */}
-          <Window id="about" title="About Afsal — Bio & Background" icon={User}>
-            <AboutApp />
-          </Window>
+      {/* 2. Desktop Environment (fades in smoothly after boot) */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isBooted ? 1 : 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full h-full flex flex-col relative overflow-hidden"
+      >
+        {/* Top Slim Menubar (20px) */}
+        <TopBar />
 
-          <Window id="terminal" title="afsal@neural-workstation:~ (zsh)" icon={Terminal}>
-            <TerminalApp />
-          </Window>
+        {/* Center Desktop Canvas with Animated Wallpaper & Desktop Shortcuts */}
+        <div className="flex-1 w-full relative overflow-hidden pt-[20px]">
+          <Desktop>
+            {/* Windows Layer */}
+            <Window id="terminal" title="Terminal — zsh" icon={Terminal}>
+              <PlaceholderApp
+                title="Terminal"
+                phaseNote="Terminal — Coming in Phase 2"
+                icon={Terminal}
+              />
+            </Window>
 
-          <Window id="projects" title="Deep Learning & AI Projects" icon={Layers}>
-            <ProjectsApp />
-          </Window>
+            <Window id="about" title="About Me" icon={User}>
+              <PlaceholderApp
+                title="About Me"
+                phaseNote="About Me — Coming in Phase 3"
+                icon={User}
+              />
+            </Window>
 
-          <Window id="skills" title="AI/ML & Deep Learning Stack" icon={Cpu}>
-            <SkillsApp />
-          </Window>
+            <Window id="finder" title="Finder — File Explorer" icon={FolderTree}>
+              <PlaceholderApp
+                title="Finder"
+                phaseNote="Finder — Coming in Phase 3"
+                icon={FolderTree}
+              />
+            </Window>
 
-          <Window id="contact" title="Connect & Inquiries" icon={Mail}>
-            <ContactApp />
-          </Window>
+            <Window id="projects" title="Projects" icon={Layers}>
+              <PlaceholderApp
+                title="Projects"
+                phaseNote="Projects — Coming in Phase 4"
+                icon={Layers}
+              />
+            </Window>
 
-          <Window id="settings" title="System Preferences" icon={Settings}>
-            <SettingsApp />
-          </Window>
-        </Desktop>
-      </div>
+            <Window id="skills" title="Skills & Neural Stack" icon={Cpu}>
+              <PlaceholderApp
+                title="Skills"
+                phaseNote="Skills — Coming in Phase 4"
+                icon={Cpu}
+              />
+            </Window>
 
-      {/* macOS-style Bottom Floating Frosted Glass Dock */}
-      <Dock />
+            <Window id="education" title="Education" icon={GraduationCap}>
+              <PlaceholderApp
+                title="Education"
+                phaseNote="Education — Coming in Phase 5"
+                icon={GraduationCap}
+              />
+            </Window>
 
-      {/* Floating System Modals & Overlays */}
-      <ContextMenu />
-      <StartMenu />
-      <ControlCenter />
+            <Window id="achievements" title="Achievements" icon={Award}>
+              <PlaceholderApp
+                title="Achievements"
+                phaseNote="Achievements — Coming in Phase 5"
+                icon={Award}
+              />
+            </Window>
+
+            <Window id="contact" title="Contact" icon={Mail}>
+              <PlaceholderApp
+                title="Contact"
+                phaseNote="Contact — Coming in Phase 6"
+                icon={Mail}
+              />
+            </Window>
+          </Desktop>
+        </div>
+
+        {/* Bottom macOS Dock */}
+        <Dock />
+
+        {/* Desktop Context Menu */}
+        <ContextMenu />
+      </motion.div>
     </div>
   )
 }

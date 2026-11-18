@@ -1,101 +1,131 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-  User,
   Terminal,
+  User,
   Layers,
   Cpu,
+  GraduationCap,
+  Award,
   Mail,
-  Settings,
+  FolderTree,
 } from 'lucide-react'
 import useOSStore from '../store/useOSStore'
 import { playClickSound, playWindowOpenSound } from '../utils/sound'
 
-const ICONS = {
-  about: User,
-  terminal: Terminal,
-  projects: Layers,
-  skills: Cpu,
-  contact: Mail,
-  settings: Settings,
-}
-
 const DOCK_APPS = [
-  { id: 'about', label: 'About Me', color: 'from-blue-600 to-indigo-600' },
-  { id: 'projects', label: 'AI Projects', color: 'from-cyan-600 to-blue-600' },
-  { id: 'skills', label: 'Neural Stack', color: 'from-indigo-600 to-purple-600' },
-  { id: 'terminal', label: 'Zsh Terminal', color: 'from-neutral-800 to-neutral-900' },
-  { id: 'contact', label: 'Get in Touch', color: 'from-emerald-600 to-teal-600' },
-  { id: 'settings', label: 'Preferences', color: 'from-neutral-700 to-neutral-800' },
+  { id: 'terminal', label: 'Terminal', icon: Terminal, color: 'text-emerald-400', bg: 'bg-[#181820]' },
+  { id: 'about', label: 'About Me', icon: User, color: 'text-[#4f9eff]', bg: 'bg-[#181820]' },
+  { id: 'projects', label: 'Projects', icon: Layers, color: 'text-cyan-400', bg: 'bg-[#181820]' },
+  { id: 'skills', label: 'Skills', icon: Cpu, color: 'text-indigo-400', bg: 'bg-[#181820]' },
+  { id: 'education', label: 'Education', icon: GraduationCap, color: 'text-amber-400', bg: 'bg-[#181820]' },
+  { id: 'achievements', label: 'Achievements', icon: Award, color: 'text-yellow-400', bg: 'bg-[#181820]' },
+  { id: 'contact', label: 'Contact', icon: Mail, color: 'text-teal-400', bg: 'bg-[#181820]' },
+  { id: 'finder', label: 'Finder', icon: FolderTree, color: 'text-blue-400', bg: 'bg-[#181820]' },
 ]
 
 export default function Dock() {
   const windows = useOSStore((s) => s.windows)
   const openApp = useOSStore((s) => s.openApp)
+  const focusApp = useOSStore((s) => s.focusApp)
   const activeAppId = useOSStore((s) => s.activeAppId)
+  const bouncingAppId = useOSStore((s) => s.bouncingAppId)
 
   const [hoveredAppId, setHoveredAppId] = useState(null)
 
   const handleAppClick = (appId) => {
     playClickSound()
     playWindowOpenSound()
-    openApp(appId)
+
+    const windowState = windows[appId]
+    if (windowState && windowState.isOpen) {
+      if (windowState.isMinimized) {
+        focusApp(appId)
+      } else if (activeAppId === appId) {
+        // already active, keep it in front
+        focusApp(appId)
+      } else {
+        focusApp(appId)
+      }
+    } else {
+      openApp(appId)
+    }
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 select-none">
+    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 select-none">
       <motion.nav
-        initial={{ y: 50, opacity: 0 }}
+        initial={{ y: 60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="glass-dock px-3 py-2 rounded-2xl flex items-end gap-2.5 backdrop-blur-2xl shadow-2xl relative"
+        className="glass-dock px-3 py-2 rounded-2xl flex items-end gap-2.5 backdrop-blur-2xl shadow-2xl relative border border-white/10"
       >
-        {DOCK_APPS.map((app) => {
-          const Icon = ICONS[app.id]
+        {DOCK_APPS.map((app, index) => {
+          const Icon = app.icon
           const isOpen = windows[app.id]?.isOpen
-          const isFocused = activeAppId === app.id
+          const isFocused = activeAppId === app.id && isOpen && !windows[app.id]?.isMinimized
           const isHovered = hoveredAppId === app.id
+          const isBouncing = bouncingAppId === app.id
+
+          // Magnification: hovered icon scales to 1.25, adjacent neighbors scale slightly
+          const hoveredIndex = DOCK_APPS.findIndex((a) => a.id === hoveredAppId)
+          let scale = 1
+          if (hoveredAppId !== null) {
+            const distance = Math.abs(index - hoveredIndex)
+            if (distance === 0) scale = 1.25
+            else if (distance === 1) scale = 1.12
+            else if (distance === 2) scale = 1.04
+          }
 
           return (
-            <div key={app.id} className="relative flex flex-col items-center group">
-              {/* Tooltip on hover */}
+            <div
+              key={app.id}
+              className="relative flex flex-col items-center group"
+              onMouseEnter={() => setHoveredAppId(app.id)}
+              onMouseLeave={() => setHoveredAppId(null)}
+            >
+              {/* Tooltip Label */}
               {isHovered && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute -top-10 px-2.5 py-1 rounded-md bg-[#1e1e24] border border-white/10 text-white text-[11px] font-medium shadow-xl pointer-events-none whitespace-nowrap z-50"
+                  className="absolute -top-9 px-2.5 py-1 rounded-md bg-[#141418]/95 border border-white/10 text-white text-[10px] font-medium tracking-tight whitespace-nowrap shadow-xl pointer-events-none z-50 font-sans"
                 >
                   {app.label}
                 </motion.div>
               )}
 
-              {/* App Icon Button */}
+              {/* Icon Container with macOS magnification and bounce */}
               <motion.button
                 onClick={() => handleAppClick(app.id)}
-                onMouseEnter={() => setHoveredAppId(app.id)}
-                onMouseLeave={() => setHoveredAppId(null)}
-                whileHover={{ scale: 1.18, y: -4 }}
-                whileTap={{ scale: 0.92 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${app.color} shadow-lg border border-white/15 cursor-pointer relative overflow-hidden transition-shadow ${
-                  isFocused ? 'ring-2 ring-[#4f9eff] shadow-blue-500/20' : ''
+                animate={
+                  isBouncing
+                    ? { y: [0, -18, 0, -10, 0, -4, 0], scale: [1, 1.1, 1, 1.05, 1, 1, 1] }
+                    : { scale }
+                }
+                transition={
+                  isBouncing
+                    ? { duration: 0.9, ease: 'easeInOut' }
+                    : { type: 'spring', stiffness: 350, damping: 25 }
+                }
+                aria-label={app.label}
+                className={`w-11 h-11 rounded-xl flex items-center justify-center border border-white/10 shadow-lg cursor-pointer transition-colors relative ${app.bg} ${
+                  isFocused ? 'ring-1 ring-[#4f9eff]/60 shadow-[0_0_15px_rgba(79,158,255,0.25)]' : ''
                 }`}
-                aria-label={`Open ${app.label}`}
               >
-                {/* Subtle sheen highlight */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-
-                {Icon && <Icon className="w-5 h-5 text-white drop-shadow relative z-10" />}
+                <Icon className={`w-5 h-5 ${app.color}`} />
               </motion.button>
 
-              {/* Active / Running Indicator Dot */}
-              <div className="h-1 mt-1 flex items-center justify-center">
+              {/* Active Dot Indicator below icon */}
+              <div className="h-1.5 flex items-center justify-center mt-1">
                 {isOpen && (
-                  <motion.div
-                    layoutId={`dot-${app.id}`}
-                    className={`w-1 h-1 rounded-full ${
-                      isFocused ? 'bg-[#4f9eff] glow-accent scale-125' : 'bg-white/60'
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isFocused ? 'bg-[#4f9eff] shadow-[0_0_6px_#4f9eff]' : 'bg-white/40'
                     }`}
                   />
                 )}
