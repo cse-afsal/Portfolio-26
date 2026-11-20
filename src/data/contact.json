@@ -1,53 +1,34 @@
 {
-  "personal": {
-    "name": "Afsal",
-    "role": "Undergraduate AI/ML Engineer",
-    "specialization": "Deep Learning & Data Science",
-    "status": "Available for AI/ML Internships, Research & Technical Roles",
-    "email": "YOUR_EMAIL",
-    "location": "YOUR_LOCATION",
-    "responseTime": "Typically replies within 24-48 hours"
-  },
+  "email": "YOUR_EMAIL@domain.com",
+  "github": "https://github.com/YOUR_GITHUB",
+  "linkedin": "https://linkedin.com/in/YOUR_LINKEDIN",
+  "kaggle": "https://kaggle.com/YOUR_KAGGLE",
+  "twitter": "https://twitter.com/YOUR_TWITTER",
   "links": [
     {
-      "id": "email",
-      "name": "Direct Email",
-      "url": "mailto:YOUR_EMAIL",
-      "handle": "YOUR_EMAIL",
-      "description": "Send inquiries regarding AI research, internships, or engineering contracts.",
-      "category": "Direct"
+      "name": "Email",
+      "handle": "YOUR_EMAIL@domain.com",
+      "url": "mailto:YOUR_EMAIL@domain.com"
     },
     {
-      "id": "github",
       "name": "GitHub",
-      "url": "YOUR_GITHUB_URL",
-      "handle": "YOUR_GITHUB_USERNAME",
-      "description": "Browse repositories of PyTorch models, deep learning experiments, and datasets.",
-      "category": "Code"
+      "handle": "github.com/YOUR_GITHUB",
+      "url": "https://github.com/YOUR_GITHUB"
     },
     {
-      "id": "linkedin",
       "name": "LinkedIn",
-      "url": "YOUR_LINKEDIN_URL",
-      "handle": "YOUR_LINKEDIN_USERNAME",
-      "description": "Professional profile, academic affiliations, and technical connections.",
-      "category": "Professional"
+      "handle": "linkedin.com/in/YOUR_LINKEDIN",
+      "url": "https://linkedin.com/in/YOUR_LINKEDIN"
     },
     {
-      "id": "kaggle",
       "name": "Kaggle",
-      "url": "YOUR_KAGGLE_URL",
-      "handle": "YOUR_KAGGLE_USERNAME",
-      "description": "Machine learning notebooks, exploratory data analysis, and model benchmarks.",
-      "category": "Data Science"
+      "handle": "kaggle.com/YOUR_KAGGLE",
+      "url": "https://kaggle.com/YOUR_KAGGLE"
     },
     {
-      "id": "twitter",
       "name": "Twitter / X",
-      "url": "YOUR_TWITTER_URL",
-      "handle": "YOUR_TWITTER_USERNAME",
-      "description": "Notes on paper summaries, machine learning breakthroughs, and AI tooling.",
-      "category": "Social"
+      "handle": "twitter.com/YOUR_TWITTER",
+      "url": "https://twitter.com/YOUR_TWITTER"
     }
   ]
 }

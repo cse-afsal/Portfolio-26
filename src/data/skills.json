@@ -1,84 +1,43 @@
 {
-  "domains": [
-    {
-      "id": "deep_learning",
-      "name": "Deep Learning & Neural Architectures",
-      "description": "Designing, training, and fine-tuning deep neural network topologies.",
-      "skills": [
-        "PyTorch",
-        "TensorFlow / Keras",
-        "Convolutional Neural Networks (CNNs)",
-        "Transformers & Self-Attention",
-        "Diffusion & Generative Models",
-        "Transfer Learning & Model Fine-Tuning",
-        "CUDA & GPU Acceleration"
-      ]
-    },
-    {
-      "id": "machine_learning",
-      "name": "Machine Learning & Data Science",
-      "description": "Statistical modeling, feature extraction, and exploratory analysis.",
-      "skills": [
-        "Scikit-Learn",
-        "XGBoost / LightGBM",
-        "Pandas & NumPy",
-        "SciPy & Statistical Testing",
-        "Exploratory Data Analysis (EDA)",
-        "Feature Engineering & Dimensionality Reduction",
-        "Data Visualization (Matplotlib, Seaborn, Plotly)"
-      ]
-    },
-    {
-      "id": "domains_cv_nlp",
-      "name": "Computer Vision & Natural Language Processing",
-      "description": "Applied vision pipelines and modern language understanding.",
-      "skills": [
-        "OpenCV",
-        "TorchVision & Albumentations",
-        "Hugging Face Transformers",
-        "Tokenization & Embeddings",
-        "Image Classification & Object Detection",
-        "Semantic Segmentation",
-        "Text Preprocessing & Sentiment Analysis"
-      ]
-    },
-    {
-      "id": "languages",
-      "name": "Programming Languages",
-      "description": "Core software languages for algorithm implementation and production deployment.",
-      "skills": [
-        "Python (Advanced)",
-        "C++ (Algorithms & Performance)",
-        "SQL (PostgreSQL, MySQL)",
-        "JavaScript / TypeScript",
-        "Bash / Shell Scripting"
-      ]
-    },
-    {
-      "id": "mlops_tooling",
-      "name": "MLOps, Tools & Infrastructure",
-      "description": "Experiment tracking, versioning, containerization, and environment management.",
-      "skills": [
-        "Git & GitHub Version Control",
-        "Docker & Containerization",
-        "Weights & Biases (W&B)",
-        "MLflow",
-        "Linux OS Environment",
-        "Jupyter & Google Colab",
-        "Conda & Virtual Environments"
-      ]
-    },
-    {
-      "id": "mathematics",
-      "name": "Mathematical Foundations",
-      "description": "Theoretical rigor underlying machine learning algorithms.",
-      "skills": [
-        "Linear Algebra & Matrix Decompositions",
-        "Multivariate Calculus & Gradients",
-        "Probability Theory & Bayes Theorem",
-        "Inferential Statistics & Hypothesis Testing",
-        "Convex & Gradient Optimization"
-      ]
-    }
-  ]
+  "categories": {
+    "Languages": [
+      "Python",
+      "C++",
+      "SQL",
+      "JavaScript",
+      "TypeScript",
+      "Bash"
+    ],
+    "Frontend": [
+      "React",
+      "Tailwind CSS",
+      "HTML5 / CSS3",
+      "Next.js"
+    ],
+    "Backend": [
+      "FastAPI",
+      "Flask",
+      "Node.js",
+      "REST APIs"
+    ],
+    "Databases": [
+      "PostgreSQL",
+      "MySQL",
+      "MongoDB",
+      "Redis"
+    ],
+    "Tools": [
+      "Git & GitHub",
+      "Docker",
+      "Linux",
+      "Weights & Biases (W&B)",
+      "Jupyter / Colab",
+      "VS Code"
+    ],
+    "Currently Learning": [
+      "Diffusion Models",
+      "Model Quantization & TensorRT",
+      "LLM Agents & Retrieval-Augmented Generation"
+    ]
+  }
 }
