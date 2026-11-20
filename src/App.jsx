@@ -17,6 +17,7 @@ import Dock from './components/Dock'
 import Window from './components/Window'
 import ContextMenu from './components/ContextMenu'
 import PlaceholderApp from './components/PlaceholderApp'
+import TerminalApp from './apps/terminal/TerminalApp'
 
 export default function App() {
   const isBooted = useOSStore((s) => s.isBooted)
@@ -44,11 +45,7 @@ export default function App() {
           <Desktop>
             {/* Windows Layer */}
             <Window id="terminal" title="Terminal — zsh" icon={Terminal}>
-              <PlaceholderApp
-                title="Terminal"
-                phaseNote="Terminal — Coming in Phase 2"
-                icon={Terminal}
-              />
+              <TerminalApp />
             </Window>
 
             <Window id="about" title="About Me" icon={User}>

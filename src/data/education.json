@@ -1,66 +1,18 @@
 {
-  "degrees": [
+  "education": [
     {
-      "id": "degree-primary",
-      "degree": "Bachelor of Technology in Computer Science & Engineering",
-      "institution": "[YOUR UNIVERSITY / COLLEGE NAME]",
-      "location": "[City, Country]",
-      "period": "2020 – 2024",
-      "status": "Graduated with Honors",
-      "overview": "Rigorous undergraduate program emphasizing software engineering, data structures & algorithms, operating systems, computer graphics, and distributed systems.",
-      "coursework": [
-        "Data Structures & Object-Oriented Analysis",
-        "Design & Analysis of Algorithms",
-        "Database Management Systems & SQL",
-        "Computer Networks & Distributed Computing",
-        "Computer Graphics & Interactive Systems",
-        "Compiler Design & Theory of Computation"
-      ],
-      "capstone": "Senior Capstone Project: Real-Time Spatial Collaboration Platform using WebSockets & WebGL."
-    }
-  ],
-  "certifications": [
-    {
-      "id": "cert-aws",
-      "title": "AWS Certified Solutions Architect — Associate",
-      "issuer": "Amazon Web Services",
-      "date": "2024",
-      "credentialId": "[AWS-CERT-ID-PLACEHOLDER]",
-      "description": "Validated expertise in designing highly available, cost-effective, and scalable cloud architectures on AWS."
+      "institution": "APJ Abdul Kalam Technological University [YOUR_COLLEGE_NAME]",
+      "degree": "Bachelor of Technology in Artificial Intelligence & Machine Learning",
+      "period": "2023 – 2027",
+      "location": "Kerala, India",
+      "details": "Focused on Deep Learning, Computer Vision, Transformers, and Computational Mathematics. Maintained strong academic standing with hands-on research prototypes."
     },
     {
-      "id": "cert-meta-frontend",
-      "title": "Meta Frontend Developer Professional Certificate",
-      "issuer": "Meta / Coursera",
-      "date": "2023",
-      "credentialId": "[META-FRONTEND-CERT-ID]",
-      "description": "In-depth specialization covering modern React patterns, advanced JavaScript, UX design principles, and automated frontend testing."
-    },
-    {
-      "id": "cert-threejs",
-      "title": "Three.js Journey — Comprehensive 3D Web Graphics",
-      "issuer": "Bruno Simon",
-      "date": "2023",
-      "credentialId": "[THREEJS-JOURNEY-CREDENTIAL]",
-      "description": "Mastery of WebGL, Three.js shaders, custom GLSL lighting models, physics integration, and performance optimization."
+      "institution": "Higher Secondary Education [YOUR_SCHOOL_NAME]",
+      "degree": "Computer Science & Mathematics Stream",
+      "period": "2021 – 2023",
+      "location": "Kerala, India",
+      "details": "Rigorous coursework in Computer Science, Object-Oriented Programming with C++, Mathematics, and Physics."
     }
-  ],
-  "workshops": [
-    {
-      "id": "workshop-webgpu",
-      "title": "Next-Generation Web Graphics with WebGPU",
-      "organizer": "W3C GPU for the Web Working Group",
-      "date": "2024",
-      "takeaways": "Practical compute shaders, render pipelines, and migration strategies from WebGL2 to WebGPU."
-    },
-    {
-      "id": "workshop-distributed",
-      "title": "Architecting Resilient Distributed Systems",
-      "organizer": "Tech Engineering Summit",
-      "date": "2023",
-      "takeaways": "Event sourcing patterns, saga orchestration, fault tolerance, and eventual consistency strategies."
-    }
-  ],
-  "learningPhilosophy": "Continuous compounding curiosity. Combining strong computer science theoretical foundations with hands-on architectural experimentation and product craftsmanship."
+  ]
 }
-

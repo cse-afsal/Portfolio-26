@@ -100,8 +100,8 @@ const useOSStore = create((set, get) => ({
 
   // Windows state map
   windows: {
-    terminal: { ...APP_CONFIGS.terminal, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    about: { ...APP_CONFIGS.about, isOpen: true, isMinimized: false, isMaximized: false, zIndex: 10 },
+    terminal: { ...APP_CONFIGS.terminal, isOpen: true, isMinimized: false, isMaximized: false, zIndex: 12 },
+    about: { ...APP_CONFIGS.about, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 10 },
     projects: { ...APP_CONFIGS.projects, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     skills: { ...APP_CONFIGS.skills, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     education: { ...APP_CONFIGS.education, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
@@ -110,8 +110,8 @@ const useOSStore = create((set, get) => ({
     finder: { ...APP_CONFIGS.finder, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     settings: { ...APP_CONFIGS.settings, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
   },
-  activeAppId: 'about',
-  highestZIndex: 10,
+  activeAppId: 'terminal',
+  highestZIndex: 12,
   bouncingAppId: null,
 
   // OS Global Settings
