@@ -1,7 +1,42 @@
 {
   "name": "Afsal",
-  "role": "AI/ML Engineer",
+  "initials": "AM",
+  "title": "AI/ML Engineer • Deep Learning • Data Science",
+  "status": "🟢 Open to Opportunities",
   "location": "Kerala, India",
-  "status": "Open to opportunities",
-  "bio": "Undergraduate engineering student and AI/ML researcher specializing in Deep Learning, Computer Vision, and Data Science. Passionate about designing deep neural network topologies, scaling vision pipelines, and uncovering actionable intelligence through data. Dedicated to reproducible research and production-grade machine learning systems."
+  "bio": "Undergraduate engineering student and AI/ML researcher specializing in Deep Learning, Computer Vision, and Data Science. Passionate about designing deep neural network topologies, scaling vision pipelines, and uncovering actionable intelligence through data. Dedicated to reproducible research and production-grade machine learning systems.",
+  "socialLinks": {
+    "github": "https://github.com/YOUR_GITHUB",
+    "linkedin": "https://linkedin.com/in/YOUR_LINKEDIN",
+    "email": "mailto:YOUR_EMAIL@domain.com"
+  },
+  "stats": {
+    "projectsCompleted": "12+",
+    "technologies": "18+",
+    "currentlyLearning": "Diffusion & LLM Agents"
+  },
+  "currentlyWorkingOn": [
+    {
+      "name": "Vision Transformer (ViT) Benchmark",
+      "description": "Custom multi-head self-attention pipeline for fine-grained image classification on CIFAR/ImageNet."
+    },
+    {
+      "name": "Real-Time Edge Vision Pipeline",
+      "description": "Ultra-low-latency object detection optimized for edge hardware using TensorRT."
+    },
+    {
+      "name": "Domain-Adapted Transformer (NLP)",
+      "description": "Fine-tuning transformer weights for semantic named entity extraction and classification."
+    }
+  ],
+  "interests": [
+    "Deep Learning",
+    "Computer Vision",
+    "Neural Architectures",
+    "NLP & Transformers",
+    "Generative AI",
+    "MLOps",
+    "Model Quantization",
+    "Data Science"
+  ]
 }

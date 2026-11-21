@@ -73,13 +73,13 @@ export const APP_CONFIGS = {
   },
   finder: {
     id: 'finder',
-    title: 'Finder — File Explorer',
+    title: 'Finder — Projects',
     name: 'Finder',
     iconName: 'FolderTree',
-    defaultSize: { width: 720, height: 480 },
-    defaultPosition: { x: 120, y: 90 },
-    minSize: { width: 400, height: 300 },
-    phaseNote: 'Finder — Coming in Phase 3',
+    defaultSize: { width: 780, height: 520 },
+    defaultPosition: { x: 120, y: 70 },
+    minSize: { width: 450, height: 320 },
+    phaseNote: 'Finder — Project Browser',
   },
   settings: {
     id: 'settings',
@@ -100,8 +100,8 @@ const useOSStore = create((set, get) => ({
 
   // Windows state map
   windows: {
-    terminal: { ...APP_CONFIGS.terminal, isOpen: true, isMinimized: false, isMaximized: false, zIndex: 12 },
-    about: { ...APP_CONFIGS.about, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 10 },
+    terminal: { ...APP_CONFIGS.terminal, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
+    about: { ...APP_CONFIGS.about, isOpen: true, isMinimized: false, isMaximized: false, zIndex: 12 },
     projects: { ...APP_CONFIGS.projects, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     skills: { ...APP_CONFIGS.skills, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     education: { ...APP_CONFIGS.education, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
@@ -110,7 +110,7 @@ const useOSStore = create((set, get) => ({
     finder: { ...APP_CONFIGS.finder, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
     settings: { ...APP_CONFIGS.settings, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
   },
-  activeAppId: 'terminal',
+  activeAppId: 'about',
   highestZIndex: 12,
   bouncingAppId: null,
 

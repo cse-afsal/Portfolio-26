@@ -18,6 +18,8 @@ import Window from './components/Window'
 import ContextMenu from './components/ContextMenu'
 import PlaceholderApp from './components/PlaceholderApp'
 import TerminalApp from './apps/terminal/TerminalApp'
+import AboutApp from './apps/about/AboutApp'
+import FinderApp from './apps/finder/FinderApp'
 
 export default function App() {
   const isBooted = useOSStore((s) => s.isBooted)
@@ -49,19 +51,11 @@ export default function App() {
             </Window>
 
             <Window id="about" title="About Me" icon={User}>
-              <PlaceholderApp
-                title="About Me"
-                phaseNote="About Me — Coming in Phase 3"
-                icon={User}
-              />
+              <AboutApp />
             </Window>
 
-            <Window id="finder" title="Finder — File Explorer" icon={FolderTree}>
-              <PlaceholderApp
-                title="Finder"
-                phaseNote="Finder — Coming in Phase 3"
-                icon={FolderTree}
-              />
+            <Window id="finder" title="Finder — Projects" icon={FolderTree}>
+              <FinderApp />
             </Window>
 
             <Window id="projects" title="Projects" icon={Layers}>
