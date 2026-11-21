@@ -430,7 +430,7 @@ export default function TerminalApp() {
                           </span>
                         )}
                       </div>
-                      <p className="text-[#8e8ea0] text-[11px]">{p.summary}</p>
+                      <p className="text-[#8e8ea0] text-[11px]">{p.shortDescription || p.summary}</p>
                     </div>
                   ))}
                 </div>

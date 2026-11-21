@@ -2,95 +2,75 @@
   "projects": [
     {
       "id": "proj-vision-transformer",
-      "title": "Vision Transformer (ViT) & Attention Classification",
-      "category": "Deep Learning / Computer Vision",
-      "badge": "Deep Learning",
-      "status": "Completed Research Prototype",
-      "summary": "Implementation and benchmarking of a patch-based Vision Transformer for multi-class visual recognition with custom multi-head self-attention layers.",
+      "title": "Vision Transformer (ViT) Visual Recognition",
+      "shortDescription": "Patch-based self-attention neural network for multi-class visual recognition.",
+      "fullDescription": "Constructed a patch-based Vision Transformer from scratch in PyTorch. Includes patch projection, learnable 1D position embeddings, multi-head self-attention blocks, and MLP classification heads with rigorous ablation studies comparing against standard CNN baselines.",
+      "category": "Deep Learning",
       "technologies": ["PyTorch", "TorchVision", "Python", "CUDA", "Weights & Biases"],
-      "highlights": [
-        "Constructed patch projection and learnable 1D position embeddings from scratch",
-        "Trained with AdamW optimizer, cosine annealing schedule, and gradient clipping",
-        "Conducted ablation study comparing standard CNN baselines vs self-attention heads",
-        "Logged real-time validation metrics and attention roll-out maps"
-      ],
-      "metrics": {
-        "dataset": "Benchmark ImageNet/CIFAR-100",
-        "parameters": "22M Parameters",
-        "architecture": "Custom Patch Embedding + 8-Layer Transformer"
-      },
-      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
-      "demo": "https://YOUR_DEMO_URL_HERE",
-      "paperUrl": null
+      "contribution": "Designed and trained the entire model from mathematical foundations. Implemented custom self-attention modules, trained with AdamW and cosine annealing schedule, and benchmarked attention rollout maps across benchmark datasets.",
+      "screenshotUrl": "",
+      "githubUrl": "https://github.com/YOUR_GITHUB/vision-transformer",
+      "liveDemoUrl": "https://demo.example.com/vit"
     },
     {
-      "id": "proj-nlp-distil-transformer",
-      "title": "Domain-Adapted Transformer for Clinical & Semantic Text",
-      "category": "Natural Language Processing",
-      "badge": "NLP",
-      "status": "Active Project",
-      "summary": "Fine-tuned language model leveraging Hugging Face Transformers for domain-specific named entity recognition and classification with attention masking.",
-      "technologies": ["PyTorch", "Hugging Face", "Tokenizers", "Scikit-Learn", "FastAPI"],
-      "highlights": [
-        "Implemented customized tokenization with subword byte-pair encoding",
-        "Fine-tuned pre-trained Transformer weights using mixed-precision FP16 training",
-        "Exposed high-throughput REST inference endpoint serving predictions under 35ms",
-        "Built automated evaluation pipeline tracking F1, Precision, and Recall scores"
-      ],
-      "metrics": {
-        "latency": "35ms Inference Latency",
-        "f1Score": "Evaluated on Standard Domain Test Split",
-        "framework": "Hugging Face / PyTorch"
-      },
-      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
-      "demo": "https://YOUR_DEMO_URL_HERE",
-      "paperUrl": null
+      "id": "proj-edge-vision-detection",
+      "title": "Real-Time Edge Vision & Object Tracker",
+      "shortDescription": "High-throughput object detection and tracking optimized for edge devices.",
+      "fullDescription": "Embedded computer vision system capable of real-time multi-object detection and tracking with sub-15ms inference latency on constrained hardware. Features custom post-training quantization and lightweight backbone integration.",
+      "category": "Computer Vision",
+      "technologies": ["OpenCV", "PyTorch", "TensorRT", "YOLOv8", "C++"],
+      "contribution": "Formulated the INT8 post-training quantization pipeline, pruned redundant weights, and integrated the OpenCV video capture loop for robust multi-stream processing.",
+      "screenshotUrl": "",
+      "githubUrl": "https://github.com/YOUR_GITHUB/edge-vision",
+      "liveDemoUrl": ""
     },
     {
-      "id": "proj-multivariate-data-science",
-      "title": "Predictive Analytics & Feature Engineering Engine",
-      "category": "Data Science & Statistical ML",
-      "badge": "Data Science",
-      "status": "Completed Case Study",
-      "summary": "End-to-end data science pipeline conducting automated exploratory data analysis, outlier remediation, multivariate hypothesis testing, and gradient-boosted ensemble modeling.",
-      "technologies": ["Python", "Pandas", "NumPy", "XGBoost", "Scikit-Learn", "Seaborn"],
-      "highlights": [
-        "Engineered robust feature pipelines handling skewed tabular distributions and missing data",
-        "Applied Bayesian hyperparameter optimization with cross-validated grid search",
-        "Generated SHAP (Shapley Additive Explanations) summary plots for model interpretability",
-        "Documented reproducible Jupyter notebook workflows and statistical conclusions"
-      ],
-      "metrics": {
-        "datasetSize": "1M+ Tabular Records",
-        "modeling": "XGBoost / LightGBM Ensembles",
-        "explainability": "TreeSHAP Interpretable Attribution"
-      },
-      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
-      "demo": "https://YOUR_DEMO_URL_HERE",
-      "paperUrl": null
+      "id": "proj-domain-adapted-nlp",
+      "title": "Domain-Adapted Clinical & Semantic Transformer",
+      "shortDescription": "Fine-tuned transformer model for domain-specific entity extraction and classification.",
+      "fullDescription": "Fine-tuned a transformer backbone using Hugging Face for domain-specific text classification and token classification with custom attention masking and high-throughput deployment.",
+      "category": "AI/ML Projects",
+      "technologies": ["PyTorch", "Hugging Face", "Tokenizers", "FastAPI", "Docker"],
+      "contribution": "Built the preprocessing and subword tokenization pipeline, executed FP16 mixed-precision fine-tuning, and wrapped the inference engine into a high-throughput REST API.",
+      "screenshotUrl": "",
+      "githubUrl": "https://github.com/YOUR_GITHUB/domain-nlp",
+      "liveDemoUrl": "https://demo.example.com/nlp"
     },
     {
-      "id": "proj-realtime-object-tracking",
-      "title": "Edge Computer Vision & Real-Time Object Tracking",
-      "category": "Computer Vision / Embedded ML",
-      "badge": "Edge Vision",
-      "status": "Prototype",
-      "summary": "High-framerate object detection and centroid tracking system optimized for live video streams with dynamic bounding box filtering.",
-      "technologies": ["OpenCV", "PyTorch", "YOLO Architecture", "Python", "NumPy"],
-      "highlights": [
-        "Optimized bounding box inference achieving 45+ FPS on standard hardware",
-        "Built multi-object centroid tracking algorithm maintaining identity over occlusion",
-        "Designed real-time telemetry HUD displaying object count, confidence, and speed",
-        "Packaged complete inference environment inside portable Docker container"
-      ],
-      "metrics": {
-        "throughput": "45+ FPS Video Processing",
-        "backbone": "Lightweight Mobile Detection Backbone",
-        "input": "HD Video Streams / Webcam"
-      },
-      "github": "https://github.com/YOUR_GITHUB_USERNAME/PROJECT_REPO_HERE",
-      "demo": "https://YOUR_DEMO_URL_HERE",
-      "paperUrl": null
+      "id": "proj-neural-audio-denoiser",
+      "title": "Spectral Neural Speech Denoising Engine",
+      "shortDescription": "U-Net convolutional architecture for real-time spectral speech enhancement.",
+      "fullDescription": "A deep convolutional recurrent neural network operating on Short-Time Fourier Transform (STFT) spectrograms to isolate clean voice signals from non-stationary background noise and ambient distortion.",
+      "category": "AI/ML Projects",
+      "technologies": ["PyTorch", "Torchaudio", "NumPy", "Librosa", "Python"],
+      "contribution": "Implemented custom complex STFT loss functions, optimized spectrogram generation on GPU, and conducted PESQ and STOI acoustic metric evaluations.",
+      "screenshotUrl": "",
+      "githubUrl": "https://github.com/YOUR_GITHUB/speech-denoiser",
+      "liveDemoUrl": ""
+    },
+    {
+      "id": "proj-afsal-os-portfolio",
+      "title": "AFSAL OS — Operating System Portfolio",
+      "shortDescription": "A macOS-inspired dark desktop OS portfolio with interactive window management.",
+      "fullDescription": "Full-featured web desktop environment complete with animated boot sequence, multi-window manager, zsh-style terminal shell, and file-explorer-style project browser.",
+      "category": "Web Apps",
+      "technologies": ["React", "Vite", "Tailwind CSS", "Framer Motion", "Zustand"],
+      "contribution": "Architected the Zustand window management lifecycle, designed the glassmorphic dark design system, and implemented the terminal parser and animation systems.",
+      "screenshotUrl": "",
+      "githubUrl": "https://github.com/YOUR_GITHUB/afsal-os",
+      "liveDemoUrl": "https://afsal-os.example.com"
+    },
+    {
+      "id": "proj-torch-metrics-toolkit",
+      "title": "TorchMetrics Deep Learning Evaluation Toolkit",
+      "shortDescription": "Open-source lightweight metric calculation modules for PyTorch research experiments.",
+      "fullDescription": "Lightweight modular PyTorch utility library for computing custom segmentation IoU, mAP, and loss curves with multi-GPU DistributedDataParallel (DDP) synchronizations.",
+      "category": "Open Source",
+      "technologies": ["Python", "PyTorch", "Git", "GitHub Actions", "pytest"],
+      "contribution": "Authored GPU-accelerated vectorized tensor operations, configured automated CI/CD unit testing, and documented reproducible benchmark scripts.",
+      "screenshotUrl": "",
+      "githubUrl": "https://github.com/YOUR_GITHUB/torch-metrics-toolkit",
+      "liveDemoUrl": ""
     }
   ]
 }
