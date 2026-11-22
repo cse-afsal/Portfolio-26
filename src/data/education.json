@@ -4,15 +4,63 @@
       "institution": "APJ Abdul Kalam Technological University [YOUR_COLLEGE_NAME]",
       "degree": "Bachelor of Technology in Artificial Intelligence & Machine Learning",
       "period": "2023 – 2027",
+      "yearRange": "2023 – 2027",
       "location": "Kerala, India",
-      "details": "Focused on Deep Learning, Computer Vision, Transformers, and Computational Mathematics. Maintained strong academic standing with hands-on research prototypes."
+      "details": "Specializing in Deep Learning, Computer Vision, and Neural Network Architectures. Active researcher in attention models with strong coursework in Linear Algebra, Probability, and Algorithms."
     },
     {
       "institution": "Higher Secondary Education [YOUR_SCHOOL_NAME]",
       "degree": "Computer Science & Mathematics Stream",
       "period": "2021 – 2023",
+      "yearRange": "2021 – 2023",
       "location": "Kerala, India",
-      "details": "Rigorous coursework in Computer Science, Object-Oriented Programming with C++, Mathematics, and Physics."
+      "details": "Graduated with distinction. Rigorous foundations in Mathematics, Physics, and Object-Oriented Programming with C++."
+    }
+  ],
+  "timeline": [
+    {
+      "id": "edu-btech",
+      "institution": "APJ Abdul Kalam Technological University [YOUR_COLLEGE_NAME]",
+      "degree": "B.Tech in Artificial Intelligence & Machine Learning",
+      "yearRange": "2023 – 2027",
+      "description": "Specializing in Deep Learning, Computer Vision, and Neural Network Architectures. Active researcher in attention models with strong coursework in Linear Algebra, Probability, and Algorithms."
+    },
+    {
+      "id": "edu-hss",
+      "institution": "Higher Secondary Education [YOUR_SCHOOL_NAME]",
+      "degree": "Computer Science & Mathematics Stream",
+      "yearRange": "2021 – 2023",
+      "description": "Graduated with distinction. Rigorous foundations in Mathematics, Physics, and Object-Oriented Programming with C++."
+    }
+  ],
+  "certifications": [
+    {
+      "id": "cert-deeplearning",
+      "name": "Deep Learning Specialization",
+      "issuer": "DeepLearning.AI / Coursera",
+      "year": "2024",
+      "link": "https://coursera.org"
+    },
+    {
+      "id": "cert-pytorch",
+      "name": "PyTorch for Deep Learning & Neural Networks",
+      "issuer": "Udemy / Zero To Mastery",
+      "year": "2024",
+      "link": "https://udemy.com"
+    },
+    {
+      "id": "cert-vision",
+      "name": "Advanced Computer Vision with OpenCV & PyTorch",
+      "issuer": "OpenCV.org",
+      "year": "2023",
+      "link": "https://opencv.org"
+    },
+    {
+      "id": "cert-mlops",
+      "name": "Machine Learning Engineering for Production (MLOps)",
+      "issuer": "DeepLearning.AI",
+      "year": "2023",
+      "link": "https://coursera.org"
     }
   ]
 }

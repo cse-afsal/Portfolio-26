@@ -20,6 +20,9 @@ import PlaceholderApp from './components/PlaceholderApp'
 import TerminalApp from './apps/terminal/TerminalApp'
 import AboutApp from './apps/about/AboutApp'
 import FinderApp from './apps/finder/FinderApp'
+import SkillsApp from './apps/skills/SkillsApp'
+import EducationApp from './apps/education/EducationApp'
+import AchievementsApp from './apps/achievements/AchievementsApp'
 
 export default function App() {
   const isBooted = useOSStore((s) => s.isBooted)
@@ -66,28 +69,16 @@ export default function App() {
               />
             </Window>
 
-            <Window id="skills" title="Skills & Neural Stack" icon={Cpu}>
-              <PlaceholderApp
-                title="Skills"
-                phaseNote="Skills — Coming in Phase 4"
-                icon={Cpu}
-              />
+            <Window id="skills" title="Skills.exe" icon={Cpu}>
+              <SkillsApp />
             </Window>
 
             <Window id="education" title="Education" icon={GraduationCap}>
-              <PlaceholderApp
-                title="Education"
-                phaseNote="Education — Coming in Phase 5"
-                icon={GraduationCap}
-              />
+              <EducationApp />
             </Window>
 
             <Window id="achievements" title="Achievements" icon={Award}>
-              <PlaceholderApp
-                title="Achievements"
-                phaseNote="Achievements — Coming in Phase 5"
-                icon={Award}
-              />
+              <AchievementsApp />
             </Window>
 
             <Window id="contact" title="Contact" icon={Mail}>
