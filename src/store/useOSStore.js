@@ -33,13 +33,13 @@ export const APP_CONFIGS = {
   },
   skills: {
     id: 'skills',
-    title: 'Skills & Neural Stack',
+    title: 'Skills.exe',
     name: 'Skills',
     iconName: 'Cpu',
-    defaultSize: { width: 720, height: 480 },
+    defaultSize: { width: 740, height: 500 },
     defaultPosition: { x: 220, y: 80 },
-    minSize: { width: 400, height: 300 },
-    phaseNote: 'Skills — Coming in Phase 4',
+    minSize: { width: 420, height: 320 },
+    phaseNote: 'Skills.exe — Technical Stack',
   },
   education: {
     id: 'education',

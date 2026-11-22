@@ -1,179 +1,220 @@
 import { useState, useMemo } from 'react'
 import {
-  Cpu,
-  Brain,
-  Database,
-  Eye,
   Code2,
-  Terminal,
-  Binary,
+  Layout,
+  Server,
+  Database,
+  Wrench,
+  Sparkles,
   Search,
+  LayoutGrid,
+  List,
   CheckCircle2,
-  Layers,
 } from 'lucide-react'
 import skillsData from '../../data/skills.json'
 import { playClickSound } from '../../utils/sound'
 
-const DOMAINS = skillsData.domains || []
+const CATEGORY_ICONS = {
+  Languages: Code2,
+  Frontend: Layout,
+  Backend: Server,
+  Databases: Database,
+  Tools: Wrench,
+  'Currently Learning': Sparkles,
+}
 
-const DOMAIN_ICONS = {
-  deep_learning: Brain,
-  machine_learning: Database,
-  domains_cv_nlp: Eye,
-  languages: Code2,
-  mlops_tooling: Terminal,
-  mathematics: Binary,
+const CATEGORY_COLORS = {
+  Languages: 'text-[#4f9eff]',
+  Frontend: 'text-cyan-400',
+  Backend: 'text-indigo-400',
+  Databases: 'text-purple-400',
+  Tools: 'text-emerald-400',
+  'Currently Learning': 'text-amber-400',
 }
 
 export default function SkillsApp() {
-  const [activeFilter, setActiveFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [viewMode, setViewMode] = useState('grid') // 'grid' | 'list'
 
-  const domains = DOMAINS
+  const categories = useMemo(() => skillsData.categories || {}, [])
 
-  const filteredDomains = useMemo(() => {
-    return domains
-      .filter((domain) => {
-        if (activeFilter === 'all') return true
-        return domain.id === activeFilter
-      })
-      .map((domain) => {
-        if (!searchQuery.trim()) return domain
-        const q = searchQuery.toLowerCase()
-        const matchesDomain = domain.name.toLowerCase().includes(q)
-        const matchingSkills = domain.skills.filter((s) => s.toLowerCase().includes(q))
-        if (matchesDomain || matchingSkills.length > 0) {
-          return {
-            ...domain,
-            skills: matchesDomain ? domain.skills : matchingSkills,
-          }
-        }
-        return null
-      })
-      .filter(Boolean)
-  }, [domains, activeFilter, searchQuery])
+  // Filter skills live based on search query
+  const filteredCategories = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return categories
+
+    const result = {}
+    for (const [catName, skillsList] of Object.entries(categories)) {
+      const catMatches = catName.toLowerCase().includes(q)
+      const matchingSkills = skillsList.filter((s) => s.toLowerCase().includes(q))
+
+      if (catMatches || matchingSkills.length > 0) {
+        result[catName] = catMatches ? skillsList : matchingSkills
+      }
+    }
+    return result
+  }, [categories, searchQuery])
 
   const totalSkillsCount = useMemo(() => {
-    return domains.reduce((acc, d) => acc + d.skills.length, 0)
-  }, [domains])
+    return Object.values(categories).reduce((acc, list) => acc + list.length, 0)
+  }, [categories])
+
+  const filteredEntries = Object.entries(filteredCategories)
 
   return (
-    <div className="p-6 md:p-8 space-y-6 text-[#e8e8f0] font-sans">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/8">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white">AI / ML Technical Stack</h1>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#4f9eff]/15 text-[#4f9eff] border border-[#4f9eff]/30">
-              {totalSkillsCount} Capabilities
-            </span>
+    <div className="w-full h-full overflow-y-auto p-5 md:p-7 text-[#e8e8f0] font-sans select-none flex flex-col justify-between">
+      <div className="space-y-5">
+        {/* Top Control Bar: Title, Live Search & View Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/8">
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold tracking-tight text-white font-mono">
+                Skills.exe
+              </h1>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#4f9eff]/15 text-[#4f9eff] border border-[#4f9eff]/30">
+                {totalSkillsCount} Capabilities
+              </span>
+            </div>
+            <p className="text-xs text-[#6b6b80] mt-0.5 font-mono">
+              Technical competencies across algorithms, neural frameworks, and production tools.
+            </p>
           </div>
-          <p className="text-xs text-[#6b6b80] mt-1 max-w-xl">
-            Applied competencies across deep neural architectures, production MLOps, statistical modeling, and mathematical rigor.
-          </p>
-        </div>
 
-        {/* Search input */}
-        <div className="relative w-full md:w-64">
-          <Search className="w-4 h-4 text-[#6b6b80] absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search frameworks, models..."
-            className="w-full bg-[#141418] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-[#6b6b80] focus:outline-none focus:border-[#4f9eff] transition-colors"
-          />
-        </div>
-      </div>
+          <div className="flex items-center gap-2.5">
+            {/* Live Search Input */}
+            <div className="relative w-full sm:w-56">
+              <Search className="w-3.5 h-3.5 text-[#6b6b80] absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search skills..."
+                className="w-full bg-[#141418] border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#6b6b80] focus:outline-none focus:border-[#4f9eff] font-mono transition-colors"
+              />
+            </div>
 
-      {/* Domain Category Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        <button
-          onClick={() => { playClickSound(); setActiveFilter('all') }}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-tight whitespace-nowrap transition-all cursor-pointer ${
-            activeFilter === 'all'
-              ? 'bg-[#4f9eff] text-black font-semibold shadow-md'
-              : 'bg-[#141418] hover:bg-[#1e1e24] text-[#8e8ea0] border border-white/5'
-          }`}
-        >
-          All Domains
-        </button>
-        {domains.map((dom) => {
-          const Icon = DOMAIN_ICONS[dom.id] || Layers
-          const isActive = activeFilter === dom.id
-          return (
-            <button
-              key={dom.id}
-              onClick={() => { playClickSound(); setActiveFilter(dom.id) }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium tracking-tight whitespace-nowrap flex items-center gap-1.5 transition-all cursor-pointer ${
-                isActive
-                  ? 'bg-[#4f9eff] text-black font-semibold shadow-md'
-                  : 'bg-[#141418] hover:bg-[#1e1e24] text-[#8e8ea0] border border-white/5'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{dom.name.split('&')[0].trim()}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Skills Grid */}
-      {filteredDomains.length === 0 ? (
-        <div className="py-16 text-center text-[#6b6b80] text-sm font-mono">
-          No skills found matching &quot;{searchQuery}&quot;
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredDomains.map((domain) => {
-            const Icon = DOMAIN_ICONS[domain.id] || Cpu
-            return (
-              <div
-                key={domain.id}
-                className="bg-[#141418]/80 hover:bg-[#181820] border border-white/8 hover:border-[#4f9eff]/30 rounded-2xl p-5 transition-all duration-200 flex flex-col justify-between group"
+            {/* Grid / List View Toggle */}
+            <div className="flex items-center bg-[#141418] border border-white/10 rounded-xl p-0.5 shrink-0">
+              <button
+                onClick={() => {
+                  playClickSound()
+                  setViewMode('grid')
+                }}
+                title="Grid view"
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-[#4f9eff] text-black shadow-md'
+                    : 'text-[#8e8ea0] hover:text-white'
+                }`}
               >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-[#1e1e24] border border-white/10 flex items-center justify-center text-[#4f9eff] group-hover:scale-105 transition-transform">
-                        <Icon className="w-4 h-4" />
+                <LayoutGrid className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => {
+                  playClickSound()
+                  setViewMode('list')
+                }}
+                title="List view"
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'list'
+                    ? 'bg-[#4f9eff] text-black shadow-md'
+                    : 'text-[#8e8ea0] hover:text-white'
+                }`}
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Display: Grid View or List View */}
+        {filteredEntries.length === 0 ? (
+          <div className="py-20 text-center text-[#6b6b80] text-xs font-mono">
+            No technical skills found matching &quot;{searchQuery}&quot;
+          </div>
+        ) : viewMode === 'grid' ? (
+          /* 1. Two-column Grid of Skill Category Cards */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredEntries.map(([categoryName, skillsList]) => {
+              const Icon = CATEGORY_ICONS[categoryName] || Code2
+              const iconColor = CATEGORY_COLORS[categoryName] || 'text-[#4f9eff]'
+
+              return (
+                <div
+                  key={categoryName}
+                  className="bg-[#141418]/85 hover:bg-[#181820] border border-white/8 hover:border-[#4f9eff]/30 rounded-2xl p-5 transition-all duration-200 flex flex-col justify-between group shadow-lg"
+                >
+                  <div>
+                    {/* Heading with Icon */}
+                    <div className="flex items-center gap-2.5 mb-3.5">
+                      <div className="w-8 h-8 rounded-lg bg-[#1e1e24] border border-white/10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <Icon className={`w-4 h-4 ${iconColor}`} />
                       </div>
                       <h2 className="text-sm font-semibold text-white tracking-tight">
-                        {domain.name}
+                        {categoryName}
                       </h2>
                     </div>
+
+                    {/* Skill Pill Tags */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {skillsList.map((skill, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono bg-[#1e1e24] text-[#d0d0e0] border border-white/5 hover:border-[#4f9eff]/30 hover:text-[#4f9eff] transition-colors"
+                        >
+                          <CheckCircle2 className="w-2.5 h-2.5 text-[#4f9eff] opacity-75 shrink-0" />
+                          <span>{skill}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          /* 2. Structured List View */
+          <div className="space-y-3">
+            {filteredEntries.map(([categoryName, skillsList]) => {
+              const Icon = CATEGORY_ICONS[categoryName] || Code2
+              const iconColor = CATEGORY_COLORS[categoryName] || 'text-[#4f9eff]'
+
+              return (
+                <div
+                  key={categoryName}
+                  className="bg-[#141418]/85 hover:bg-[#181820] border border-white/8 hover:border-[#4f9eff]/30 rounded-xl p-4 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md"
+                >
+                  <div className="flex items-center gap-2.5 shrink-0 w-44">
+                    <div className="w-7 h-7 rounded-lg bg-[#1e1e24] border border-white/10 flex items-center justify-center">
+                      <Icon className={`w-3.5 h-3.5 ${iconColor}`} />
+                    </div>
+                    <span className="text-xs font-semibold text-white">
+                      {categoryName}
+                    </span>
                   </div>
 
-                  <p className="text-xs text-[#8e8ea0] leading-relaxed mb-4">
-                    {domain.description}
-                  </p>
+                  <div className="flex flex-wrap gap-1.5 flex-1 justify-start sm:justify-end">
+                    {skillsList.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2.5 py-1 rounded-md text-[11px] font-mono bg-[#1e1e24] text-[#d0d0e0] border border-white/5"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
 
-                {/* Skill Badges */}
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
-                  {domain.skills.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-mono bg-[#1e1e24] hover:bg-[#252530] text-[#d0d0e0] hover:text-[#4f9eff] border border-white/5 hover:border-[#4f9eff]/30 transition-colors"
-                    >
-                      <CheckCircle2 className="w-2.5 h-2.5 text-[#4f9eff] opacity-75 shrink-0" />
-                      <span>{skill}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {/* Engineering Philosophy Callout */}
-      <div className="p-4 rounded-xl bg-[#141418]/50 border border-white/5 flex items-center justify-between text-xs text-[#6b6b80]">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#4f9eff] animate-pulse" />
-          <span>Core philosophy: Math-first understanding, PyTorch-first implementation, production-first MLOps.</span>
-        </div>
-        <span className="font-mono text-[10px] text-[#4f9eff]">No arbitrary % meters</span>
+      {/* Footer Info Callout */}
+      <div className="mt-6 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-[#6b6b80] font-mono">
+        <span>Verified technical foundations</span>
+        <span>Zero simulated percentages</span>
       </div>
     </div>
   )
