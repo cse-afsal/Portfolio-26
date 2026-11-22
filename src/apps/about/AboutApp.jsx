@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Download, Mail, Sparkles, FolderGit2, AlertCircle } from 'lucide-react'
 import { GithubIcon, LinkedinIcon } from '../../components/BrandIcons'
 import aboutData from '../../data/about.json'
+import useOSStore from '../../store/useOSStore'
 import { playClickSound } from '../../utils/sound'
 
 export default function AboutApp() {
@@ -64,7 +65,10 @@ export default function AboutApp() {
                 href={aboutData.socialLinks.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={playClickSound}
+                onClick={() => {
+                  playClickSound()
+                  useOSStore.getState().notify('Opening GitHub in a new tab...')
+                }}
                 title="GitHub Profile"
                 className="w-9 h-9 rounded-xl bg-[#1e1e24] hover:bg-[#282834] border border-white/10 hover:border-[#4f9eff]/40 text-[#8e8ea0] hover:text-[#4f9eff] flex items-center justify-center transition-all cursor-pointer shadow-md"
               >

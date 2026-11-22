@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { GithubIcon } from '../../components/BrandIcons'
 import projectsData from '../../data/projects.json'
+import useOSStore from '../../store/useOSStore'
 import { playClickSound } from '../../utils/sound'
 
 export default function FinderApp() {
@@ -196,6 +197,7 @@ export default function FinderApp() {
                           onClick={(e) => {
                             e.stopPropagation()
                             playClickSound()
+                            useOSStore.getState().notify('Opening GitHub in a new tab...')
                           }}
                           title="Open GitHub Repository"
                           className="p-1.5 rounded-lg bg-[#1e1e24] hover:bg-[#282834] text-[#8e8ea0] hover:text-white transition-colors"
@@ -332,7 +334,10 @@ export default function FinderApp() {
                     href={activeProject.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={playClickSound}
+                    onClick={() => {
+                      playClickSound()
+                      useOSStore.getState().notify('Opening GitHub in a new tab...')
+                    }}
                     className="flex-1 py-2.5 px-3 rounded-xl bg-[#1e1e24] hover:bg-[#282832] border border-white/10 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                   >
                     <GithubIcon className="w-4 h-4 text-[#4f9eff]" />

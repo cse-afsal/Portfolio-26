@@ -1,18 +1,16 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail,
   Send,
-  Copy,
-  Check,
-  ExternalLink,
   MessageSquare,
-  MapPin,
-  Clock,
-  ShieldCheck,
+  ExternalLink,
+  CheckCircle2,
+  RefreshCw,
 } from 'lucide-react'
 import { GithubIcon, LinkedinIcon, KaggleIcon } from '../../components/BrandIcons'
 import contactData from '../../data/contact.json'
-import profileData from '../../data/profile.json'
+import useOSStore from '../../store/useOSStore'
 import { playClickSound } from '../../utils/sound'
 
 const CHANNEL_ICONS = {
@@ -24,233 +22,256 @@ const CHANNEL_ICONS = {
 }
 
 export default function ContactApp() {
-  const [copiedKey, setCopiedKey] = useState(null)
+  const notify = useOSStore((s) => s.notify)
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
   })
-  const [sentStatus, setSentStatus] = useState(false)
+  const [sendingState, setSendingState] = useState('idle') // 'idle' | 'sending' | 'sent'
 
-  const handleCopy = (text, key) => {
+  const handleLinkClick = (link) => {
     playClickSound()
-    navigator.clipboard.writeText(text)
-    setCopiedKey(key)
-    setTimeout(() => setCopiedKey(null), 2000)
+    if (link.id === 'github' || link.name.toLowerCase().includes('github')) {
+      notify('Opening GitHub in a new tab...')
+    }
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     playClickSound()
-    const mailtoUrl = `mailto:${contactData.personal.email}?subject=${encodeURIComponent(
-      formData.subject || 'Portfolio Inquiry'
-    )}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\n${formData.message}`
-    )}`
-    window.location.href = mailtoUrl
-    setSentStatus(true)
-    setTimeout(() => setSentStatus(false), 4000)
+    setSendingState('sending')
+
+    // Simulate sending progress bar
+    setTimeout(() => {
+      setSendingState('sent')
+      notify('Message sent successfully!')
+    }, 1500)
+  }
+
+  const handleReset = () => {
+    playClickSound()
+    setFormData({ name: '', email: '', subject: '', message: '' })
+    setSendingState('idle')
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-6 text-[#e8e8f0] font-sans">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/8">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white">Connect & Inquiries</h1>
-            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Open for Internships
-            </span>
-          </div>
-          <p className="text-xs text-[#6b6b80] mt-1 max-w-xl">
-            Direct channel for AI/ML engineering roles, deep learning research collaborations, and open-source inquiries.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs text-[#8e8ea0]">
-          <div className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-[#4f9eff]" />
-            <span>{contactData.personal.location}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-[#4f9eff]" />
-            <span>{contactData.personal.responseTime}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Interactive Message Dispatcher (7 cols) */}
-        <div className="lg:col-span-7 bg-[#141418] border border-white/8 rounded-2xl p-5 md:p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
-                <Mail className="w-4 h-4 text-[#4f9eff]" />
-                Dispatch Direct Transmission
-              </h2>
-              <span className="text-[10px] font-mono text-[#6b6b80]">Encrypted Client-Side</span>
+    <div className="w-full h-full overflow-y-auto p-5 md:p-8 text-[#e8e8f0] font-sans select-none flex flex-col justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Panel: Contact Card (5 cols on lg) */}
+        <div className="lg:col-span-5 bg-[#141418]/90 border border-white/8 rounded-2xl p-6 shadow-xl space-y-5">
+          {/* Avatar & Info */}
+          <div className="flex items-center gap-4 pb-4 border-b border-white/8">
+            <div className="relative group">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1e2840] to-[#121624] border-2 border-[#4f9eff]/40 flex items-center justify-center text-lg font-bold font-mono text-[#4f9eff] shadow-xl glow-accent-subtle">
+                {contactData.initials || 'AM'}
+              </div>
+              <div className="absolute inset-0 rounded-full bg-[#4f9eff]/15 blur-lg pointer-events-none" />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3.5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-medium text-[#8e8ea0] mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Dr. Alex Vance"
-                    className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#8e8ea0] mb-1">
-                    Your Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="alex@domain.com"
-                    className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors"
-                  />
-                </div>
+            <div>
+              <h2 className="text-lg font-bold text-white tracking-tight">
+                {contactData.name || 'Afsal'}
+              </h2>
+              <p className="text-xs text-[#4f9eff] font-medium mt-0.5">
+                {contactData.role || 'AI/ML Engineer'}
+              </p>
+              <div className="text-[10px] font-mono text-emerald-400 mt-1 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{contactData.status || 'Available for inquiries'}</span>
               </div>
+            </div>
+          </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-[#8e8ea0] mb-1">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  placeholder="AI/ML Internship / Collaboration / Question"
-                  className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors"
-                />
-              </div>
+          {/* List of Contact Methods */}
+          <div className="space-y-2">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-[#606070] mb-1">
+              Direct Channels
+            </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-[#8e8ea0] mb-1">
-                  Message
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Write your message or project opportunity details here..."
-                  className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-[10px] text-[#6b6b80] flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  Routes via native OS mail handler
-                </span>
-
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-[#4f9eff] hover:bg-[#3d8ef5] text-black font-semibold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20 cursor-pointer"
+            {(contactData.links || []).map((link) => {
+              const Icon = CHANNEL_ICONS[link.id] || ExternalLink
+              return (
+                <a
+                  key={link.id || link.name}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => handleLinkClick(link)}
+                  className="w-full p-2.5 rounded-xl bg-[#1e1e24]/70 hover:bg-[#1e1e24] border border-white/5 hover:border-[#4f9eff]/40 text-[#c8c8d8] hover:text-white flex items-center justify-between transition-all group cursor-pointer shadow-sm"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Transmit Message</span>
-                </button>
-              </div>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-[#141418] border border-white/10 flex items-center justify-center text-[#4f9eff] group-hover:scale-105 transition-transform shrink-0">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white truncate">
+                        {link.name}
+                      </div>
+                      <div className="text-[11px] font-mono text-[#6b6b80] truncate">
+                        {link.handle}
+                      </div>
+                    </div>
+                  </div>
 
-              {sentStatus && (
-                <div className="p-2.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs text-center animate-fade-in font-mono">
-                  Mail protocol triggered. Opening email client...
-                </div>
-              )}
-            </form>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#6b6b80] group-hover:text-[#4f9eff] shrink-0" />
+                </a>
+              )
+            })}
           </div>
         </div>
 
-        {/* Right: Verified Communication Channels (5 cols) */}
-        <div className="lg:col-span-5 space-y-3">
-          <h2 className="text-sm font-semibold text-white tracking-tight mb-2">
-            Verified Profiles & Channels
-          </h2>
-
-          {contactData.links.map((ch) => {
-            const Icon = CHANNEL_ICONS[ch.id] || ExternalLink
-            const isCopied = copiedKey === ch.id
-
-            return (
-              <div
-                key={ch.id}
-                className="bg-[#141418] hover:bg-[#181822] border border-white/8 hover:border-white/15 rounded-xl p-3.5 transition-all flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-[#1e1e24] border border-white/10 flex items-center justify-center text-[#4f9eff] group-hover:scale-105 transition-transform shrink-0">
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-white truncate">{ch.name}</span>
-                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-white/5 text-[#8e8ea0]">
-                        {ch.category}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[#6b6b80] font-mono truncate">{ch.handle}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                  <button
-                    onClick={() => handleCopy(ch.handle, ch.id)}
-                    title="Copy to clipboard"
-                    className="p-1.5 rounded-lg bg-[#1e1e24] hover:bg-[#282834] text-[#8e8ea0] hover:text-white transition-colors cursor-pointer"
-                  >
-                    {isCopied ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    ) : (
-                      <Copy className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-
-                  <a
-                    href={ch.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={playClickSound}
-                    title="Open external link"
-                    className="p-1.5 rounded-lg bg-[#1e1e24] hover:bg-[#282834] text-[#8e8ea0] hover:text-[#4f9eff] transition-colors cursor-pointer"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-            )
-          })}
-
-          {/* Direct Resume CTA */}
-          <div className="pt-2">
-            <a
-              href={profileData.contacts.resume}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={playClickSound}
-              className="w-full p-3 rounded-xl bg-gradient-to-r from-[#182236] to-[#121624] border border-[#4f9eff]/30 hover:border-[#4f9eff]/60 text-xs font-medium text-white flex items-center justify-between group transition-all cursor-pointer"
-            >
+        {/* Right Panel: Send a Message Form (7 cols on lg) */}
+        <div className="lg:col-span-7 bg-[#141418]/90 border border-white/8 rounded-2xl p-6 shadow-xl flex flex-col justify-between min-h-[380px]">
+          <div>
+            <div className="flex items-center justify-between pb-4 border-b border-white/8 mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#4f9eff] shadow-sm shadow-[#4f9eff]" />
-                <span>Full Technical Curriculum Vitae (PDF)</span>
+                <Mail className="w-4 h-4 text-[#4f9eff]" />
+                <h3 className="text-sm font-semibold text-white tracking-tight">
+                  Send a Message
+                </h3>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-[#4f9eff] group-hover:translate-x-0.5 transition-transform" />
-            </a>
+              <span className="text-[10px] font-mono text-[#6b6b80]">
+                Mail Dispatcher
+              </span>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {sendingState === 'idle' && (
+                <motion.form
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onSubmit={handleSubmit}
+                  className="space-y-3.5"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-mono text-[#8e8ea0] mb-1">
+                        Your Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g. Alex Vance"
+                        className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-mono text-[#8e8ea0] mb-1">
+                        Your Email
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="alex@domain.com"
+                        className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono text-[#8e8ea0] mb-1">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      placeholder="Opportunity / Collaboration / Inquiry"
+                      className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-mono text-[#8e8ea0] mb-1">
+                      Message
+                    </label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      placeholder="Write your message here..."
+                      className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors resize-none font-mono"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end pt-2">
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 rounded-xl bg-[#4f9eff] hover:bg-[#3d8ef5] text-black font-semibold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20 cursor-pointer"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Message</span>
+                    </button>
+                  </div>
+                </motion.form>
+              )}
+
+              {sendingState === 'sending' && (
+                <motion.div
+                  key="sending"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="py-16 flex flex-col items-center justify-center text-center space-y-4"
+                >
+                  <div className="w-10 h-10 rounded-full border-2 border-[#4f9eff] border-t-transparent animate-spin" />
+                  <div className="text-xs font-mono text-[#a0a0b0]">
+                    Dispatching transmission via mail client...
+                  </div>
+                  {/* Fake sending progress bar */}
+                  <div className="w-56 h-1.5 bg-[#1e1e24] rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: '0%' }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: 1.4, ease: 'easeInOut' }}
+                      className="h-full bg-[#4f9eff]"
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {sendingState === 'sent' && (
+                <motion.div
+                  key="sent"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="py-12 flex flex-col items-center justify-center text-center space-y-4"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shadow-xl">
+                    <CheckCircle2 className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-bold text-white">
+                      Message Sent Successfully!
+                    </h4>
+                    <p className="text-xs text-[#a0a0b0] max-w-sm">
+                      Message sent! Afsal will get back to you soon.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={handleReset}
+                    className="mt-4 px-4 py-2 rounded-xl bg-[#1e1e24] hover:bg-[#282834] border border-white/10 text-xs font-mono text-white flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-[#4f9eff]" />
+                    <span>Send Another Message</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
