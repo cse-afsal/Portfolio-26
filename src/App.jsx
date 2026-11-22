@@ -8,6 +8,7 @@ import {
   Award,
   Mail,
   FolderTree,
+  FileCode,
 } from 'lucide-react'
 import useOSStore from './store/useOSStore'
 import BootScreen from './components/BootScreen'
@@ -23,6 +24,11 @@ import FinderApp from './apps/finder/FinderApp'
 import SkillsApp from './apps/skills/SkillsApp'
 import EducationApp from './apps/education/EducationApp'
 import AchievementsApp from './apps/achievements/AchievementsApp'
+import ContactApp from './apps/contact/ContactApp'
+import ReadmeViewer from './components/ReadmeViewer'
+import Notifications from './components/Notifications'
+import SpotlightSearch from './components/SpotlightSearch'
+import AboutThisOSModal from './components/AboutThisOSModal'
 
 export default function App() {
   const isBooted = useOSStore((s) => s.isBooted)
@@ -81,12 +87,12 @@ export default function App() {
               <AchievementsApp />
             </Window>
 
-            <Window id="contact" title="Contact" icon={Mail}>
-              <PlaceholderApp
-                title="Contact"
-                phaseNote="Contact — Coming in Phase 6"
-                icon={Mail}
-              />
+            <Window id="contact" title="Mail — Contact Afsal" icon={Mail}>
+              <ContactApp />
+            </Window>
+
+            <Window id="readme" title="README.txt" icon={FileCode}>
+              <ReadmeViewer />
             </Window>
           </Desktop>
         </div>
@@ -96,6 +102,15 @@ export default function App() {
 
         {/* Desktop Context Menu */}
         <ContextMenu />
+
+        {/* System Notifications Overlay */}
+        <Notifications />
+
+        {/* Spotlight Search Overlay */}
+        <SpotlightSearch />
+
+        {/* About This OS Mini Window */}
+        <AboutThisOSModal />
       </motion.div>
     </div>
   )

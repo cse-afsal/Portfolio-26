@@ -1,4 +1,8 @@
 {
+  "name": "Afsal",
+  "role": "AI/ML Engineer",
+  "initials": "AM",
+  "status": "Available for roles & research",
   "email": "YOUR_EMAIL@domain.com",
   "github": "https://github.com/YOUR_GITHUB",
   "linkedin": "https://linkedin.com/in/YOUR_LINKEDIN",
@@ -6,26 +10,31 @@
   "twitter": "https://twitter.com/YOUR_TWITTER",
   "links": [
     {
+      "id": "email",
       "name": "Email",
       "handle": "YOUR_EMAIL@domain.com",
       "url": "mailto:YOUR_EMAIL@domain.com"
     },
     {
+      "id": "github",
       "name": "GitHub",
       "handle": "github.com/YOUR_GITHUB",
       "url": "https://github.com/YOUR_GITHUB"
     },
     {
+      "id": "linkedin",
       "name": "LinkedIn",
       "handle": "linkedin.com/in/YOUR_LINKEDIN",
       "url": "https://linkedin.com/in/YOUR_LINKEDIN"
     },
     {
+      "id": "kaggle",
       "name": "Kaggle",
       "handle": "kaggle.com/YOUR_KAGGLE",
       "url": "https://kaggle.com/YOUR_KAGGLE"
     },
     {
+      "id": "twitter",
       "name": "Twitter / X",
       "handle": "twitter.com/YOUR_TWITTER",
       "url": "https://twitter.com/YOUR_TWITTER"

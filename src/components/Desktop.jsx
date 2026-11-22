@@ -1,37 +1,24 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  Terminal,
-  User,
-  Layers,
-  Cpu,
-  GraduationCap,
-  Award,
-  Mail,
-  FolderTree,
+  FileText,
+  FileCode,
 } from 'lucide-react'
-import useOSStore from '../store/useOSStore'
+import useOSStore, { WALLPAPERS } from '../store/useOSStore'
 import { playClickSound, playWindowOpenSound } from '../utils/sound'
-
-const DESKTOP_SHORTCUTS = [
-  { id: 'terminal', label: 'Terminal', icon: Terminal, color: 'text-emerald-400' },
-  { id: 'about', label: 'About Me', icon: User, color: 'text-[#4f9eff]' },
-  { id: 'projects', label: 'Projects', icon: Layers, color: 'text-cyan-400' },
-  { id: 'skills', label: 'Skills', icon: Cpu, color: 'text-indigo-400' },
-  { id: 'education', label: 'Education', icon: GraduationCap, color: 'text-amber-400' },
-  { id: 'achievements', label: 'Achievements', icon: Award, color: 'text-yellow-400' },
-  { id: 'contact', label: 'Contact', icon: Mail, color: 'text-teal-400' },
-  { id: 'finder', label: 'Finder', icon: FolderTree, color: 'text-blue-400' },
-]
 
 export default function Desktop({ children }) {
   const openApp = useOSStore((s) => s.openApp)
   const openContextMenu = useOSStore((s) => s.openContextMenu)
   const closeContextMenu = useOSStore((s) => s.closeContextMenu)
+  const wallpaperIndex = useOSStore((s) => s.wallpaperIndex)
+  const notify = useOSStore((s) => s.notify)
 
   const [selectedIconId, setSelectedIconId] = useState(null)
   const canvasRef = useRef(null)
 
-  // Subtle dark animated particle wallpaper
+  const activeWallpaper = WALLPAPERS[wallpaperIndex] || WALLPAPERS[0]
+
+  // Subtle dark animated particle wallpaper that updates according to active wallpaper
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -54,8 +41,8 @@ export default function Desktop({ children }) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
         radius: Math.random() * 1.5 + 0.5,
         alpha: Math.random() * 0.35 + 0.1,
       })
@@ -64,7 +51,11 @@ export default function Desktop({ children }) {
     const render = () => {
       ctx.clearRect(0, 0, width, height)
 
-      // Very subtle radial background glow
+      // Background fill from active wallpaper
+      ctx.fillStyle = activeWallpaper.bg
+      ctx.fillRect(0, 0, width, height)
+
+      // Radial or gradient overlay
       const grad = ctx.createRadialGradient(
         width * 0.5,
         height * 0.35,
@@ -73,41 +64,56 @@ export default function Desktop({ children }) {
         height * 0.35,
         width * 0.8
       )
-      grad.addColorStop(0, '#12141c')
-      grad.addColorStop(0.5, '#0e0f14')
-      grad.addColorStop(1, '#09090c')
+      if (wallpaperIndex === 1) {
+        // Deep Midnight
+        grad.addColorStop(0, '#10131f')
+        grad.addColorStop(0.6, '#08090f')
+        grad.addColorStop(1, '#040507')
+      } else if (wallpaperIndex === 2) {
+        // Cyber Blue Glow
+        grad.addColorStop(0, '#122544')
+        grad.addColorStop(0.55, '#0a101d')
+        grad.addColorStop(1, '#04070e')
+      } else {
+        // Neural Mesh
+        grad.addColorStop(0, '#141826')
+        grad.addColorStop(0.6, '#0c0e14')
+        grad.addColorStop(1, '#070709')
+      }
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, width, height)
 
-      // Draw subtle particles and faint connecting lines
+      // Subtle particles and connections
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         p.x += p.vx
         p.y += p.vy
 
-        // Wrap edges smoothly
         if (p.x < 0) p.x = width
         if (p.x > width) p.x = 0
         if (p.y < 0) p.y = height
         if (p.y > height) p.y = 0
 
-        // Particle circle
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(79, 158, 255, ${p.alpha})`
+        ctx.fillStyle =
+          wallpaperIndex === 2
+            ? `rgba(56, 189, 248, ${p.alpha})`
+            : wallpaperIndex === 1
+            ? `rgba(129, 140, 248, ${p.alpha})`
+            : `rgba(79, 158, 255, ${p.alpha})`
         ctx.fill()
 
-        // Connecting lines for close particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j]
           const dx = p.x - p2.x
           const dy = p.y - p2.y
           const dist = Math.sqrt(dx * dx + dy * dy)
-          if (dist < 130) {
+          if (dist < 125) {
             ctx.beginPath()
             ctx.moveTo(p.x, p.y)
             ctx.lineTo(p2.x, p2.y)
-            ctx.strokeStyle = `rgba(79, 158, 255, ${0.08 * (1 - dist / 130)})`
+            ctx.strokeStyle = `rgba(79, 158, 255, ${0.07 * (1 - dist / 125)})`
             ctx.lineWidth = 0.6
             ctx.stroke()
           }
@@ -123,7 +129,7 @@ export default function Desktop({ children }) {
       cancelAnimationFrame(animationFrameId)
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [activeWallpaper, wallpaperIndex])
 
   const handleDesktopClick = () => {
     setSelectedIconId(null)
@@ -135,17 +141,19 @@ export default function Desktop({ children }) {
     openContextMenu(e.clientX, e.clientY)
   }
 
-  const handleIconClick = (e, id) => {
+  const handleResumeClick = (e) => {
     e.stopPropagation()
     playClickSound()
-    setSelectedIconId(id)
+    setSelectedIconId('resume')
+    notify('Resume.pdf: Resume coming soon')
   }
 
-  const handleIconDoubleClick = (e, id) => {
+  const handleReadmeClick = (e) => {
     e.stopPropagation()
     playClickSound()
     playWindowOpenSound()
-    openApp(id)
+    setSelectedIconId('readme')
+    openApp('readme')
   }
 
   return (
@@ -162,7 +170,7 @@ export default function Desktop({ children }) {
 
       {/* Subtle Grid Overlay */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-25 z-0"
+        className="absolute inset-0 pointer-events-none opacity-20 z-0"
         style={{
           backgroundImage:
             'radial-gradient(rgba(79, 158, 255, 0.12) 1px, transparent 1px)',
@@ -170,51 +178,76 @@ export default function Desktop({ children }) {
         }}
       />
 
-      {/* Desktop App Icons Grid (Top Left, below 20px menubar) */}
-      <div className="absolute top-8 left-5 z-10 flex flex-col gap-3">
-        {DESKTOP_SHORTCUTS.map((item) => {
-          const Icon = item.icon
-          const isSelected = selectedIconId === item.id
+      {/* Desktop File Shortcuts (Top Left) */}
+      <div className="absolute top-6 left-6 z-10 flex flex-col gap-4">
+        {/* Shortcut 1: Resume.pdf */}
+        <div
+          onClick={handleResumeClick}
+          onDoubleClick={handleResumeClick}
+          className={`w-20 p-2 rounded-xl flex flex-col items-center gap-1 transition-all cursor-pointer group text-center ${
+            selectedIconId === 'resume'
+              ? 'bg-[#4f9eff]/20 ring-1 ring-[#4f9eff]/50'
+              : 'hover:bg-white/5'
+          }`}
+        >
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#141418]/90 border border-white/10 shadow-lg group-hover:scale-105 transition-transform relative">
+            <FileText className="w-5 h-5 text-rose-400" />
+            <span className="absolute bottom-1 right-1 text-[7px] font-mono font-bold bg-rose-500/20 text-rose-400 px-0.5 rounded border border-rose-500/30">
+              PDF
+            </span>
+          </div>
 
-          return (
-            <div
-              key={item.id}
-              onClick={(e) => handleIconClick(e, item.id)}
-              onDoubleClick={(e) => handleIconDoubleClick(e, item.id)}
-              onTouchEnd={(e) => handleIconDoubleClick(e, item.id)}
-              className={`w-20 p-2 rounded-xl flex flex-col items-center gap-1 transition-all cursor-pointer group text-center ${
-                isSelected
-                  ? 'bg-[#4f9eff]/20 ring-1 ring-[#4f9eff]/50'
-                  : 'hover:bg-white/5'
-              }`}
-            >
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center bg-[#141418]/90 border border-white/10 shadow-lg group-hover:scale-105 transition-transform ${
-                  isSelected ? 'border-[#4f9eff]/60' : ''
-                }`}
-              >
-                <Icon className={`w-5 h-5 ${item.color}`} />
-              </div>
+          <span
+            className={`text-[10px] font-mono tracking-tight px-1.5 py-0.5 rounded leading-tight drop-shadow truncate max-w-full ${
+              selectedIconId === 'resume'
+                ? 'bg-[#4f9eff] text-black font-semibold'
+                : 'text-[#e8e8f0]'
+            }`}
+          >
+            Resume.pdf
+          </span>
+        </div>
 
-              <span
-                className={`text-[10px] font-medium tracking-tight px-1.5 py-0.5 rounded leading-tight drop-shadow truncate max-w-full ${
-                  isSelected ? 'bg-[#4f9eff] text-black font-semibold' : 'text-[#e8e8f0]'
-                }`}
-              >
-                {item.label}
-              </span>
-            </div>
-          )
-        })}
+        {/* Shortcut 2: README.txt */}
+        <div
+          onClick={handleReadmeClick}
+          onDoubleClick={handleReadmeClick}
+          className={`w-20 p-2 rounded-xl flex flex-col items-center gap-1 transition-all cursor-pointer group text-center ${
+            selectedIconId === 'readme'
+              ? 'bg-[#4f9eff]/20 ring-1 ring-[#4f9eff]/50'
+              : 'hover:bg-white/5'
+          }`}
+        >
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#141418]/90 border border-white/10 shadow-lg group-hover:scale-105 transition-transform relative">
+            <FileCode className="w-5 h-5 text-[#4f9eff]" />
+            <span className="absolute bottom-1 right-1 text-[7px] font-mono font-bold bg-[#4f9eff]/20 text-[#4f9eff] px-0.5 rounded border border-[#4f9eff]/30">
+              TXT
+            </span>
+          </div>
+
+          <span
+            className={`text-[10px] font-mono tracking-tight px-1.5 py-0.5 rounded leading-tight drop-shadow truncate max-w-full ${
+              selectedIconId === 'readme'
+                ? 'bg-[#4f9eff] text-black font-semibold'
+                : 'text-[#e8e8f0]'
+            }`}
+          >
+            README.txt
+          </span>
+        </div>
       </div>
 
       {/* Subtle Watermark in bottom right */}
       <div className="absolute bottom-20 right-8 pointer-events-none text-right z-0 opacity-15">
-        <div className="text-2xl font-light tracking-widest text-[#e8e8f0] font-mono">AFSAL OS</div>
-        <div className="text-[10px] font-mono text-[#4f9eff]">v1.0 • Neural Environment</div>
+        <div className="text-2xl font-light tracking-widest text-[#e8e8f0] font-mono">
+          AFSAL OS
+        </div>
+        <div className="text-[10px] font-mono text-[#4f9eff]">
+          {activeWallpaper.name} • v1.0
+        </div>
       </div>
 
-      {/* Windows Layer Container (Center zone) */}
+      {/* Windows Layer Container */}
       <div className="w-full h-full relative z-20 pointer-events-none">
         <div className="w-full h-full relative pointer-events-auto">
           {children}
