@@ -2,25 +2,25 @@ import { create } from 'zustand'
 
 export const WALLPAPERS = [
   {
-    id: 'neural_mesh',
-    name: 'Neural Mesh',
+    id: 'neural_particles',
+    name: 'Particle Field',
     bg: '#09090c',
-    gradient: 'radial-gradient(circle at 50% 35%, #141724 0%, #0c0d12 60%, #070709 100%)',
+    description: 'Slow-moving particle field (Default)',
     particleColor: 'rgba(79, 158, 255, 0.4)',
   },
   {
-    id: 'deep_midnight',
-    name: 'Deep Midnight',
-    bg: '#060608',
-    gradient: 'linear-gradient(135deg, #0f111a 0%, #090a10 50%, #040507 100%)',
-    particleColor: 'rgba(129, 140, 248, 0.35)',
+    id: 'animated_gradient',
+    name: 'Cosmic Gradient',
+    bg: '#070a14',
+    description: 'Subtle animated gradient (Deep blue to dark purple)',
+    particleColor: 'rgba(168, 85, 247, 0.35)',
   },
   {
-    id: 'cyber_glow',
-    name: 'Cyber Blue Glow',
-    bg: '#080a10',
-    gradient: 'radial-gradient(ellipse at 80% 20%, #162444 0%, #0c101c 55%, #05070c 100%)',
-    particleColor: 'rgba(56, 189, 248, 0.45)',
+    id: 'geometric_pattern',
+    name: 'Static Geometric',
+    bg: '#08080c',
+    description: 'Minimalist static dark geometric pattern',
+    particleColor: 'rgba(255, 255, 255, 0.1)',
   },
 ]
 
@@ -107,38 +107,114 @@ export const APP_CONFIGS = {
   },
 }
 
+// LocalStorage safe access helpers
+const STORAGE_KEYS = {
+  WALLPAPER: 'afsal_os_wallpaper',
+  SOUND: 'afsal_os_sound',
+  BOOTED: 'afsal_os_booted',
+  OPEN_WINDOWS: 'afsal_os_open_windows',
+}
+
+const safeGetStorage = (key, fallback) => {
+  if (typeof window === 'undefined') return fallback
+  try {
+    const val = localStorage.getItem(key)
+    if (val === null) return fallback
+    return JSON.parse(val)
+  } catch {
+    return fallback
+  }
+}
+
+const safeSetStorage = (key, value) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // Ignore storage quota/permission errors
+  }
+}
+
+// Initial state reading from LocalStorage
+const savedWallpaperIdx = safeGetStorage(STORAGE_KEYS.WALLPAPER, 0)
+const validWallpaperIdx =
+  typeof savedWallpaperIdx === 'number' &&
+  savedWallpaperIdx >= 0 &&
+  savedWallpaperIdx < WALLPAPERS.length
+    ? savedWallpaperIdx
+    : 0
+
+const savedSoundEnabled = safeGetStorage(STORAGE_KEYS.SOUND, false)
+const savedBooted = safeGetStorage(STORAGE_KEYS.BOOTED, false)
+const savedOpenWindows = safeGetStorage(STORAGE_KEYS.OPEN_WINDOWS, ['about'])
+
+const buildInitialWindows = () => {
+  const initial = {}
+  let maxZ = 10
+  const openList = Array.isArray(savedOpenWindows) ? savedOpenWindows : ['about']
+
+  Object.keys(APP_CONFIGS).forEach((appId) => {
+    const isOpen = openList.includes(appId)
+    const zIndex = isOpen ? ++maxZ : 1
+    initial[appId] = {
+      ...APP_CONFIGS[appId],
+      isOpen,
+      isMinimized: false,
+      isMaximized: false,
+      zIndex,
+    }
+  })
+
+  return { windows: initial, highestZIndex: maxZ }
+}
+
+const { windows: initialWindows, highestZIndex: initialHighestZIndex } = buildInitialWindows()
+
+const persistOpenWindows = (windows) => {
+  const openIds = Object.keys(windows).filter((id) => windows[id]?.isOpen)
+  safeSetStorage(STORAGE_KEYS.OPEN_WINDOWS, openIds)
+}
+
 const useOSStore = create((set, get) => ({
-  // Boot state
-  isBooted: false,
-  setBooted: (val) => set({ isBooted: val }),
+  // Boot state (persisted: if previously completed, skips boot sequence)
+  isBooted: savedBooted === true,
+  setBooted: (val) => {
+    safeSetStorage(STORAGE_KEYS.BOOTED, Boolean(val))
+    set({ isBooted: Boolean(val) })
+  },
+  resetBootState: () => {
+    safeSetStorage(STORAGE_KEYS.BOOTED, false)
+    set({ isBooted: false })
+  },
 
   // Windows state map
-  windows: {
-    terminal: { ...APP_CONFIGS.terminal, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    about: { ...APP_CONFIGS.about, isOpen: true, isMinimized: false, isMaximized: false, zIndex: 12 },
-    finder: { ...APP_CONFIGS.finder, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    skills: { ...APP_CONFIGS.skills, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    education: { ...APP_CONFIGS.education, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    achievements: { ...APP_CONFIGS.achievements, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    contact: { ...APP_CONFIGS.contact, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-    readme: { ...APP_CONFIGS.readme, isOpen: false, isMinimized: false, isMaximized: false, zIndex: 1 },
-  },
-  activeAppId: 'about',
-  highestZIndex: 12,
+  windows: initialWindows,
+  activeAppId: savedOpenWindows?.[0] || 'about',
+  highestZIndex: initialHighestZIndex,
   bouncingAppId: null,
 
-  // Wallpaper cycle state
-  wallpaperIndex: 0,
+  // Wallpaper state & cycle
+  wallpaperIndex: validWallpaperIdx,
+  setWallpaperIndex: (idx) => {
+    safeSetStorage(STORAGE_KEYS.WALLPAPER, idx)
+    set({ wallpaperIndex: idx })
+  },
   cycleWallpaper: () => {
     const { wallpaperIndex, notify } = get()
     const nextIdx = (wallpaperIndex + 1) % WALLPAPERS.length
+    safeSetStorage(STORAGE_KEYS.WALLPAPER, nextIdx)
     set({ wallpaperIndex: nextIdx })
     notify(`Wallpaper set to: ${WALLPAPERS[nextIdx].name}`)
   },
 
-  // Audio state
-  soundEnabled: true,
-  toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
+  // Audio state (off by default per Task 3 specification)
+  soundEnabled: savedSoundEnabled === true,
+  toggleSound: () =>
+    set((state) => {
+      const next = !state.soundEnabled
+      safeSetStorage(STORAGE_KEYS.SOUND, next)
+      return { soundEnabled: next }
+    }),
 
   // Menubar & Modals state
   isSpotlightOpen: false,
@@ -161,10 +237,10 @@ const useOSStore = create((set, get) => ({
       notifications: [...state.notifications, newNotif],
     }))
 
-    // Auto dismiss after 3 seconds
+    // Auto dismiss after 3.2 seconds
     setTimeout(() => {
       get().dismissNotification(id)
-    }, 3000)
+    }, 3200)
   },
   dismissNotification: (id) => {
     set((state) => ({
@@ -179,17 +255,20 @@ const useOSStore = create((set, get) => ({
     if (!target) return
 
     const newZ = highestZIndex + 1
+    const nextWindows = {
+      ...windows,
+      [appId]: {
+        ...target,
+        isOpen: true,
+        isMinimized: false,
+        zIndex: newZ,
+      },
+    }
+
+    persistOpenWindows(nextWindows)
 
     set({
-      windows: {
-        ...windows,
-        [appId]: {
-          ...target,
-          isOpen: true,
-          isMinimized: false,
-          zIndex: newZ,
-        },
-      },
+      windows: nextWindows,
       activeAppId: appId,
       highestZIndex: newZ,
       bouncingAppId: null,
@@ -202,16 +281,20 @@ const useOSStore = create((set, get) => ({
     const { windows } = get()
     if (!windows[appId]) return
 
-    set({
-      windows: {
-        ...windows,
-        [appId]: {
-          ...windows[appId],
-          isOpen: false,
-          isMinimized: false,
-          isMaximized: false,
-        },
+    const nextWindows = {
+      ...windows,
+      [appId]: {
+        ...windows[appId],
+        isOpen: false,
+        isMinimized: false,
+        isMaximized: false,
       },
+    }
+
+    persistOpenWindows(nextWindows)
+
+    set({
+      windows: nextWindows,
       activeAppId: get().activeAppId === appId ? null : get().activeAppId,
     })
   },

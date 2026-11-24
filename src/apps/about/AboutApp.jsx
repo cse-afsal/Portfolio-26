@@ -1,33 +1,35 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Download, Mail, Sparkles, FolderGit2, AlertCircle } from 'lucide-react'
-import { GithubIcon, LinkedinIcon } from '../../components/BrandIcons'
+import { Download, Sparkles, FolderGit2, CheckCircle2 } from 'lucide-react'
+import { GithubIcon, LinkedinIcon, KaggleIcon } from '../../components/BrandIcons'
 import aboutData from '../../data/about.json'
 import useOSStore from '../../store/useOSStore'
 import { playClickSound } from '../../utils/sound'
 
 export default function AboutApp() {
-  const [toastMessage, setToastMessage] = useState(null)
+  const [downloadToast, setDownloadToast] = useState(false)
+  const notify = useOSStore((s) => s.notify)
 
-  const handleResumeClick = () => {
+  const handleResumeDownload = () => {
     playClickSound()
-    setToastMessage('Resume coming soon')
-    setTimeout(() => setToastMessage(null), 3000)
+    setDownloadToast(true)
+    notify('Downloading Afsal_Resume.pdf...')
+    setTimeout(() => setDownloadToast(false), 3500)
   }
 
   return (
-    <div className="w-full h-full overflow-y-auto p-6 md:p-8 text-[#e8e8f0] font-sans relative">
-      {/* Toast Notification for Fake Alert */}
+    <div className="w-full h-full overflow-y-auto p-6 md:p-8 text-[#e8e8f0] font-sans relative select-none">
+      {/* Toast Notification for Resume Download */}
       <AnimatePresence>
-        {toastMessage && (
+        {downloadToast && (
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#1e1e24] border border-[#4f9eff]/40 px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-mono text-[#e8e8f0]"
+            className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#1e1e24] border border-[#4f9eff]/50 px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-mono text-[#e8e8f0]"
           >
-            <AlertCircle className="w-4 h-4 text-[#4f9eff]" />
-            <span>{toastMessage}</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>Afsal_Resume.pdf download initiated</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -67,7 +69,7 @@ export default function AboutApp() {
                 rel="noopener noreferrer"
                 onClick={() => {
                   playClickSound()
-                  useOSStore.getState().notify('Opening GitHub in a new tab...')
+                  notify('Opening GitHub in a new tab...')
                 }}
                 title="GitHub Profile"
                 className="w-9 h-9 rounded-xl bg-[#1e1e24] hover:bg-[#282834] border border-white/10 hover:border-[#4f9eff]/40 text-[#8e8ea0] hover:text-[#4f9eff] flex items-center justify-center transition-all cursor-pointer shadow-md"
@@ -81,7 +83,10 @@ export default function AboutApp() {
                 href={aboutData.socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={playClickSound}
+                onClick={() => {
+                  playClickSound()
+                  notify('Opening LinkedIn in a new tab...')
+                }}
                 title="LinkedIn Profile"
                 className="w-9 h-9 rounded-xl bg-[#1e1e24] hover:bg-[#282834] border border-white/10 hover:border-[#4f9eff]/40 text-[#8e8ea0] hover:text-[#4f9eff] flex items-center justify-center transition-all cursor-pointer shadow-md"
               >
@@ -89,28 +94,33 @@ export default function AboutApp() {
               </a>
             )}
 
-            {aboutData.socialLinks?.email && (
+            {aboutData.socialLinks?.kaggle && (
               <a
-                href={aboutData.socialLinks.email}
+                href={aboutData.socialLinks.kaggle}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={playClickSound}
-                title="Send Email"
+                onClick={() => {
+                  playClickSound()
+                  notify('Opening Kaggle in a new tab...')
+                }}
+                title="Kaggle Profile"
                 className="w-9 h-9 rounded-xl bg-[#1e1e24] hover:bg-[#282834] border border-white/10 hover:border-[#4f9eff]/40 text-[#8e8ea0] hover:text-[#4f9eff] flex items-center justify-center transition-all cursor-pointer shadow-md"
               >
-                <Mail className="w-4 h-4" />
+                <KaggleIcon className="w-4 h-4" />
               </a>
             )}
           </div>
 
-          {/* Download Resume Button */}
-          <button
-            onClick={handleResumeClick}
-            className="w-full py-2.5 px-4 rounded-xl bg-[#4f9eff] hover:bg-[#3d8ef5] text-black font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 cursor-pointer"
+          {/* Download Resume Button with Real Download */}
+          <a
+            href="/resume.pdf"
+            download="Afsal_Resume.pdf"
+            onClick={handleResumeDownload}
+            className="w-full py-2.5 px-4 rounded-xl bg-[#4f9eff] hover:bg-[#3d8ef5] text-black font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/20 cursor-pointer no-underline group"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
             <span>Download Resume</span>
-          </button>
+          </a>
         </div>
 
         {/* Right Column (70% on md: 8 cols) */}
@@ -141,7 +151,7 @@ export default function AboutApp() {
                 Technologies
               </span>
               <div className="text-2xl font-bold font-mono text-[#4f9eff] mt-1">
-                {aboutData.stats?.technologies || '18+'}
+                {aboutData.stats?.technologies || '24+'}
               </div>
             </div>
 
@@ -149,33 +159,34 @@ export default function AboutApp() {
               <span className="text-[11px] font-mono text-[#6b6b80] uppercase tracking-wider">
                 Currently Learning
               </span>
-              <div className="text-sm font-semibold text-emerald-400 mt-2 truncate">
-                {aboutData.stats?.currentlyLearning || 'Diffusion Models'}
+              <div className="text-sm font-semibold text-white mt-2 truncate">
+                {aboutData.stats?.currentlyLearning || 'Agentic Workflows'}
               </div>
             </div>
           </div>
 
           {/* Currently Working On Section */}
           <div className="bg-[#141418]/80 border border-white/8 rounded-2xl p-6 shadow-xl space-y-3">
-            <div className="flex items-center gap-2">
-              <FolderGit2 className="w-4 h-4 text-[#4f9eff]" />
-              <h2 className="text-xs font-mono uppercase tracking-wider text-[#8e8ea0]">
-                Currently Working On
-              </h2>
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#6b6b80]">
+              <Sparkles className="w-3.5 h-3.5 text-[#4f9eff]" />
+              <span>Currently Working On</span>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-3 pt-1">
               {(aboutData.currentlyWorkingOn || []).map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#1e1e24]/70 border border-white/5 rounded-xl p-3.5 hover:border-[#4f9eff]/30 transition-colors"
+                  className="p-3.5 rounded-xl bg-[#1e1e24]/60 border border-white/5 hover:border-white/10 transition-colors flex items-start gap-3"
                 >
-                  <div className="text-xs font-semibold text-white tracking-tight">
-                    {item.name}
+                  <FolderGit2 className="w-4 h-4 text-[#4f9eff] mt-0.5 shrink-0" />
+                  <div>
+                    <h4 className="text-xs font-semibold text-white">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-[#8e8ea0] mt-0.5 leading-normal">
+                      {item.description}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-[#8e8ea0] mt-0.5 leading-relaxed">
-                    {item.description}
-                  </p>
                 </div>
               ))}
             </div>
@@ -183,18 +194,14 @@ export default function AboutApp() {
 
           {/* Interests Section */}
           <div className="bg-[#141418]/80 border border-white/8 rounded-2xl p-6 shadow-xl space-y-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#4f9eff]" />
-              <h2 className="text-xs font-mono uppercase tracking-wider text-[#8e8ea0]">
-                Areas of Interest
-              </h2>
-            </div>
-
+            <h2 className="text-xs font-mono uppercase tracking-wider text-[#6b6b80]">
+              Interests & Focus Areas
+            </h2>
             <div className="flex flex-wrap gap-2 pt-1">
               {(aboutData.interests || []).map((interest, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1 rounded-full text-xs font-mono bg-[#1e1e24] text-[#d0d0e0] border border-white/10 hover:border-[#4f9eff]/40 hover:text-[#4f9eff] transition-colors"
+                  className="px-3 py-1.5 rounded-full bg-[#1e1e24] border border-white/8 text-xs font-mono text-[#c8c8d8] hover:border-[#4f9eff]/40 hover:text-white transition-colors"
                 >
                   {interest}
                 </span>
