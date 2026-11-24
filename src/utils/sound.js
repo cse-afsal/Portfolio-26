@@ -70,7 +70,34 @@ export function playWindowOpenSound() {
   }
 }
 
-// Soft terminal beep / enter
+// Soft whoosh when closing a window
+export function playWindowCloseSound() {
+  if (!useOSStore.getState().soundEnabled) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(540, ctx.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.09)
+
+    gain.gain.setValueAtTime(0.03, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start()
+    osc.stop(ctx.currentTime + 0.09)
+  } catch {
+    // ignore
+  }
+}
+
+// Soft terminal keystroke sound (very quiet)
 export function playKeySound() {
   if (!useOSStore.getState().soundEnabled) return
   const ctx = getAudioContext()
@@ -82,16 +109,16 @@ export function playKeySound() {
 
     osc.type = 'sine'
     osc.frequency.setValueAtTime(1100, ctx.currentTime)
-    osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.02)
+    osc.frequency.exponentialRampToValueAtTime(850, ctx.currentTime + 0.018)
 
-    gain.gain.setValueAtTime(0.015, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02)
+    gain.gain.setValueAtTime(0.012, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.018)
 
     osc.connect(gain)
     gain.connect(ctx.destination)
 
     osc.start()
-    osc.stop(ctx.currentTime + 0.02)
+    osc.stop(ctx.currentTime + 0.018)
   } catch {
     // ignore
   }

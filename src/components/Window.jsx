@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { Minus, Square, X } from 'lucide-react'
 import useOSStore from '../store/useOSStore'
-import { playClickSound } from '../utils/sound'
+import { playClickSound, playWindowCloseSound } from '../utils/sound'
 
 export default function Window({ id, title, icon: Icon, children }) {
   const windowState = useOSStore((s) => s.windows[id])
@@ -29,7 +29,7 @@ export default function Window({ id, title, icon: Icon, children }) {
 
   const handleClose = (e) => {
     e.stopPropagation()
-    playClickSound()
+    playWindowCloseSound()
     closeApp(id)
   }
 

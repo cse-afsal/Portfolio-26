@@ -7,6 +7,8 @@ import {
   ExternalLink,
   CheckCircle2,
   RefreshCw,
+  AlertCircle,
+  ShieldCheck,
 } from 'lucide-react'
 import { GithubIcon, LinkedinIcon, KaggleIcon } from '../../components/BrandIcons'
 import contactData from '../../data/contact.json'
@@ -30,31 +32,68 @@ export default function ContactApp() {
     subject: '',
     message: '',
   })
-  const [sendingState, setSendingState] = useState('idle') // 'idle' | 'sending' | 'sent'
+  const [sendingState, setSendingState] = useState('idle') // 'idle' | 'sending' | 'sent' | 'error'
+  const [errorMessage, setErrorMessage] = useState(null)
+
+  const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT
 
   const handleLinkClick = (link) => {
     playClickSound()
-    if (link.id === 'github' || link.name.toLowerCase().includes('github')) {
+    if (link.id === 'github' || link.name?.toLowerCase().includes('github')) {
       notify('Opening GitHub in a new tab...')
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     playClickSound()
     setSendingState('sending')
+    setErrorMessage(null)
 
-    // Simulate sending progress bar
-    setTimeout(() => {
-      setSendingState('sent')
-      notify('Message sent successfully!')
-    }, 1500)
+    if (formspreeEndpoint) {
+      try {
+        const response = await fetch(formspreeEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(formData),
+        })
+
+        if (response.ok) {
+          setSendingState('sent')
+          notify('Message transmitted to Afsal successfully!')
+        } else {
+          const errData = await response.json().catch(() => ({}))
+          throw new Error(
+            errData.error || 'Endpoint responded with an error.'
+          )
+        }
+      } catch (err) {
+        setSendingState('error')
+        setErrorMessage(
+          err.message ||
+            'Failed to dispatch transmission. Please retry or contact directly via email.'
+        )
+        notify('Transmission error. Check details in Mail.', 'error')
+      }
+    } else {
+      // Demo simulation mode when no endpoint is configured
+      setTimeout(() => {
+        setSendingState('sent')
+        notify(
+          'Demo mode: Message simulated successfully! Set VITE_FORMSPREE_ENDPOINT in .env for live messages.'
+        )
+      }, 1400)
+    }
   }
 
   const handleReset = () => {
     playClickSound()
     setFormData({ name: '', email: '', subject: '', message: '' })
     setSendingState('idle')
+    setErrorMessage(null)
   }
 
   return (
@@ -87,8 +126,12 @@ export default function ContactApp() {
 
           {/* List of Contact Methods */}
           <div className="space-y-2">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-[#606070] mb-1">
-              Direct Channels
+            <div className="text-[10px] font-mono uppercase tracking-wider text-[#606070] mb-1 flex items-center justify-between">
+              <span>Direct Channels</span>
+              <span className="text-[9px] text-[#4f9eff] font-mono flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                Verified
+              </span>
             </div>
 
             {(contactData.links || []).map((link) => {
@@ -133,8 +176,8 @@ export default function ContactApp() {
                   Send a Message
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-[#6b6b80]">
-                Mail Dispatcher
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[#8e8ea0]">
+                {formspreeEndpoint ? '🟢 Live API Active' : '⚪ Demo Mode (Simulated)'}
               </span>
             </div>
 
@@ -157,7 +200,9 @@ export default function ContactApp() {
                         type="text"
                         required
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
                         placeholder="e.g. Alex Vance"
                         className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors font-mono"
                       />
@@ -171,7 +216,9 @@ export default function ContactApp() {
                         type="email"
                         required
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
                         placeholder="alex@domain.com"
                         className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors font-mono"
                       />
@@ -186,7 +233,9 @@ export default function ContactApp() {
                       type="text"
                       required
                       value={formData.subject}
-                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, subject: e.target.value })
+                      }
                       placeholder="Opportunity / Collaboration / Inquiry"
                       className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors font-mono"
                     />
@@ -200,7 +249,9 @@ export default function ContactApp() {
                       required
                       rows={4}
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
                       placeholder="Write your message here..."
                       className="w-full bg-[#1e1e24] border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white placeholder-[#505060] focus:outline-none focus:border-[#4f9eff] transition-colors resize-none font-mono"
                     />
@@ -268,6 +319,37 @@ export default function ContactApp() {
                   >
                     <RefreshCw className="w-3.5 h-3.5 text-[#4f9eff]" />
                     <span>Send Another Message</span>
+                  </button>
+                </motion.div>
+              )}
+
+              {sendingState === 'error' && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="py-12 flex flex-col items-center justify-center text-center space-y-4"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-400 flex items-center justify-center shadow-xl">
+                    <AlertCircle className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-bold text-white">
+                      Transmission Failed
+                    </h4>
+                    <p className="text-xs text-rose-300 max-w-sm font-mono">
+                      {errorMessage ||
+                        'Unable to reach service. Please verify endpoint configuration.'}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setSendingState('idle')}
+                    className="mt-4 px-4 py-2 rounded-xl bg-[#1e1e24] hover:bg-[#282834] border border-white/10 text-xs font-mono text-white flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-[#4f9eff]" />
+                    <span>Retry Sending</span>
                   </button>
                 </motion.div>
               )}
